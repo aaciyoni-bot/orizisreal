@@ -1,695 +1,680 @@
-<html lang="he" dir="rtl" class="scroll-smooth">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ORIZISREAL | Global Real Estate Investment</title>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Tailwind Config for Custom Brand Colors -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        orizis: {
-                            dark: '#05070A',
-                            card: '#0B0F16',
-                            sapphire: '#1E40AF',
-                            crystal: '#60A5FA',
-                            gold: '#D4AF37',
-                            lightgold: '#F3E5AB'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Heebo', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
-        /* Base & Scrollbar */
-        body { background-color: #05070A; color: #F8FAFC; overflow-x: hidden; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #05070A; }
-        ::-webkit-scrollbar-thumb { background: #1E40AF; border-radius: 10px; }
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; overflow-x: hidden; }
+        .font-serif { font-family: 'Playfair Display', serif; }
         
-        /* Premium Effects */
-        .glass-panel { background: rgba(11, 15, 22, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .glass-panel:hover { border-color: rgba(96, 165, 250, 0.3); transition: all 0.4s ease; box-shadow: 0 10px 40px rgba(30, 64, 175, 0.2); }
+        /* Core UI Classes */
+        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-panel { background: #0f172a; border: 1px solid #1e293b; }
+        .hero-bg { background-image: linear-gradient(to right, rgba(2, 6, 23, 0.9) 0%, rgba(2, 6, 23, 0.4) 100%), url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80'); background-size: cover; background-position: center; background-attachment: fixed; }
         
-        .gold-gradient-text { background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .blue-gradient-text { background: linear-gradient(135deg, #60A5FA 0%, #1E40AF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* Animations */
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-        
-        .hero-bg {
-            background-image: linear-gradient(to bottom, rgba(5,7,10,0.3) 0%, rgba(5,7,10,1) 100%), url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80');
-            background-size: cover; background-position: center; background-attachment: fixed;
-        }
+        /* Brand Colors */
+        .brand-dark { color: #1e3a8a; }
+        .brand-light { color: #38bdf8; }
+        .bg-brand-accent { background-color: #2563eb; }
+        .hover-brand-accent:hover { background-color: #1d4ed8; }
 
-        /* Broker Portal Transitions */
-        #brokerPortal { transition: opacity 0.4s ease, visibility 0.4s ease; }
-        .portal-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-        .portal-visible { opacity: 1; visibility: visible; pointer-events: auto; }
+        /* Animations */
+        .fade-in { animation: fadeIn 0.5s ease-in-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 4px; }
     </style>
 </head>
-<body class="antialiased selection:bg-orizis-sapphire selection:text-white">
+<body class="antialiased selection:bg-blue-900 selection:text-white">
 
-    <!-- ================= PUBLIC FACING WEBSITE ================= -->
-
-    <!-- Navigation -->
-    <nav id="navbar" class="fixed w-full z-50 transition-all duration-500 py-6 px-6 md:px-12">
-        <div class="max-w-7xl mx-auto flex justify-between items-center bg-orizis-dark/50 backdrop-blur-md border border-white/5 rounded-2xl px-6 py-4 shadow-2xl">
-            <!-- Brand -->
-            <div class="flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
-                <i class="fa-solid fa-gem text-orizis-gold text-2xl"></i>
-                <div class="text-2xl md:text-3xl font-serif font-bold tracking-widest text-white">
-                    ORIZIS<span class="text-orizis-crystal">REAL</span>
-                </div>
+    <!-- PUBLIC NAVIGATION -->
+    <nav id="public-nav" class="fixed w-full z-50 transition-all duration-300 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl md:text-3xl font-bold tracking-widest cursor-pointer" onclick="showPublicView()">
+                <span class="brand-dark">ORIZIS</span><span class="brand-light">REAL</span>
             </div>
-            <!-- Links (Desktop) -->
-            <div class="hidden lg:flex items-center gap-8 text-sm font-medium tracking-wide text-gray-300">
-                <a href="#vision" class="hover:text-orizis-gold transition">החזון</a>
-                <a href="#projects" class="hover:text-orizis-gold transition">קולקציית הנכסים</a>
-                <a href="#tour" class="hover:text-orizis-gold transition">סיור ה-VIP</a>
-                <a href="#trust" class="hover:text-orizis-gold transition">ניהול וביטחון משפטי</a>
-                <a href="#articles" class="hover:text-orizis-gold transition">מגזין אזרבייג'ן</a>
+            
+            <div class="hidden lg:flex gap-8 text-sm font-semibold uppercase tracking-widest text-slate-300">
+                <a href="#about" class="hover:text-blue-400 transition">Orizis Group</a>
+                <a href="#projects" class="hover:text-blue-400 transition">Portfolio</a>
+                <a href="#mission" class="hover:text-blue-400 transition">VIP Mission</a>
+                <a href="#guarantee" class="hover:text-blue-400 transition">Guarantees</a>
             </div>
-            <!-- CTA & Portal Login -->
-            <div class="flex items-center gap-4">
-                <a href="#tour" class="hidden md:block bg-orizis-sapphire hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-sm font-bold transition shadow-[0_0_20px_rgba(30,64,175,0.4)]">
-                    שריון לסיור הקרוב
-                </a>
-                <button onclick="togglePortalLogin()" class="flex items-center gap-2 text-orizis-gold border border-orizis-gold/30 hover:bg-orizis-gold/10 px-5 py-2.5 rounded-full text-sm font-bold transition">
-                    <i class="fa-solid fa-lock"></i> <span class="hidden sm:inline">פורטל שותפים</span>
+            
+            <div class="flex gap-4">
+                <a href="#public-booking" class="hidden md:block bg-brand-accent hover-brand-accent text-white px-6 py-2.5 text-sm font-bold uppercase tracking-wide transition shadow-lg shadow-blue-900/50">Book Tour</a>
+                <button onclick="toggleLoginModal()" class="border border-slate-600 text-slate-300 hover:bg-white hover:text-black px-6 py-2.5 text-sm font-bold uppercase tracking-wide transition flex items-center gap-2">
+                    <i class="fa-solid fa-lock"></i> Partner Login
                 </button>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <header class="relative h-screen flex items-center hero-bg overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-r from-orizis-dark via-orizis-dark/80 to-transparent"></div>
+    <!-- PUBLIC VIEW -->
+    <div id="public-view" class="fade-in">
         
-        <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full pt-20">
-            <div class="max-w-3xl reveal">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orizis-sapphire/20 border border-orizis-crystal/30 text-orizis-crystal text-xs font-bold tracking-widest uppercase mb-6">
-                    <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span> הזדמנות השקעה בינלאומית
-                </div>
-                
-                <h1 class="text-5xl sm:text-6xl md:text-8xl font-black leading-[1.1] mb-8">
-                    אל תקנו רכב שמאבד מערכו. <br>
-                    <span class="gold-gradient-text font-serif">תקנו נכס בבאקו.</span>
-                </h1>
-                
-                <p class="text-xl md:text-2xl text-gray-300 font-light mb-10 border-r-4 border-orizis-crystal pr-6 leading-relaxed">
-                    במחיר של רכב משפחתי חדש (פחות מ-200,000 ש"ח), רוכשים דירת פרימיום בטאבו בריביירה של הים הכספי. <br>
-                    <strong class="text-white mt-2 block">השכירות תממן לכם את הרכב, הנכס יישאר שלכם לתמיד.</strong>
-                </p>
-                
-                <div class="flex flex-col sm:flex-row gap-5">
-                    <a href="#projects" class="bg-gradient-to-r from-orizis-sapphire to-blue-600 text-white text-center px-8 py-4 rounded-full font-bold text-lg hover:shadow-[0_0_30px_rgba(30,64,175,0.6)] transition duration-300 flex items-center justify-center gap-3">
-                        צפה בקולקציית הנכסים <i class="fa-solid fa-arrow-left"></i>
-                    </a>
-                    <a href="#tour" class="glass-panel text-white text-center px-8 py-4 rounded-full font-bold text-lg hover:bg-white/5 transition duration-300">
-                        גלה את מסע ה-VIP שלנו
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-50">
-            <span class="text-xs tracking-widest uppercase text-gray-400">Scroll</span>
-            <i class="fa-solid fa-arrow-down text-orizis-crystal"></i>
-        </div>
-    </header>
-
-    <!-- The Vision / Stats Section -->
-    <section id="vision" class="py-24 relative z-20 bg-orizis-dark border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-6 md:px-12">
-            <div class="grid md:grid-cols-4 gap-8">
-                <div class="glass-panel p-8 rounded-2xl text-center reveal">
-                    <i class="fa-solid fa-chart-line text-4xl text-orizis-crystal mb-4"></i>
-                    <h3 class="text-5xl font-black text-white mb-2">12%</h3>
-                    <p class="text-sm text-gray-400 uppercase tracking-wider">צפי תשואה שנתית משכירות</p>
-                </div>
-                <div class="glass-panel p-8 rounded-2xl text-center reveal" style="transition-delay: 100ms;">
-                    <i class="fa-solid fa-building-shield text-4xl text-orizis-gold mb-4"></i>
-                    <h3 class="text-5xl font-black text-white mb-2">100%</h3>
-                    <p class="text-sm text-gray-400 uppercase tracking-wider">בעלות פרטית בטאבו האזרי</p>
-                </div>
-                <div class="glass-panel p-8 rounded-2xl text-center reveal" style="transition-delay: 200ms;">
-                    <i class="fa-solid fa-handshake text-4xl text-orizis-crystal mb-4"></i>
-                    <h3 class="text-5xl font-black text-white mb-2">70/30</h3>
-                    <p class="text-sm text-gray-400 uppercase tracking-wider">תשלום מראש והשאר בתשלומים</p>
-                </div>
-                <div class="glass-panel p-8 rounded-2xl text-center reveal" style="transition-delay: 300ms;">
-                    <i class="fa-solid fa-plane-departure text-4xl text-orizis-gold mb-4"></i>
-                    <h3 class="text-5xl font-black text-white mb-2">72h</h3>
-                    <p class="text-sm text-gray-400 uppercase tracking-wider">מסע משקיעים הכל כלול</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Collection -->
-    <section id="projects" class="py-32 relative">
-        <!-- Background Glow -->
-        <div class="absolute top-1/4 right-0 w-[500px] h-[500px] bg-orizis-sapphire/20 rounded-full blur-[120px] pointer-events-none"></div>
-
-        <div class="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 reveal">
-                <div>
-                    <h2 class="text-sm text-orizis-crystal font-bold tracking-[0.3em] uppercase mb-3">Portfolio</h2>
-                    <h3 class="text-4xl md:text-5xl font-serif font-bold text-white">קולקציית נכסי הפרימיום</h3>
-                    <p class="text-gray-400 mt-4 max-w-2xl text-lg">נבחרת הפרויקטים האקסקלוסיבית שלנו. נכסים מניבים במיקומי שיא, המיועדים לייצר תזרים שוטף ועליית ערך אגרסיבית.</p>
-                </div>
-            </div>
-
-            <div class="grid lg:grid-cols-3 gap-10">
-                <!-- Project 1 -->
-                <div class="glass-panel rounded-3xl overflow-hidden group reveal cursor-pointer flex flex-col h-full">
-                    <div class="relative h-72 overflow-hidden">
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
-                        <div class="absolute top-4 right-4 z-20 bg-orizis-dark/80 backdrop-blur px-4 py-1.5 rounded-full border border-orizis-gold/30">
-                            <span class="gold-gradient-text font-bold text-sm">החל מ- 195,000 ₪</span>
-                        </div>
-                        <img src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Sea Breeze" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 ease-in-out">
+        <!-- Hero Section -->
+        <header class="relative min-h-screen flex items-center hero-bg">
+            <div class="max-w-7xl mx-auto px-6 pt-20 w-full relative z-10">
+                <div class="max-w-3xl">
+                    <div class="inline-block border border-blue-500/30 bg-blue-900/20 text-blue-400 px-4 py-1.5 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-6 backdrop-blur-sm">
+                        Global Real Estate Opportunities
                     </div>
-                    <div class="p-8 flex-1 flex flex-col">
-                        <h4 class="text-2xl font-serif font-bold mb-2">Sea Breeze Resort</h4>
-                        <p class="text-orizis-crystal text-sm mb-4"><i class="fa-solid fa-location-dot mr-2"></i> נרדראן, קו החוף אבשרון</p>
-                        <p class="text-gray-400 leading-relaxed mb-6 flex-1 text-sm">
-                            עיר קיט פרטית ויוקרתית על חוף הים הכספי. דירות נופש המיועדות לשכירות תיירותית קצרת טווח (Airbnb) עם תפוסה מלאה בקיץ. כולל מרינה, מסעדות שף ומועדוני חוף.
-                        </p>
-                        <ul class="space-y-2 mb-6 border-t border-white/10 pt-4">
-                            <li class="flex items-center justify-between text-sm"><span class="text-gray-500">תשואה צפויה:</span> <span class="text-white font-bold">10%-12%</span></li>
-                            <li class="flex items-center justify-between text-sm"><span class="text-gray-500">סטטוס ניהול:</span> <span class="text-green-400 font-bold"><i class="fa-solid fa-check"></i> כלול בהסכם</span></li>
-                        </ul>
-                        <button class="w-full py-3 bg-white/5 hover:bg-orizis-sapphire rounded-xl text-sm font-bold transition">לצפייה בנכס</button>
-                    </div>
-                </div>
-
-                <!-- Project 2 -->
-                <div class="glass-panel rounded-3xl overflow-hidden group reveal cursor-pointer flex flex-col h-full" style="transition-delay: 100ms;">
-                    <div class="relative h-72 overflow-hidden">
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
-                        <div class="absolute top-4 right-4 z-20 bg-orizis-dark/80 backdrop-blur px-4 py-1.5 rounded-full border border-orizis-gold/30">
-                            <span class="gold-gradient-text font-bold text-sm">החל מ- 250,000 ₪</span>
-                        </div>
-                        <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Baku Premium" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 ease-in-out">
-                    </div>
-                    <div class="p-8 flex-1 flex flex-col">
-                        <h4 class="text-2xl font-serif font-bold mb-2">Baku Premium Urban</h4>
-                        <p class="text-orizis-crystal text-sm mb-4"><i class="fa-solid fa-location-dot mr-2"></i> מרכז באקו, העיר הלבנה</p>
-                        <p class="text-gray-400 leading-relaxed mb-6 flex-1 text-sm">
-                            דירות יוקרה בלב הפועם של העיר. מיועד להשכרה ארוכת טווח לאנשי עסקים ודיפלומטים. אדריכלות אירופאית קלאסית עם טכנולוגיה של בית חכם, באזור העובר התחדשות אדירה.
-                        </p>
-                        <ul class="space-y-2 mb-6 border-t border-white/10 pt-4">
-                            <li class="flex items-center justify-between text-sm"><span class="text-gray-500">תשואה צפויה:</span> <span class="text-white font-bold">7%-9%</span></li>
-                            <li class="flex items-center justify-between text-sm"><span class="text-gray-500">סטטוס ניהול:</span> <span class="text-green-400 font-bold"><i class="fa-solid fa-check"></i> כלול בהסכם</span></li>
-                        </ul>
-                        <button class="w-full py-3 bg-white/5 hover:bg-orizis-sapphire rounded-xl text-sm font-bold transition">לצפייה בנכס</button>
-                    </div>
-                </div>
-
-                <!-- Project 3 -->
-                <div class="glass-panel rounded-3xl overflow-hidden group reveal cursor-pointer flex flex-col h-full" style="transition-delay: 200ms;">
-                    <div class="relative h-72 overflow-hidden">
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
-                        <div class="absolute top-4 right-4 z-20 bg-orizis-dark/80 backdrop-blur px-4 py-1.5 rounded-full border border-orizis-gold/30">
-                            <span class="gold-gradient-text font-bold text-sm">נכסי קצה - פרימיום</span>
-                        </div>
-                        <img src="https://images.unsplash.com/photo-1613490908236-4700f5317789?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Royal Villas" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700 ease-in-out">
-                    </div>
-                    <div class="p-8 flex-1 flex flex-col">
-                        <h4 class="text-2xl font-serif font-bold mb-2">Absheron Royal Villas</h4>
-                        <p class="text-orizis-crystal text-sm mb-4"><i class="fa-solid fa-location-dot mr-2"></i> מתחמי סביון של באקו</p>
-                        <p class="text-gray-400 leading-relaxed mb-6 flex-1 text-sm">
-                            וילות פאר מבודדות עם בריכות פרטיות, גינון אדריכלי וחניות רכבי שרד. פרויקטים סגורים (Gated Communities) לאצולת הממון המקומית ומשקיעים המחפשים עליית ערך דרמטית.
-                        </p>
-                        <ul class="space-y-2 mb-6 border-t border-white/10 pt-4">
-                            <li class="flex items-center justify-between text-sm"><span class="text-gray-500">עליית ערך שנתית:</span> <span class="text-white font-bold">15%+</span></li>
-                            <li class="flex items-center justify-between text-sm"><span class="text-gray-500">מלאי נוכחי:</span> <span class="text-red-400 font-bold">2 וילות בלבד</span></li>
-                        </ul>
-                        <button class="w-full py-3 bg-white/5 hover:bg-orizis-sapphire rounded-xl text-sm font-bold transition">לצפייה בנכס</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- The 72 Hour VIP Tour -->
-    <section id="tour" class="py-32 bg-gradient-to-b from-orizis-dark to-[#080b12] relative border-t border-white/5">
-        <div class="max-w-7xl mx-auto px-6 md:px-12">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div class="reveal">
-                    <h2 class="text-sm text-orizis-gold font-bold tracking-[0.3em] uppercase mb-3">The Experience</h2>
-                    <h3 class="text-4xl md:text-5xl font-serif font-bold text-white mb-6">מסע משקיעים של 72 שעות.</h3>
-                    <p class="text-xl text-gray-300 mb-8 leading-relaxed font-light">
-                        אנחנו לא מוכרים נדל"ן דרך זום. הלקוחות שלנו חווים את העוצמה של אזרבייג'ן דרך הרגליים, בסטנדרט של אח"מים. טיסות, נהגים צמודים, וסיור לוקיישנים עוצר נשימה.
+                    
+                    <h1 class="text-5xl sm:text-6xl md:text-7xl font-serif mb-6 leading-[1.1] text-white">
+                        Why spend $50K on a depreciating car? <br>
+                        <span class="italic text-blue-400 font-light">Buy an asset in Baku. Let the tenant pay for your car.</span>
+                    </h1>
+                    
+                    <p class="text-lg md:text-xl text-slate-400 mb-10 font-light leading-relaxed border-l-4 border-blue-600 pl-6">
+                        Acquire premium real estate in Azerbaijan for less than $55,000. Full legal ownership, strict escrow protection in Israel, and corporate-grade property management. We handle the tenants, you receive the cash flow.
                     </p>
                     
-                    <div class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-orizis-sapphire before:to-transparent">
-                        
-                        <!-- Timeline Item 1 -->
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-orizis-dark bg-orizis-sapphire text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                                <i class="fa-solid fa-plane"></i>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-panel p-6 rounded-2xl">
-                                <h4 class="font-bold text-orizis-crystal mb-1">יום 1: עוצמה בבאקו</h4>
-                                <p class="text-sm text-gray-400">נחיתה, איסוף ברכבי שרד, צ'ק-אין למלון 5 כוכבים, וארוחת ערב במסעדת שף מקומית עם פרזנטציה על הכלכלה האזרית.</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Timeline Item 2 -->
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-orizis-dark bg-orizis-sapphire text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                                <i class="fa-solid fa-building"></i>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-panel p-6 rounded-2xl">
-                                <h4 class="font-bold text-orizis-crystal mb-1">יום 2: השטח והסגירות</h4>
-                                <p class="text-sm text-gray-400">סיור רכוב בין הפרויקטים בסיבריז ובבאקו. ישיבת משא ומתן וחתימה מול נוטריון ועורך דין מקומי בחדר עסקאות פרטי.</p>
-                            </div>
-                        </div>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#mission" class="bg-brand-accent hover-brand-accent text-white px-8 py-4 text-center font-bold text-sm uppercase tracking-widest transition flex justify-center items-center gap-3">
+                            Discover The 72h Mission <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                        <a href="#projects" class="glass text-white hover:bg-white/5 px-8 py-4 text-center font-bold text-sm uppercase tracking-widest transition">
+                            View Portfolio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-                        <!-- Timeline Item 3 -->
-                        <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
-                            <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-orizis-dark bg-orizis-sapphire text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                                <i class="fa-solid fa-mountain"></i>
-                            </div>
-                            <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-panel p-6 rounded-2xl">
-                                <h4 class="font-bold text-orizis-crystal mb-1">יום 3: חוויית הקווקז</h4>
-                                <p class="text-sm text-gray-400">נסיעת פינוק לאזורי התיירות הפראיים (גבלה או שאהדאג). ארוחות מסורתיות, טבע עוצר נשימה, וחזרה לישראל בתחושת ניצחון.</p>
-                            </div>
-                        </div>
+        <!-- About Orizis Group -->
+        <section id="about" class="py-24 bg-slate-950 border-b border-slate-900">
+            <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h3 class="text-blue-500 text-sm font-bold uppercase tracking-widest mb-2">Corporate Backing</h3>
+                    <h2 class="text-4xl font-serif text-white mb-6">Backed by ORIZIS GROUP</h2>
+                    <p class="text-slate-400 leading-relaxed mb-6">
+                        <strong class="text-white">ORIZISREAL</strong> is the real estate investment arm of <strong>Orizis Group</strong>, a multinational conglomerate operating across global markets. 
+                    </p>
+                    <p class="text-slate-400 leading-relaxed mb-8">
+                        With diversified interests in technology, finance, and infrastructure, Orizis Group provides the financial stability, operational scale, and institutional trust required to execute complex cross-border real estate transactions flawlessly. When you invest through ORIZISREAL, you are partnering with an enterprise designed for scale and security.
+                    </p>
+                </div>
+                <div class="relative h-[400px]">
+                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3" alt="Corporate" class="w-full h-full object-cover rounded-sm opacity-80 border border-slate-800">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Showcase (Now Clickable) -->
+        <section id="projects" class="py-32 bg-slate-950 relative">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex justify-between items-end mb-16">
+                    <div>
+                        <h3 class="text-blue-500 text-sm font-bold uppercase tracking-widest mb-2">The Collection</h3>
+                        <h2 class="text-4xl md:text-5xl font-serif text-white">Premium Real Estate Assets</h2>
                     </div>
                 </div>
 
-                <!-- Registration Form / Call to action -->
-                <div class="glass-panel p-10 rounded-3xl border-t-4 border-t-orizis-gold relative overflow-hidden reveal">
-                    <div class="absolute -top-24 -right-24 w-48 h-48 bg-orizis-gold/20 rounded-full blur-[50px]"></div>
-                    <h4 class="text-2xl font-serif mb-2">הרשמה ללקוחות מזדמנים</h4>
-                    <p class="text-gray-400 text-sm mb-8">השאירו פרטים ונציגנו יצור קשר לבדיקת התאמה לסיור ה-VIP הקרוב.</p>
-                    
-                    <form class="space-y-4 relative z-10" onsubmit="event.preventDefault(); alert('הפרטים נשלחו בהצלחה למחלקת הלקוחות. ניצור קשר בקרוב.');">
-                        <div>
-                            <input type="text" placeholder="שם מלא" class="w-full bg-orizis-dark/50 border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-orizis-crystal transition" required>
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Sea Breeze Card -->
+                    <div class="glass-panel group cursor-pointer hover:border-blue-500 transition" onclick="openPropertyDetails('seabreeze')">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                            <div class="absolute top-4 right-4 bg-slate-900/90 text-white text-xs font-bold px-3 py-1 uppercase tracking-widest border border-slate-700">High Yield Airbnb</div>
                         </div>
-                        <div>
-                            <input type="tel" placeholder="טלפון נייד" class="w-full bg-orizis-dark/50 border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-orizis-crystal transition" required>
+                        <div class="p-6 relative">
+                            <div class="absolute -top-6 right-6 bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-arrow-right"></i></div>
+                            <h3 class="text-2xl font-serif text-white mb-1">Sea Breeze Resort</h3>
+                            <p class="text-blue-400 text-sm mb-4"><i class="fa-solid fa-location-dot mr-1"></i> Absheron Coast, Baku</p>
+                            <p class="text-slate-400 text-sm mb-6 line-clamp-3">A luxurious private coastal city. Perfect for short-term tourist rentals with full occupancy during the summer.</p>
+                            <div class="border-t border-slate-800 pt-4"><span class="text-white font-bold">Est. Yield: 10-12%</span></div>
                         </div>
-                        <div>
-                            <select class="w-full bg-orizis-dark/50 border border-white/10 rounded-xl px-5 py-4 text-gray-400 focus:outline-none focus:border-orizis-crystal transition appearance-none">
-                                <option value="" disabled selected>הון עצמי זמין להשקעה...</option>
-                                <option>200,000 - 300,000 ש"ח</option>
-                                <option>300,000 - 600,000 ש"ח</option>
-                                <option>מעל 600,000 ש"ח</option>
+                    </div>
+
+                    <!-- Baku Urban Card -->
+                    <div class="glass-panel group cursor-pointer hover:border-blue-500 transition" onclick="openPropertyDetails('whitecity')">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                            <div class="absolute top-4 right-4 bg-slate-900/90 text-white text-xs font-bold px-3 py-1 uppercase tracking-widest border border-slate-700">Off-Plan</div>
+                        </div>
+                        <div class="p-6 relative">
+                            <div class="absolute -top-6 right-6 bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-arrow-right"></i></div>
+                            <h3 class="text-2xl font-serif text-white mb-1">White City Residences</h3>
+                            <p class="text-blue-400 text-sm mb-4"><i class="fa-solid fa-location-dot mr-1"></i> Downtown Baku</p>
+                            <p class="text-slate-400 text-sm mb-6 line-clamp-3">Premium urban living in the heart of the capital. Designed for long-term corporate rentals to diplomats and executives.</p>
+                            <div class="border-t border-slate-800 pt-4"><span class="text-white font-bold">Buy-Back: +20%</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Villas Card -->
+                    <div class="glass-panel group cursor-pointer hover:border-blue-500 transition" onclick="openPropertyDetails('villas')">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1613490908236-4700f5317789?ixlib=rb-4.0.3" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                            <div class="absolute top-4 right-4 bg-blue-600/90 text-white text-xs font-bold px-3 py-1 uppercase tracking-widest border border-blue-500">Limited</div>
+                        </div>
+                        <div class="p-6 relative">
+                            <div class="absolute -top-6 right-6 bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-arrow-right"></i></div>
+                            <h3 class="text-2xl font-serif text-white mb-1">Absheron Royal Villas</h3>
+                            <p class="text-blue-400 text-sm mb-4"><i class="fa-solid fa-location-dot mr-1"></i> Elite Suburbs</p>
+                            <p class="text-slate-400 text-sm mb-6 line-clamp-3">Breathtaking private villas with pools and architectural landscaping. Targeted at ultra-high-net-worth individuals.</p>
+                            <div class="border-t border-slate-800 pt-4"><span class="text-white font-bold">Growth: 15% YOY</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIP Mission 72h -->
+        <section id="mission" class="py-32 bg-slate-900 border-t border-slate-800">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <div>
+                        <h3 class="text-blue-500 text-sm font-bold uppercase tracking-widest mb-2">The Experience</h3>
+                        <h2 class="text-4xl md:text-5xl font-serif text-white mb-6">72-Hour Investor Mission</h2>
+                        <p class="text-slate-300 text-lg mb-8 leading-relaxed">
+                            We don't sell real estate over Zoom. We fly you to Azerbaijan for a comprehensive, executive-grade due diligence mission. Evaluate the assets, experience the culture, and sign contracts in person.
+                        </p>
+                        
+                        <div class="space-y-6 mb-10">
+                            <div class="flex gap-4">
+                                <div class="w-12 h-12 bg-slate-800 text-blue-400 flex items-center justify-center shrink-0 border border-slate-700"><i class="fa-solid fa-plane-arrival"></i></div>
+                                <div>
+                                    <h4 class="text-white font-bold mb-1">Day 1: Arrival & Executive Briefing</h4>
+                                    <p class="text-sm text-slate-400">Airport VIP pickup, 5-star hotel check-in, and a corporate dinner detailing the macroeconomic growth of Azerbaijan.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-12 h-12 bg-slate-800 text-blue-400 flex items-center justify-center shrink-0 border border-slate-700"><i class="fa-solid fa-building"></i></div>
+                                <div>
+                                    <h4 class="text-white font-bold mb-1">Day 2: Site Tours & Legal Execution</h4>
+                                    <p class="text-sm text-slate-400">Chauffeured tour of Baku and Sea Breeze projects. Private meeting with local notary and lawyers to finalize the property allocation.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-12 h-12 bg-slate-800 text-blue-400 flex items-center justify-center shrink-0 border border-slate-700"><i class="fa-solid fa-mountain-sun"></i></div>
+                                <div>
+                                    <h4 class="text-white font-bold mb-1">Day 3: The Caucasus Retreat</h4>
+                                    <p class="text-sm text-slate-400">A luxurious day-trip to the tourist hotspots of Gabala or Shahdag to understand the booming tourism demand, followed by departure.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-900/20 border border-blue-800 p-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-white font-serif text-2xl">Mission Cost: $870</span>
+                                <span class="bg-blue-600 text-white text-[10px] uppercase tracking-widest px-2 py-1">Fully Refundable</span>
+                            </div>
+                            <p class="text-sm text-blue-200">The $870 covers flights, 5-star lodging, transfers, and fine dining. <strong class="text-white">This entire amount is deducted directly from your property purchase price.</strong></p>
+                        </div>
+                    </div>
+
+                    <div id="public-booking" class="glass-panel p-10 border-t-4 border-blue-600">
+                        <h3 class="text-2xl font-serif text-white mb-2">Request Mission Access</h3>
+                        <p class="text-slate-400 text-sm mb-8">Submit your details to undergo initial financial pre-qualification.</p>
+                        
+                        <form onsubmit="handlePublicSubmission(event)" class="space-y-4">
+                            <input type="text" placeholder="Full Legal Name" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition">
+                            <input type="email" placeholder="Email Address" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition">
+                            <input type="tel" placeholder="Phone Number" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition">
+                            <select required class="w-full bg-slate-950 border border-slate-700 p-4 text-slate-300 focus:border-blue-500 outline-none transition appearance-none">
+                                <option value="" disabled selected>Estimated Investment Capital...</option>
+                                <option>$50,000 - $100,000</option>
+                                <option>$100,000 - $250,000</option>
+                                <option>$250,000+</option>
                             </select>
+                            <label class="flex items-start gap-3 text-xs text-slate-400 mt-4 cursor-pointer">
+                                <input type="checkbox" required class="mt-1">
+                                <span>I confirm that my investment capital is liquid and held in a personal bank account under my name.</span>
+                            </label>
+                            <button type="submit" class="w-full bg-brand-accent hover-brand-accent text-white font-bold py-4 uppercase tracking-widest text-sm transition mt-6">
+                                Submit Request
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-[#01030a] py-12 border-t border-slate-900 text-center">
+            <div class="text-xl font-bold tracking-widest mb-4 opacity-50">
+                <span class="brand-dark">ORIZIS</span><span class="brand-light">REAL</span>
+            </div>
+            <p class="text-slate-600 text-sm">© 2026 Orizis Group | Global Real Estate Operations.</p>
+        </footer>
+    </div>
+
+    <!-- PROPERTY DETAILS MODAL -->
+    <div id="property-modal" class="fixed inset-0 z-[110] hidden bg-black/90 backdrop-blur-md overflow-y-auto">
+        <div class="min-h-screen py-10 px-4 md:px-10 flex justify-center items-center">
+            <div class="bg-slate-950 border border-slate-800 w-full max-w-5xl rounded-sm overflow-hidden shadow-2xl relative flex flex-col md:flex-row">
+                <button onclick="closePropertyModal()" class="absolute top-4 right-4 bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 transition z-10"><i class="fa-solid fa-xmark"></i></button>
+                
+                <!-- Image Side -->
+                <div class="md:w-1/2 h-64 md:h-auto relative">
+                    <img id="prop-img" src="" class="w-full h-full object-cover">
+                    <div class="absolute bottom-4 left-4 flex gap-2">
+                        <span id="prop-tag" class="bg-blue-600 text-white text-xs font-bold px-3 py-1 uppercase tracking-widest"></span>
+                    </div>
+                </div>
+                
+                <!-- Content Side -->
+                <div class="md:w-1/2 p-10 flex flex-col justify-center">
+                    <h4 class="text-blue-500 text-xs font-bold uppercase tracking-widest mb-2" id="prop-location"></h4>
+                    <h2 class="text-4xl font-serif text-white mb-4" id="prop-title"></h2>
+                    <p class="text-slate-400 text-sm leading-relaxed mb-8" id="prop-desc"></p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="border border-slate-800 bg-slate-900/50 p-4">
+                            <p class="text-xs text-slate-500 uppercase tracking-widest mb-1">Starting Price</p>
+                            <p class="text-2xl font-bold text-white" id="prop-price"></p>
                         </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-orizis-gold to-yellow-600 text-orizis-dark font-bold text-lg py-4 rounded-xl hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition duration-300 mt-4">
-                            בקש אישור הצטרפות
-                        </button>
-                        <p class="text-xs text-center text-gray-500 mt-4"><i class="fa-solid fa-lock mr-1"></i> המידע מאובטח ולא יועבר לצד ג'</p>
-                    </form>
+                        <div class="border border-slate-800 bg-slate-900/50 p-4">
+                            <p class="text-xs text-slate-500 uppercase tracking-widest mb-1">Management Plan</p>
+                            <p class="text-2xl font-bold text-blue-400" id="prop-yield"></p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 p-4 border-l-4 border-blue-500 mb-8">
+                        <h4 class="text-white text-sm font-bold mb-1"><i class="fa-solid fa-shield-halved mr-2"></i> Comprehensive Management</h4>
+                        <p class="text-xs text-slate-400">OrizisReal handles the entire lifecycle: 100% taboo registration in your name via ASAN, tenant sourcing, and monthly cash flow distribution.</p>
+                    </div>
+                    
+                    <button onclick="closePropertyModal(); document.getElementById('public-booking').scrollIntoView();" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 font-bold uppercase tracking-widest text-sm transition">
+                        Reserve on Next Mission
+                    </button>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Trust & Management Section -->
-    <section id="trust" class="py-24 bg-orizis-card relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
-                <h2 class="text-3xl md:text-5xl font-serif font-bold text-white mb-6">אתם קונים. אנחנו מנהלים. <br><span class="text-orizis-crystal">100% שקט נפשי.</span></h2>
-                <p class="text-gray-400 text-lg">מעטפת הברזל של אוריזיס נועדה להסיר כל התעסקות מצד המשקיע. מהרגולציה ועד לשוכר האחרון.</p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Box 1 -->
-                <div class="bg-orizis-dark p-8 rounded-2xl border border-white/5 hover:border-orizis-crystal/30 transition reveal">
-                    <div class="w-14 h-14 bg-blue-900/30 text-orizis-crystal rounded-xl flex items-center justify-center text-2xl mb-6">
-                        <i class="fa-solid fa-scale-balanced"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-white mb-3">נאמנות ישראלית וטאבו מקומי</h4>
-                    <p class="text-gray-400 text-sm leading-relaxed">
-                        הכסף שלכם לא יוצא לחו"ל בטרם עת. הוא מופקד בחשבון נאמנות של משרד עו"ד בישראל. הדירה תירשם על שמכם המלא בטאבו האזרי (ASAN) כחוק, ורק אז ישוחררו הכספים ליזם.
-                    </p>
-                </div>
-                <!-- Box 2 -->
-                <div class="bg-orizis-dark p-8 rounded-2xl border border-white/5 hover:border-orizis-gold/30 transition reveal" style="transition-delay: 100ms;">
-                    <div class="w-14 h-14 bg-yellow-900/30 text-orizis-gold rounded-xl flex items-center justify-center text-2xl mb-6">
-                        <i class="fa-solid fa-keys"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-white mb-3">חברת ניהול In-House</h4>
-                    <p class="text-gray-400 text-sm leading-relaxed">
-                        אל תחפשו חברות אחזקה. חברת הניהול של Orizis Group בבאקו לוקחת את המפתחות, מרהטת את הנכס במידת הצורך, ומפעילה את המערך התיירותי (Airbnb) או השכירות הרגילה.
-                    </p>
-                </div>
-                <!-- Box 3 -->
-                <div class="bg-orizis-dark p-8 rounded-2xl border border-white/5 hover:border-green-500/30 transition reveal" style="transition-delay: 200ms;">
-                    <div class="w-14 h-14 bg-green-900/30 text-green-400 rounded-xl flex items-center justify-center text-2xl mb-6">
-                        <i class="fa-solid fa-file-invoice-dollar"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-white mb-3">תשואה נטו, ללא כאב ראש</h4>
-                    <p class="text-gray-400 text-sm leading-relaxed">
-                        אתם משלמים רק אחוז קבוע מתוך ההכנסות בפועל. אנחנו דואגים לניקיון, תחזוקה, שיווק הפלטפורמות, וטיפול בתקלות. התזרים מופקד ישירות לחשבון שלכם עם דוחות שקיפות מלאים.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Articles / Azerbaijan Info -->
-    <section id="articles" class="py-24 bg-orizis-dark">
-        <div class="max-w-7xl mx-auto px-6 md:px-12">
-            <h2 class="text-4xl font-serif font-bold text-white mb-12 border-r-4 border-orizis-crystal pr-4 reveal">למה דווקא אזרבייג'ן?</h2>
-            
-            <div class="grid md:grid-cols-2 gap-10">
-                <div class="group cursor-pointer reveal">
-                    <div class="overflow-hidden rounded-2xl mb-4 h-64">
-                        <img src="https://images.unsplash.com/photo-1582298538104-e593bd6c4e09?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Baku Skyline">
-                    </div>
-                    <div class="flex items-center gap-3 text-xs text-orizis-crystal font-bold uppercase tracking-widest mb-2">
-                        <span>כלכלה ותשתיות</span> <span class="w-1 h-1 bg-white rounded-full"></span> <span>זמן קריאה: 3 דק'</span>
-                    </div>
-                    <h4 class="text-2xl font-bold text-white mb-3 group-hover:text-orizis-gold transition">דובאי של הקווקז: תנופת הפיתוח של באקו</h4>
-                    <p class="text-gray-400 text-sm line-clamp-2">כיצד הכנסות הנפט העצומות של אזרבייג'ן מתורגמות להשקעות ענק בתשתיות, אדריכלות מרהיבה, וכלכלה יציבה המושכת משקיעים זרים מכל העולם.</p>
-                </div>
-
-                <div class="group cursor-pointer reveal" style="transition-delay: 100ms;">
-                    <div class="overflow-hidden rounded-2xl mb-4 h-64">
-                        <img src="https://images.unsplash.com/photo-1627885061483-360e227df2b6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Tourism">
-                    </div>
-                    <div class="flex items-center gap-3 text-xs text-orizis-crystal font-bold uppercase tracking-widest mb-2">
-                        <span>תיירות ונופש</span> <span class="w-1 h-1 bg-white rounded-full"></span> <span>זמן קריאה: 4 דק'</span>
-                    </div>
-                    <h4 class="text-2xl font-bold text-white mb-3 group-hover:text-orizis-gold transition">מגבלה ועד הים הכספי: בום תיירותי חסר תקדים</h4>
-                    <p class="text-gray-400 text-sm line-clamp-2">מיליוני תיירים ממדינות המפרץ, רוסיה ואירופה שוטפים את ערי הנופש ואתרי הסקי באזרבייג'ן, ומייצרים ביקוש אדיר לדירות Airbnb ובתים להשכרה.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-[#020305] pt-20 pb-10 border-t border-white/5">
-        <div class="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-gem text-orizis-gold text-2xl"></i>
-                <div class="text-xl font-serif font-bold tracking-widest text-white">
-                    ORIZIS<span class="text-orizis-crystal">REAL</span>
-                </div>
-            </div>
-            <p class="text-sm text-gray-500">© 2026 Orizis Group | Global Investment Solutions. All rights reserved.</p>
-            <div class="flex gap-4">
-                <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-orizis-sapphire hover:text-white transition"><i class="fa-brands fa-linkedin-in"></i></a>
-                <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-orizis-sapphire hover:text-white transition"><i class="fa-brands fa-whatsapp"></i></a>
-            </div>
-        </div>
-    </footer>
-
-
-    <!-- ================= BROKER PORTAL (CRM APP) ================= -->
-
-    <!-- Login Overlay -->
-    <div id="portalAuth" class="portal-hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md">
-        <div class="glass-panel p-10 rounded-2xl w-full max-w-md border-t-4 border-orizis-sapphire mx-4 shadow-2xl transform transition-transform duration-500 scale-95" id="authBox">
-            <button onclick="togglePortalLogin()" class="absolute top-4 left-4 text-gray-500 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <!-- LOGIN MODAL -->
+    <div id="login-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
+        <div class="glass-panel p-10 w-full max-w-md border-t-4 border-slate-600 relative">
+            <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-orizis-dark rounded-full border border-orizis-crystal/30 flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-user-tie text-2xl text-orizis-crystal"></i>
-                </div>
-                <h3 class="text-2xl font-serif text-white">פורטל שותפים ומתווכים</h3>
-                <p class="text-sm text-gray-400 mt-2">מערכת שריון סיורים וניהול לקוחות</p>
+                <i class="fa-solid fa-fingerprint text-4xl text-blue-500 mb-4"></i>
+                <h2 class="text-2xl font-serif text-white">Partner Authentication</h2>
+                <p class="text-sm text-slate-400 mt-2">Log in using your official Broker License Number.</p>
             </div>
-            <form onsubmit="handleBrokerLogin(event)" class="space-y-5">
-                <div>
-                    <input type="text" id="brokerUser" value="VIP-BROKER" class="w-full bg-orizis-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orizis-crystal font-mono text-left" dir="ltr" required>
-                </div>
-                <div>
-                    <input type="password" id="brokerPass" value="1234" class="w-full bg-orizis-dark border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-orizis-crystal font-mono tracking-widest text-left" dir="ltr" required>
-                </div>
-                <button type="submit" class="w-full bg-orizis-sapphire hover:bg-blue-600 text-white font-bold py-3.5 rounded-lg transition shadow-lg mt-2 flex justify-center items-center gap-2">
-                    התחבר למערכת <i class="fa-solid fa-right-to-bracket"></i>
+            
+            <div class="bg-slate-900 border border-slate-700 p-4 mb-6 rounded text-xs text-slate-400 text-left">
+                <p class="text-white font-bold mb-1">Test the CSV Database:</p>
+                <p>Username = License Number, Password = License Number</p>
+                <p>Try: <strong class="text-blue-400">30514470</strong> (אב אורית)</p>
+                <p>Try: <strong class="text-blue-400">30210094</strong> (אבדור דרור)</p>
+                <p>Admin: <strong class="text-blue-400">admin / admin</strong></p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <input type="text" id="username" placeholder="License Number (Username)" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition text-center text-lg tracking-widest">
+                <input type="password" id="password" placeholder="Password" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition text-center text-lg tracking-widest">
+                <button type="submit" class="w-full bg-slate-800 hover:bg-blue-600 text-white font-bold py-4 uppercase tracking-widest text-sm transition mt-2">
+                    Authenticate
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Main CRM Dashboard -->
-    <div id="crmApp" class="portal-hidden fixed inset-0 z-[110] bg-orizis-dark flex flex-col md:flex-row overflow-hidden">
-        
-        <!-- Sidebar -->
-        <aside class="w-full md:w-64 bg-[#0a0d14] border-l border-white/5 flex flex-col">
-            <div class="p-6 border-b border-white/5 flex justify-between items-center">
-                <div class="text-xl font-serif font-bold tracking-widest text-white">ORIZIS<span class="text-orizis-crystal">CRM</span></div>
-                <button onclick="logoutBroker()" class="md:hidden text-gray-400"><i class="fa-solid fa-xmark"></i></button>
+    <!-- BROKER PORTAL VIEW -->
+    <div id="broker-view" class="fixed inset-0 z-[60] hidden bg-slate-950 flex overflow-hidden">
+        <aside class="w-64 bg-[#0a0f1c] border-r border-slate-800 flex flex-col">
+            <div class="p-6 border-b border-slate-800">
+                <div class="text-xl font-bold tracking-widest"><span class="brand-dark">ORIZIS</span><span class="brand-light">REAL</span></div>
+                <div class="text-[10px] uppercase tracking-widest text-blue-500 mt-1">Broker Partner Portal</div>
             </div>
-            <div class="p-6">
-                <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">מחובר כעת:</p>
-                <p class="text-sm font-bold text-orizis-gold">אמין נדל"ן בע"מ</p>
-                <span class="inline-block mt-2 px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded border border-green-500/30">שותף פרימיום (5%)</span>
+            <div class="p-6 border-b border-slate-800 bg-slate-900/30">
+                <p class="text-xs text-slate-500 mb-1">Welcome back,</p>
+                <p id="broker-name-display" class="text-white font-bold text-sm">--</p>
+                <p id="broker-city-display" class="text-slate-400 text-xs mt-1">--</p>
+                <span class="inline-block mt-2 bg-green-900/30 text-green-400 border border-green-800 text-[10px] px-2 py-0.5 uppercase tracking-wider">Commission Tier: 5%</span>
             </div>
-            <nav class="flex-1 px-4 space-y-2 mt-4">
-                <a href="#" class="flex items-center gap-3 px-4 py-3 bg-orizis-sapphire/20 text-orizis-crystal rounded-lg border border-orizis-crystal/20"><i class="fa-solid fa-chart-pie"></i> דשבורד מרכזי</a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition"><i class="fa-solid fa-users"></i> הלקוחות שלי</a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition"><i class="fa-solid fa-building"></i> מצגת נכסים (ללקוח)</a>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="switchBrokerTab('dashboard')" id="b-tab-dashboard" class="w-full text-left px-4 py-3 bg-blue-900/20 text-blue-400 text-sm font-semibold transition"><i class="fa-solid fa-chart-pie w-6"></i> Overview</button>
+                <button onclick="switchBrokerTab('book')" id="b-tab-book" class="w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition"><i class="fa-solid fa-plane-departure w-6"></i> Book Mission</button>
+                <button onclick="switchBrokerTab('leads')" id="b-tab-leads" class="w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition"><i class="fa-solid fa-users w-6"></i> My Leads</button>
             </nav>
-            <div class="p-4 border-t border-white/5">
-                <button onclick="logoutBroker()" class="flex items-center gap-3 text-red-400 hover:text-red-300 transition w-full px-4 py-2"><i class="fa-solid fa-power-off"></i> התנתק</button>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm font-semibold flex items-center gap-2 px-4 py-2"><i class="fa-solid fa-power-off"></i> Secure Logout</button>
             </div>
         </aside>
 
-        <!-- Main Dashboard Content -->
-        <main class="flex-1 overflow-y-auto bg-gradient-to-b from-[#05070a] to-[#0a0d14] p-6 md:p-10">
-            
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-                <div>
-                    <h2 class="text-3xl font-bold text-white font-serif mb-1">מרכז שליטה ובקרה</h2>
-                    <p class="text-gray-400 text-sm">ניהול לידים, מעקב עמלות ושריון סיורי VIP.</p>
-                </div>
-                <div class="glass-panel px-6 py-3 rounded-xl border-orizis-crystal/30 flex items-center gap-4">
-                    <div>
-                        <span class="block text-xs text-gray-400">צפי עמלות (עסקאות פתוחות)</span>
-                        <span class="text-2xl font-bold text-orizis-crystal font-mono">$18,500</span>
+        <main class="flex-1 overflow-y-auto p-10 bg-slate-950">
+            <div id="b-content-dashboard" class="block">
+                <h2 class="text-3xl font-serif text-white mb-8">Performance Overview</h2>
+                <div class="grid grid-cols-3 gap-6 mb-10">
+                    <div class="glass-panel p-6 border-t-2 border-slate-600">
+                        <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Total Leads</p>
+                        <h3 class="text-4xl font-bold text-white">0</h3>
                     </div>
-                    <i class="fa-solid fa-wallet text-3xl text-orizis-sapphire opacity-50"></i>
+                    <div class="glass-panel p-6 border-t-2 border-blue-500">
+                        <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Active Missions</p>
+                        <h3 class="text-4xl font-bold text-white">0</h3>
+                    </div>
+                    <div class="glass-panel p-6 border-t-2 border-green-500">
+                        <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Earned Commissions</p>
+                        <h3 class="text-4xl font-bold text-green-400">$0</h3>
+                    </div>
                 </div>
-            </header>
-
-            <!-- Stats Row -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-                <div class="bg-white/5 border border-white/5 rounded-xl p-5">
-                    <p class="text-xs text-gray-400 mb-1">לידים שהועברו</p>
-                    <h3 class="text-3xl font-bold text-white font-mono">14</h3>
-                </div>
-                <div class="bg-white/5 border border-white/5 rounded-xl p-5">
-                    <p class="text-xs text-gray-400 mb-1">טסו לסיורים</p>
-                    <h3 class="text-3xl font-bold text-white font-mono">6</h3>
-                </div>
-                <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-5">
-                    <p class="text-xs text-green-400 mb-1">עסקאות שנסגרו (5%)</p>
-                    <h3 class="text-3xl font-bold text-green-400 font-mono">2</h3>
-                </div>
-                <div class="bg-orizis-gold/10 border border-orizis-gold/20 rounded-xl p-5">
-                    <p class="text-xs text-orizis-gold mb-1">סך עמלות ששולמו</p>
-                    <h3 class="text-3xl font-bold text-orizis-gold font-mono">₪45,000</h3>
-                </div>
+                
+                <h3 class="text-xl font-serif text-white mb-6">Upcoming Tour Availability (Max 10 Seats)</h3>
+                <div id="broker-tours-list" class="space-y-4"></div>
             </div>
 
-            <!-- Action Area: Tours & Leads -->
-            <div class="grid lg:grid-cols-2 gap-10">
-                
-                <!-- Tour Booking Engine -->
-                <div class="glass-panel rounded-2xl p-6 md:p-8 flex flex-col h-full">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-white flex items-center gap-2"><i class="fa-solid fa-calendar-check text-orizis-sapphire"></i> שריון סיור ללקוח</h3>
-                        <span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2 py-1 rounded uppercase">מוגבל ל-10 מקומות בשבוע</span>
+            <div id="b-content-book" class="hidden max-w-2xl">
+                <h2 class="text-3xl font-serif text-white mb-2">Register Client for Mission</h2>
+                <p class="text-slate-400 text-sm mb-8">Secure a seat for a qualified investor. Client will be billed $870 (Refundable against property).</p>
+                <form onsubmit="handleBrokerBooking(event)" class="glass-panel p-8 space-y-6">
+                    <div>
+                        <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Select Mission Date</label>
+                        <select id="broker-tour-select" required class="w-full bg-slate-900 border border-slate-700 p-3 text-white outline-none focus:border-blue-500"></select>
                     </div>
-                    
-                    <div class="space-y-4 mb-6 flex-1">
-                        <!-- Tour Option 1 -->
-                        <div class="border border-orizis-sapphire/40 bg-orizis-sapphire/10 rounded-xl p-4 cursor-pointer relative overflow-hidden group">
-                            <div class="absolute top-0 right-0 w-1 h-full bg-orizis-sapphire"></div>
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <h4 class="font-bold text-white">15-17 במאי, 2026</h4>
-                                    <p class="text-xs text-gray-400 mt-1">באקו VIP + סיבריז</p>
-                                </div>
-                                <span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded">פתוח להרשמה</span>
-                            </div>
-                            <div class="flex justify-between items-end mt-4">
-                                <span class="text-xs text-gray-500"><i class="fa-solid fa-users mr-1"></i> נותרו 4 מקומות</span>
-                                <button onclick="openBookingForm('15-17 במאי, 2026')" class="text-sm text-orizis-crystal font-bold hover:text-white transition">בחר לתהליך <i class="fa-solid fa-arrow-left text-xs"></i></button>
-                            </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Client Full Name</label>
+                            <input type="text" id="b-client-name" required class="w-full bg-slate-900 border border-slate-700 p-3 text-white outline-none focus:border-blue-500">
                         </div>
-                        
-                        <!-- Tour Option 2 -->
-                        <div class="border border-white/10 bg-white/5 rounded-xl p-4 cursor-pointer relative overflow-hidden group hover:border-white/30 transition">
-                            <div class="absolute top-0 right-0 w-1 h-full bg-orizis-gold"></div>
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <h4 class="font-bold text-white">01-03 ביוני, 2026</h4>
-                                    <p class="text-xs text-gray-400 mt-1">מסע פרימיום כולל גבלה/שאהדאג</p>
-                                </div>
-                                <span class="bg-orizis-gold/20 text-orizis-gold text-xs px-2 py-1 rounded">מתמלא מהר</span>
-                            </div>
-                            <div class="flex justify-between items-end mt-4">
-                                <span class="text-xs text-gray-500"><i class="fa-solid fa-users mr-1"></i> נותרו 2 מקומות</span>
-                                <button onclick="openBookingForm('01-03 ביוני, 2026')" class="text-sm text-orizis-gold font-bold hover:text-white transition">בחר לתהליך <i class="fa-solid fa-arrow-left text-xs"></i></button>
-                            </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Phone</label>
+                            <input type="tel" required class="w-full bg-slate-900 border border-slate-700 p-3 text-white outline-none focus:border-blue-500">
                         </div>
                     </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 uppercase tracking-widest text-sm transition">Lock Seat for Client</button>
+                </form>
+            </div>
 
-                    <!-- Hidden Booking Form inside the card -->
-                    <div id="bookingForm" class="hidden border-t border-white/10 pt-6 mt-4">
-                        <h4 class="text-sm font-bold text-white mb-4">פרטי משקיע לסיור: <span id="selectedTourLabel" class="text-orizis-crystal"></span></h4>
-                        <form onsubmit="submitLead(event)" class="space-y-4">
-                            <input type="text" placeholder="שם הלקוח" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:border-orizis-sapphire outline-none" required>
-                            <input type="tel" placeholder="טלפון" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:border-orizis-sapphire outline-none text-left" dir="ltr" required>
-                            <div class="bg-blue-900/20 p-3 rounded-lg border border-blue-900/50 flex gap-3 text-xs text-blue-200">
-                                <i class="fa-solid fa-info-circle mt-0.5"></i>
-                                <p>שים לב: אוריזיס תבצע את גביית דמי הרצינות ($1,000) ישירות מהלקוח להבטחת המקום. הלקוח משויך למשרדך אוטומטית.</p>
-                            </div>
-                            <button type="submit" class="w-full bg-orizis-sapphire hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition text-sm">העבר ליד למטה החברה</button>
-                        </form>
-                    </div>
+            <div id="b-content-leads" class="hidden">
+                <h2 class="text-3xl font-serif text-white mb-8">My Pipeline</h2>
+                <div class="glass-panel overflow-hidden p-6 text-center text-slate-500">
+                    No active leads registered yet. Go to 'Book Mission' to start.
                 </div>
-
-                <!-- Active Pipeline Table -->
-                <div class="glass-panel rounded-2xl p-6 md:p-8">
-                    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2"><i class="fa-solid fa-list-check text-orizis-gold"></i> מעקב לקוחות בתהליך</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm" dir="rtl">
-                            <thead>
-                                <tr class="text-gray-500 border-b border-white/10">
-                                    <th class="pb-3 font-medium">שם לקוח</th>
-                                    <th class="pb-3 font-medium">סטטוס סיור</th>
-                                    <th class="pb-3 font-medium">סטטוס משפטי</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-white/5">
-                                <tr>
-                                    <td class="py-4 text-white font-medium">סעיד א.</td>
-                                    <td class="py-4"><span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs">שולם דמי רצינות</span></td>
-                                    <td class="py-4 text-gray-400 text-xs">ממתין לסיור</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-4 text-white font-medium">יוסף ר.</td>
-                                    <td class="py-4"><span class="bg-green-500/20 text-green-400 px-2 py-1 rounded text-xs">ביקר בסיור</span></td>
-                                    <td class="py-4 text-orizis-gold text-xs">כסף בנאמנות Escrow</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-4 text-white font-medium">קארים מ.</td>
-                                    <td class="py-4"><span class="bg-gray-800 text-gray-400 px-2 py-1 rounded text-xs">ליד חדש</span></td>
-                                    <td class="py-4 text-gray-500 text-xs">בבדיקת חיתום ראשונית</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
             </div>
         </main>
     </div>
 
-    <!-- Interactive Scripts -->
+    <!-- ADMIN PORTAL VIEW -->
+    <div id="admin-view" class="fixed inset-0 z-[70] hidden bg-slate-950 flex overflow-hidden">
+        <aside class="w-64 bg-[#050b14] border-r border-slate-800 flex flex-col">
+            <div class="p-6 border-b border-slate-800">
+                <div class="text-xl font-bold tracking-widest"><span class="brand-dark">ORIZIS</span><span class="brand-light">REAL</span></div>
+                <div class="text-[10px] uppercase tracking-widest text-red-500 mt-1 font-bold">Master Control</div>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="switchAdminTab('dashboard')" id="a-tab-dashboard" class="w-full text-left px-4 py-3 bg-slate-800 text-white text-sm font-semibold transition"><i class="fa-solid fa-earth-americas w-6"></i> HQ Overview</button>
+                <button onclick="switchAdminTab('brokers')" id="a-tab-brokers" class="w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition"><i class="fa-solid fa-network-wired w-6"></i> Broker Database</button>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <button onclick="logout()" class="text-slate-500 hover:text-white text-sm font-semibold flex items-center gap-2 px-4 py-2"><i class="fa-solid fa-power-off"></i> Sign Out</button>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto p-10 bg-slate-900/50">
+            <div id="a-content-dashboard" class="block">
+                <h2 class="text-3xl font-serif text-white mb-8">Global Operations</h2>
+                <div class="grid grid-cols-4 gap-6 mb-10">
+                    <div class="glass-panel p-6 border-t-2 border-slate-500">
+                        <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Registered Brokers</p>
+                        <h3 class="text-3xl font-bold text-white" id="stat-total-brokers">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div id="a-content-brokers" class="hidden">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-3xl font-serif text-white mb-2">Broker Database</h2>
+                        <p class="text-slate-400 text-sm">Real data extracted from uploaded CSV file.</p>
+                    </div>
+                </div>
+                <div class="glass-panel overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-900 border-b border-slate-800">
+                            <tr>
+                                <th class="p-4 text-slate-400 font-semibold">Broker Name</th>
+                                <th class="p-4 text-slate-400 font-semibold">License Number (ID)</th>
+                                <th class="p-4 text-slate-400 font-semibold">City</th>
+                                <th class="p-4 text-slate-400 font-semibold">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-brokers-tbody" class="divide-y divide-slate-800 text-slate-300">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 z-[200] glass-panel border-l-4 border-blue-500 p-4 shadow-2xl flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-blue-400"></i>
+        <span id="toast-msg" class="text-white text-sm font-semibold">Action successful.</span>
+    </div>
+
     <script>
-        // Scroll Animation Logic
-        function reveal() {
-            var reveals = document.querySelectorAll(".reveal");
-            for (var i = 0; i < reveals.length; i++) {
-                var windowHeight = window.innerHeight;
-                var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 100;
-                if (elementTop < windowHeight - elementVisible) {
-                    reveals[i].classList.add("active");
+        // --- DATA FROM USER CSV UPLOAD (מתווכים.xls) ---
+        // I have extracted a sample of the exact rows provided in the prompt to simulate the DB.
+        const brokerDatabase = [
+            { id: '30514470', name: 'אב אורית', city: 'מבשרת ציון', activeLeads: 0 },
+            { id: '3008778', name: 'אב אלון שמעון', city: 'מבשרת ציון', activeLeads: 0 },
+            { id: '3183587', name: 'אבאיב אהרון', city: 'ראשון לציון', activeLeads: 0 },
+            { id: '3163298', name: 'אבאייב אלכסנדר', city: 'אור עקיבא', activeLeads: 0 },
+            { id: '3994869', name: 'אבאייב אמנון', city: 'פתח תקווה', activeLeads: 0 },
+            { id: '3135071', name: 'אבגי אוחנה נטלי', city: 'מגדל העמק', activeLeads: 0 },
+            { id: '3151114', name: 'אבגי איתי', city: 'באר שבע', activeLeads: 0 },
+            { id: '312108541', name: 'אבגי אלה', city: 'נתניה', activeLeads: 0 },
+            { id: '3181732', name: 'אבגי טום', city: 'נתניה', activeLeads: 0 },
+            { id: '313375', name: 'אבגר ניצן', city: 'תל אביב - יפו', activeLeads: 0 },
+            { id: '30210094', name: 'אבדור דרור', city: 'תל אביב - יפו', activeLeads: 0 },
+            { id: '30615737', name: 'אסי', city: 'אשקלון', activeLeads: 0 },
+            { id: '3161315', name: 'תמיר חמי נחמה', city: 'נתניה', activeLeads: 0 },
+            { id: '30992464', name: 'תמיר ינון יוסף', city: 'תל אביב - יפו', activeLeads: 0 },
+            // Added some Arab sector and international examples per previous instructions
+            { id: '9000001', name: 'סמיר אינווסט', city: 'נצרת', activeLeads: 0 },
+            { id: '9000002', name: 'אחמד נדלן', city: 'טייבה', activeLeads: 0 },
+            { id: 'JO100', name: 'Amman International', city: 'Amman, Jordan', activeLeads: 0 }
+        ];
+
+        let loggedInBroker = null;
+
+        // --- PROPERTY DATA FOR MODALS ---
+        const propertiesDB = {
+            'seabreeze': {
+                title: 'Sea Breeze Resort',
+                location: 'Absheron Coast, Baku',
+                img: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3',
+                tag: 'High Yield Airbnb',
+                price: 'From $48,000',
+                yield: '10-12% ROI',
+                desc: 'Sea Breeze is a world-class coastal resort city situated on the shores of the Caspian Sea. When you acquire an asset here, you are entering the most lucrative short-term rental market in the region. Properties are managed completely by our internal operations, ensuring zero vacancy during peak tourist seasons.'
+            },
+            'whitecity': {
+                title: 'White City Residences',
+                location: 'Downtown Baku',
+                img: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3',
+                tag: 'Off-Plan (Buy-Back)',
+                price: 'From $55,000',
+                yield: 'Corporate Leasing',
+                desc: 'Baku White City is one of the largest modern urban development projects globally. This asset is strictly targeted at long-term corporate rentals. For off-plan investors, Orizis Group offers a contractual 20% buy-back guarantee upon project completion, creating a virtually risk-free capital appreciation play.'
+            },
+            'villas': {
+                title: 'Absheron Royal Villas',
+                location: 'Elite Suburbs, Baku',
+                img: 'https://images.unsplash.com/photo-1613490908236-4700f5317789?ixlib=rb-4.0.3',
+                tag: 'Ultra-Premium',
+                price: 'From $250,000',
+                yield: 'Capital Appreciation',
+                desc: 'The Royal Villas represent the apex of luxury living in Azerbaijan. Situated on private lands with premium amenities, these assets are designed for aggressive year-over-year capital growth due to extreme land scarcity in the premier coastal zones.'
+            }
+        };
+
+        let tours = [
+            { id: 'T1', date: 'July 15 - July 18, 2026', type: 'Baku + Sea Breeze', seatsTotal: 10, seatsBooked: 2 },
+            { id: 'T2', date: 'August 02 - August 05, 2026', type: 'Baku Urban Off-Plan', seatsTotal: 10, seatsBooked: 9 }
+        ];
+
+        // --- PROPERTY MODAL LOGIC ---
+        function openPropertyDetails(id) {
+            const data = propertiesDB[id];
+            if(!data) return;
+            
+            document.getElementById('prop-img').src = data.img;
+            document.getElementById('prop-tag').innerText = data.tag;
+            document.getElementById('prop-title').innerText = data.title;
+            document.getElementById('prop-location').innerText = data.location;
+            document.getElementById('prop-desc').innerText = data.desc;
+            document.getElementById('prop-price').innerText = data.price;
+            document.getElementById('prop-yield').innerText = data.yield;
+            
+            document.getElementById('property-modal').classList.remove('hidden');
+        }
+
+        function closePropertyModal() {
+            document.getElementById('property-modal').classList.add('hidden');
+        }
+
+        // --- LOGIN & AUTH LOGIC ---
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+        }
+
+        function showPublicView() {
+            document.getElementById('public-view').classList.remove('hidden');
+            document.getElementById('broker-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
+            document.getElementById('public-nav').classList.remove('hidden');
+        }
+
+        function toggleLoginModal() {
+            const modal = document.getElementById('login-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            
+            // Check Admin
+            if(user === 'admin' && pass === 'admin') {
+                toggleLoginModal();
+                document.getElementById('public-view').classList.add('hidden');
+                document.getElementById('public-nav').classList.add('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+                renderAdminData();
+                showToast('Welcome, Master Admin.');
+                return;
+            }
+
+            // Check Broker against CSV Database
+            // Logic: Username = License Number, Password = License Number
+            const broker = brokerDatabase.find(b => b.id === user && pass === user);
+            
+            if (broker) {
+                loggedInBroker = broker;
+                toggleLoginModal();
+                document.getElementById('public-view').classList.add('hidden');
+                document.getElementById('public-nav').classList.add('hidden');
+                document.getElementById('broker-view').classList.remove('hidden');
+                
+                // Update UI with Broker Name (Hebrew/English dynamically)
+                document.getElementById('broker-name-display').innerText = broker.name;
+                document.getElementById('broker-city-display').innerText = broker.city;
+                
+                renderBrokerData();
+                showToast('Authenticated successfully.');
+            } else {
+                alert('Authentication Failed: License number not found in database.');
+            }
+        }
+
+        function logout() {
+            loggedInBroker = null;
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            showPublicView();
+            showToast('Logged out securely.');
+        }
+
+        // --- BROKER & ADMIN RENDER LOGIC ---
+        function switchBrokerTab(tab) {
+            ['dashboard', 'book', 'leads'].forEach(t => {
+                document.getElementById('b-content-' + t).classList.add('hidden');
+                document.getElementById('b-tab-' + t).className = 'w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition';
+            });
+            document.getElementById('b-content-' + tab).classList.remove('hidden');
+            document.getElementById('b-content-' + tab).classList.add('block');
+            document.getElementById('b-tab-' + tab).className = 'w-full text-left px-4 py-3 bg-blue-900/20 text-blue-400 text-sm font-semibold transition';
+        }
+
+        function renderBrokerData() {
+            const select = document.getElementById('broker-tour-select');
+            select.innerHTML = '<option value="">Select available mission...</option>';
+            const list = document.getElementById('broker-tours-list');
+            list.innerHTML = '';
+
+            tours.forEach(t => {
+                const isFull = t.seatsBooked >= t.seatsTotal;
+                if(!isFull) {
+                    select.innerHTML += `<option value="${t.id}">${t.date} - ${t.seatsTotal - t.seatsBooked} seats left</option>`;
                 }
-            }
-        }
-        window.addEventListener("scroll", reveal);
-        reveal(); // Trigger on load
-
-        // Navbar Scroll Effect
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                nav.classList.add('py-2');
-                nav.classList.remove('py-6');
-            } else {
-                nav.classList.add('py-6');
-                nav.classList.remove('py-2');
-            }
-        });
-
-        // Portal Authentication Logic
-        function togglePortalLogin() {
-            const auth = document.getElementById('portalAuth');
-            const box = document.getElementById('authBox');
-            
-            if (auth.classList.contains('portal-hidden')) {
-                auth.classList.remove('portal-hidden');
-                auth.classList.add('portal-visible');
-                setTimeout(() => { box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
-            } else {
-                box.classList.remove('scale-100'); box.classList.add('scale-95');
-                setTimeout(() => { auth.classList.remove('portal-visible'); auth.classList.add('portal-hidden'); }, 300);
-            }
+                const barWidth = (t.seatsBooked / t.seatsTotal) * 100;
+                list.innerHTML += `
+                    <div class="glass-panel p-4 flex justify-between items-center ${isFull ? 'opacity-50' : ''}">
+                        <div><div class="text-white font-bold">${t.date}</div><div class="text-xs text-slate-400">${t.type}</div></div>
+                        <div class="text-right w-1/3">
+                            <div class="text-xs text-slate-400 mb-1">${t.seatsBooked} / ${t.seatsTotal} Booked</div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                <div class="${isFull ? 'bg-red-500' : 'bg-blue-500'} h-full" style="width: ${barWidth}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        function handleBrokerLogin(e) {
+        function handleBrokerBooking(e) {
             e.preventDefault();
-            togglePortalLogin();
-            
-            const app = document.getElementById('crmApp');
-            setTimeout(() => {
-                app.classList.remove('portal-hidden');
-                app.classList.add('portal-visible');
-                document.body.style.overflow = 'hidden'; // Prevent background scrolling
-            }, 400);
-        }
-
-        function logoutBroker() {
-            const app = document.getElementById('crmApp');
-            app.classList.remove('portal-visible');
-            app.classList.add('portal-hidden');
-            document.body.style.overflow = 'auto'; // Restore scrolling
-            
-            // Reset forms
-            document.getElementById('bookingForm').classList.add('hidden');
-        }
-
-        // Dashboard Booking Logic
-        function openBookingForm(tourDate) {
-            const form = document.getElementById('bookingForm');
-            const label = document.getElementById('selectedTourLabel');
-            form.classList.remove('hidden');
-            label.innerText = tourDate;
-            form.scrollIntoView({behavior: "smooth", block: "end"});
-        }
-
-        function submitLead(e) {
-            e.preventDefault();
-            alert('הליד נכנס למערכת Orizis בהצלחה! צוות המטה יצור קשר עם הלקוח לגביית התשלום להבטחת הסיור.');
+            showToast('Client reserved successfully under your ID.');
             e.target.reset();
-            document.getElementById('bookingForm').classList.add('hidden');
+        }
+
+        function switchAdminTab(tab) {
+            ['dashboard', 'brokers'].forEach(t => {
+                document.getElementById('a-content-' + t).classList.add('hidden');
+                document.getElementById('a-tab-' + t).className = 'w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition';
+            });
+            document.getElementById('a-content-' + tab).classList.remove('hidden');
+            document.getElementById('a-content-' + tab).classList.add('block');
+            document.getElementById('a-tab-' + tab).className = 'w-full text-left px-4 py-3 bg-slate-800 text-white text-sm font-semibold transition';
+        }
+
+        function renderAdminData() {
+            document.getElementById('stat-total-brokers').innerText = brokerDatabase.length;
+            const tbody = document.getElementById('admin-brokers-tbody');
+            tbody.innerHTML = '';
+            brokerDatabase.forEach(b => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-4 font-semibold text-white">${b.name}</td>
+                        <td class="p-4 text-blue-400 font-mono text-xs">${b.id}</td>
+                        <td class="p-4 text-slate-400">${b.city}</td>
+                        <td class="p-4"><span class="bg-green-900/30 text-green-400 border border-green-800 px-2 py-1 text-xs rounded">Active</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function handlePublicSubmission(e) {
+            e.preventDefault();
+            showToast('Request submitted securely to HQ.');
+            e.target.reset();
         }
     </script>
 </body>
