@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
@@ -296,14 +297,6 @@
                 <p class="text-sm text-slate-400 mt-2">Log in using your official Broker License Number.</p>
             </div>
             
-            <div class="bg-slate-900 border border-slate-700 p-4 mb-6 rounded text-xs text-slate-400 text-left">
-                <p class="text-white font-bold mb-1">Admin Access:</p>
-                <p>User: <strong class="text-blue-400">admin</strong> | Pass: <strong class="text-blue-400">admin</strong></p>
-                <p class="mt-2 text-yellow-500 italic">Upload your CSV in the Admin Panel to enable broker logins.</p>
-                <p class="mt-2 text-white font-bold">Demo Broker (If CSV not loaded):</p>
-                <p>User: <strong class="text-blue-400">30514470</strong> | Pass: <strong class="text-blue-400">30514470</strong></p>
-            </div>
-
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <input type="text" id="username" placeholder="License Number (Username)" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition text-center text-lg tracking-widest">
                 <input type="password" id="password" placeholder="Password" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition text-center text-lg tracking-widest">
@@ -502,10 +495,7 @@
             if (saved) {
                 brokerDatabase = JSON.parse(saved);
             } else {
-                // Default fallback so you can test it immediately without uploading
-                brokerDatabase = [
-                    { id: '30514470', name: 'אב אורית (Test Demo)', city: 'מבשרת ציון', activeLeads: 0 }
-                ];
+                brokerDatabase = [];
             }
         }
         initBrokerDatabase();
@@ -581,8 +571,8 @@
         };
 
         let tours = [
-            { id: 'T1', date: 'July 15 - July 18, 2026', type: 'Baku + Sea Breeze', seatsTotal: 10, seatsBooked: 2 },
-            { id: 'T2', date: 'August 02 - August 05, 2026', type: 'Baku Urban Off-Plan', seatsTotal: 10, seatsBooked: 9 }
+            { id: 'T1', date: 'July 15 - July 18, 2026', type: 'Baku + Sea Breeze', seatsTotal: 10, seatsBooked: 0 },
+            { id: 'T2', date: 'August 02 - August 05, 2026', type: 'Baku Urban Off-Plan', seatsTotal: 10, seatsBooked: 0 }
         ];
 
         // --- UI LOGIC ---
