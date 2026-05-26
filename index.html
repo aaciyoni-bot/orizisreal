@@ -373,57 +373,45 @@
     <div id="adminModal" class="modal-hidden fixed inset-0 z-[100] items-center justify-center p-4">
         <div class="absolute inset-0 bg-[#020617]/98 backdrop-blur-md"></div>
         <div class="relative w-full max-w-7xl h-[92vh] bg-slate-950 rounded-2xl shadow-2xl border border-slate-800 flex flex-col lg:flex-row overflow-hidden">
-            <aside class="w-full lg:w-64 bg-black/40 border-r lg:border-r border-b lg:border-b-0 border-slate-800 p-6 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center gap-3 mb-8">
-                        <div class="w-8 h-8 rounded-full bg-sapphire flex items-center justify-center text-white text-xs"><i class="fa-solid fa-shield-halved"></i></div>
-                        <span class="text-lg font-serif font-bold text-white tracking-widest">ORIZIS MASTER</span>
-                    </div>
-                    <nav class="space-y-2">
-                        <button onclick="switchAdminTab('overview', this)" class="admin-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 bg-sapphire text-white"><i class="fa-solid fa-chart-line mr-2"></i> Dashboard</button>
-                        <button onclick="switchAdminTab('brokers', this)" class="admin-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-300"><i class="fa-solid fa-users mr-2"></i> Authorized Brokers</button>
-                    </nav>
-                </div>
-                <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm font-semibold flex items-center gap-2 mt-8 lg:mt-0"><i class="fa-solid fa-right-from-bracket"></i> Secure Logout</button>
-            </aside>
-
-            <main class="flex-1 p-8 overflow-y-auto bg-gradient-to-b from-[#020617] to-[#07080a]">
-                <!-- Tab: Overview -->
-                <div id="admin-overview" class="admin-tab-content block space-y-8">
-                    <h3 class="text-3xl font-serif font-bold">Operational Control Center</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
-                            <span class="text-xs text-slate-500 block mb-1">Total Network Brokers</span>
-                            <span id="admin-stat-brokers" class="text-4xl font-bold font-mono text-white">0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab: Brokers Database -->
-                <div id="admin-brokers" class="admin-tab-content hidden space-y-6">
-                    <div class="flex justify-between items-end mb-8">
-                        <div>
-                            <h3 class="text-3xl font-serif font-bold">Partner Broker Database</h3>
-                            <p class="text-gray-400 text-sm">Pre-loaded active broker network. Manage access below.</p>
-                        </div>
-                    </div>
-
-                    <div class="glass-card p-4 rounded-2xl overflow-hidden border border-slate-800">
-                        <div class="max-h-[500px] overflow-y-auto">
-                            <table class="w-full text-left text-sm">
-                                <thead class="bg-slate-950 border-b border-slate-800 text-gray-400 sticky top-0">
-                                    <tr>
-                                        <th class="p-4">Broker Name</th>
-                                        <th class="p-4">License ID (Login)</th>
-                                        <th class="p-4">City</th>
-                                        <th class="p-4">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-brokers-table-body" class="divide-y divide-slate-900 text-slate-300">
-                                    <!-- Dynamic -->
-                                </tbody>
-                            </table>
-                        </div>
+                <!-- Tab: Property Management -->
+                <div id="admin-properties" class="admin-tab-content hidden space-y-6">
+                    <h3 class="text-3xl font-serif font-bold">Dynamic Asset Control</h3>
+                    <p class="text-gray-400 text-sm">Create and launch new real estate assets directly to the public showcase.</p>
+                    
+                    <div class="glass-card p-8 rounded-2xl border border-slate-800 max-w-2xl">
+                        <form id="addPropertyForm" onsubmit="addNewProperty(event)" class="space-y-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest text-slate-500 font-bold mb-2">Project Title</label>
+                                    <input type="text" id="newPropTitle" placeholder="e.g., Sea Breeze Polo Residences" required class="w-full bg-slate-900 border border-slate-800 p-3 text-white rounded focus:border-crystal outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest text-slate-500 font-bold mb-2">Location</label>
+                                    <input type="text" id="newPropLocation" placeholder="e.g., Baku Coast" required class="w-full bg-slate-900 border border-slate-800 p-3 text-white rounded focus:border-crystal outline-none">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest text-slate-500 font-bold mb-2">Price From</label>
+                                    <input type="text" id="newPropPrice" placeholder="e.g., $65,000" required class="w-full bg-slate-900 border border-slate-800 p-3 text-white rounded focus:border-crystal outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest text-slate-500 font-bold mb-2">Plan / Category</label>
+                                    <select id="newPropCategory" class="w-full bg-slate-900 border border-slate-800 p-3 text-slate-300 rounded focus:border-crystal outline-none cursor-pointer">
+                                        <option value="off-plan">Off-Plan</option>
+                                        <option value="apartments">Apartments</option>
+                                        <option value="villas">Villas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-slate-500 font-bold mb-2">Visual Asset (Image)</label>
+                                <input type="file" id="newPropMedia" accept="image/*" class="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-bold file:bg-sapphire file:text-white cursor-pointer bg-slate-900 border border-slate-800 p-2 rounded outline-none focus:border-crystal transition">
+                            </div>
+                            <button type="submit" class="w-full bg-sapphire text-white font-bold py-4 rounded-none hover:bg-blue-700 transition uppercase tracking-widest text-xs">
+                                Publish Asset Live
+                            </button>
+                        </form>
                     </div>
                 </div>
             </main>
@@ -433,11 +421,23 @@
     <!-- Script Block -->
     <script>
         // --- REAL ESTATE DATABASE ---
-        const propertiesDB = [
+        let propertiesDB = [];
+
+        const defaultPropertiesDB = [
             { id: 'seabreeze', category: 'apartments', title: 'Sea Breeze Resort', location: 'Absheron Coastline, Baku', tag: 'High Yield Airbnb', price: '$65,000', yield: '9%-12% ROI', desc: 'Premium beachfront apartments with private coastline access, upscale yacht clubs, and elite dining integration.', media: [{ type: 'image', url: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3' }, { type: 'image', url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3' }] },
             { id: 'whitecity', category: 'off-plan', title: 'White City Residences', location: 'Downtown Baku Metro area', tag: 'Off-Plan (Buy-Back)', price: '$85,000', yield: 'Lease Contract', desc: 'Urban luxury apartments positioned in Bakus premier corporate development zone. Backed by a strict 20% buy-back guarantee.', media: [{ type: 'image', url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3' }, { type: 'image', url: 'https://images.unsplash.com/photo-1600607687920-4e2a09be1587?ixlib=rb-4.0.3' }] },
             { id: 'villas', category: 'villas', title: 'Absheron Royal Villas', location: 'Elite Residential Suburbs', tag: 'Exclusive Stock', price: '$150,000', yield: '15%+ Growth YOY', desc: 'Breathtaking estates with private landscape gardens, pools, and high-end security. Perfect capital appreciation asset.', media: [{ type: 'image', url: 'https://images.unsplash.com/photo-1613490908236-4700f5317789?ixlib=rb-4.0.3' }, { type: 'image', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3' }] }
         ];
+
+        function initPropertiesDatabase() {
+            const savedProps = localStorage.getItem('orizis_properties');
+            if (savedProps) {
+                propertiesDB = JSON.parse(savedProps);
+            } else {
+                propertiesDB = [...defaultPropertiesDB];
+                localStorage.setItem('orizis_properties', JSON.stringify(propertiesDB));
+            }
+        }
 
         // --- PRE-LOADED BROKER DATABASE (No CSV Required) ---
         let brokerDatabase = [];
@@ -466,6 +466,7 @@
 
         // --- APP INITIALIZATION ---
         function initApp() {
+            initPropertiesDatabase();
             initBrokerDatabase();
             renderCollection('all');
             initCalendar();
@@ -727,6 +728,52 @@
             });
             document.getElementById('admin-' + tab).classList.remove('hidden');
             document.getElementById('admin-' + tab).classList.add('block');
+        }
+
+        // --- DYNAMIC PROPERTY UPLOAD LOGIC ---
+        function addNewProperty(e) {
+            e.preventDefault();
+            const title = document.getElementById('newPropTitle').value;
+            const location = document.getElementById('newPropLocation').value;
+            const price = document.getElementById('newPropPrice').value;
+            const category = document.getElementById('newPropCategory').value;
+            const fileInput = document.getElementById('newPropMedia');
+            
+            // Fallback image if user doesn't upload one
+            let mediaUrl = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3'; 
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    mediaUrl = evt.target.result;
+                    saveAndRenderProperty(title, location, price, category, mediaUrl);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                saveAndRenderProperty(title, location, price, category, mediaUrl);
+            }
+        }
+
+        function saveAndRenderProperty(title, location, price, category, mediaUrl) {
+            const newProp = {
+                id: 'prop-' + Date.now(),
+                category: category,
+                title: title,
+                location: location,
+                tag: 'New Asset',
+                price: price,
+                yield: 'Contact Advisory',
+                desc: 'Newly uploaded premium asset. Detailed prospectus available upon request during the VIP mission.',
+                media: [{ type: 'image', url: mediaUrl }]
+            };
+            
+            propertiesDB.unshift(newProp); // Add to the beginning of the list
+            localStorage.setItem('orizis_properties', JSON.stringify(propertiesDB));
+            
+            renderCollection('all'); // Refresh public UI
+            showNotification('Asset published live to the public portfolio!');
+            document.getElementById('addPropertyForm').reset();
         }
     </script>
 </body>
