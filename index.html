@@ -43,11 +43,10 @@
                 <a href="#about" class="hover:text-blue-400 transition">Orizis Group</a>
                 <a href="#projects" class="hover:text-blue-400 transition">Portfolio</a>
                 <a href="#mission" class="hover:text-blue-400 transition">VIP Mission</a>
-                <a href="#guarantee" class="hover:text-blue-400 transition">Guarantees</a>
             </div>
             
             <div class="flex gap-4">
-                <a href="#public-booking" class="hidden md:block bg-brand-accent hover-brand-accent text-white px-6 py-2.5 text-sm font-bold uppercase tracking-wide transition shadow-lg shadow-blue-900/50">Book Tour</a>
+                <button onclick="document.getElementById('public-booking').scrollIntoView();" class="hidden md:block bg-brand-accent hover-brand-accent text-white px-6 py-2.5 text-sm font-bold uppercase tracking-wide transition shadow-lg shadow-blue-900/50">Book Tour</button>
                 <button onclick="toggleLoginModal()" class="border border-slate-600 text-slate-300 hover:bg-white hover:text-black px-6 py-2.5 text-sm font-bold uppercase tracking-wide transition flex items-center gap-2">
                     <i class="fa-solid fa-lock"></i> Partner Login
                 </button>
@@ -107,7 +106,7 @@
             </div>
         </section>
 
-        <!-- Portfolio Showcase (Now Clickable) -->
+        <!-- Portfolio Showcase -->
         <section id="projects" class="py-32 bg-slate-950 relative">
             <div class="max-w-7xl mx-auto px-6">
                 <div class="flex justify-between items-end mb-16">
@@ -237,7 +236,6 @@
             </div>
         </section>
 
-        <!-- Footer -->
         <footer class="bg-[#01030a] py-12 border-t border-slate-900 text-center">
             <div class="text-xl font-bold tracking-widest mb-4 opacity-50">
                 <span class="brand-dark">ORIZIS</span><span class="brand-light">REAL</span>
@@ -252,7 +250,6 @@
             <div class="bg-slate-950 border border-slate-800 w-full max-w-5xl rounded-sm overflow-hidden shadow-2xl relative flex flex-col md:flex-row">
                 <button onclick="closePropertyModal()" class="absolute top-4 right-4 bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 transition z-10"><i class="fa-solid fa-xmark"></i></button>
                 
-                <!-- Image Side -->
                 <div class="md:w-1/2 h-64 md:h-auto relative">
                     <img id="prop-img" src="" class="w-full h-full object-cover">
                     <div class="absolute bottom-4 left-4 flex gap-2">
@@ -260,7 +257,6 @@
                     </div>
                 </div>
                 
-                <!-- Content Side -->
                 <div class="md:w-1/2 p-10 flex flex-col justify-center">
                     <h4 class="text-blue-500 text-xs font-bold uppercase tracking-widest mb-2" id="prop-location"></h4>
                     <h2 class="text-4xl font-serif text-white mb-4" id="prop-title"></h2>
@@ -301,11 +297,11 @@
             </div>
             
             <div class="bg-slate-900 border border-slate-700 p-4 mb-6 rounded text-xs text-slate-400 text-left">
-                <p class="text-white font-bold mb-1">Test the CSV Database:</p>
-                <p>Username = License Number, Password = License Number</p>
-                <p>Try: <strong class="text-blue-400">30514470</strong> (אב אורית)</p>
-                <p>Try: <strong class="text-blue-400">30210094</strong> (אבדור דרור)</p>
-                <p>Admin: <strong class="text-blue-400">admin / admin</strong></p>
+                <p class="text-white font-bold mb-1">Admin Access:</p>
+                <p>User: <strong class="text-blue-400">admin</strong> | Pass: <strong class="text-blue-400">admin</strong></p>
+                <p class="mt-2 text-yellow-500 italic">Upload your CSV in the Admin Panel to enable broker logins.</p>
+                <p class="mt-2 text-white font-bold">Demo Broker (If CSV not loaded):</p>
+                <p>User: <strong class="text-blue-400">30514470</strong> | Pass: <strong class="text-blue-400">30514470</strong></p>
             </div>
 
             <form onsubmit="handleLogin(event)" class="space-y-4">
@@ -404,6 +400,7 @@
             <nav class="flex-1 p-4 space-y-2">
                 <button onclick="switchAdminTab('dashboard')" id="a-tab-dashboard" class="w-full text-left px-4 py-3 bg-slate-800 text-white text-sm font-semibold transition"><i class="fa-solid fa-earth-americas w-6"></i> HQ Overview</button>
                 <button onclick="switchAdminTab('brokers')" id="a-tab-brokers" class="w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition"><i class="fa-solid fa-network-wired w-6"></i> Broker Database</button>
+                <button onclick="switchAdminTab('properties')" id="a-tab-properties" class="w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition"><i class="fa-solid fa-building w-6"></i> Property Manager</button>
             </nav>
             <div class="p-4 border-t border-slate-800">
                 <button onclick="logout()" class="text-slate-500 hover:text-white text-sm font-semibold flex items-center gap-2 px-4 py-2"><i class="fa-solid fa-power-off"></i> Sign Out</button>
@@ -411,6 +408,7 @@
         </aside>
 
         <main class="flex-1 overflow-y-auto p-10 bg-slate-900/50">
+            <!-- Admin Dashboard -->
             <div id="a-content-dashboard" class="block">
                 <h2 class="text-3xl font-serif text-white mb-8">Global Operations</h2>
                 <div class="grid grid-cols-4 gap-6 mb-10">
@@ -421,27 +419,68 @@
                 </div>
             </div>
 
+            <!-- Admin Brokers & CSV Importer -->
             <div id="a-content-brokers" class="hidden">
                 <div class="flex justify-between items-end mb-8">
                     <div>
                         <h2 class="text-3xl font-serif text-white mb-2">Broker Database</h2>
-                        <p class="text-slate-400 text-sm">Real data extracted from uploaded CSV file.</p>
+                        <p class="text-slate-400 text-sm">Manage access for partner brokers.</p>
+                    </div>
+                    
+                    <!-- CSV UPLOAD SECTION -->
+                    <div class="glass-panel p-4 flex items-center gap-4">
+                        <div>
+                            <p class="text-xs text-slate-400 font-bold mb-1">Upload Brokers (CSV)</p>
+                            <input type="file" id="csv-upload" accept=".csv" class="text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-900 file:text-white hover:file:bg-blue-800 cursor-pointer">
+                        </div>
                     </div>
                 </div>
+
                 <div class="glass-panel overflow-hidden">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-900 border-b border-slate-800">
-                            <tr>
-                                <th class="p-4 text-slate-400 font-semibold">Broker Name</th>
-                                <th class="p-4 text-slate-400 font-semibold">License Number (ID)</th>
-                                <th class="p-4 text-slate-400 font-semibold">City</th>
-                                <th class="p-4 text-slate-400 font-semibold">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-brokers-tbody" class="divide-y divide-slate-800 text-slate-300">
-                            <!-- Populated by JS -->
-                        </tbody>
-                    </table>
+                    <div class="max-h-[600px] overflow-y-auto">
+                        <table class="w-full text-left text-sm relative">
+                            <thead class="bg-slate-900 border-b border-slate-800 sticky top-0">
+                                <tr>
+                                    <th class="p-4 text-slate-400 font-semibold">Broker Name</th>
+                                    <th class="p-4 text-slate-400 font-semibold">License Number (ID)</th>
+                                    <th class="p-4 text-slate-400 font-semibold">City</th>
+                                    <th class="p-4 text-slate-400 font-semibold">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-brokers-tbody" class="divide-y divide-slate-800 text-slate-300">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Property Manager -->
+            <div id="a-content-properties" class="hidden">
+                <h2 class="text-3xl font-serif text-white mb-2">Property Manager</h2>
+                <p class="text-slate-400 text-sm mb-8">Upload new assets, photos, and videos to the public portfolio.</p>
+                
+                <div class="glass-panel p-8 max-w-3xl">
+                    <form onsubmit="event.preventDefault(); showToast('Asset saved to database (Simulation)');" class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Project Name</label>
+                                <input type="text" class="w-full bg-slate-900 border border-slate-700 p-3 text-white outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Location</label>
+                                <input type="text" class="w-full bg-slate-900 border border-slate-700 p-3 text-white outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Upload Images/Video</label>
+                            <div class="border-2 border-dashed border-slate-700 rounded-lg p-10 text-center hover:bg-slate-900 transition cursor-pointer">
+                                <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-500 mb-2"></i>
+                                <p class="text-sm text-slate-400">Drag and drop media files here, or click to browse</p>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 uppercase tracking-widest text-sm transition">Publish Asset to Website</button>
+                    </form>
                 </div>
             </div>
         </main>
@@ -454,28 +493,59 @@
     </div>
 
     <script>
-        // --- DATA FROM USER CSV UPLOAD (מתווכים.xls) ---
-        // I have extracted a sample of the exact rows provided in the prompt to simulate the DB.
-        const brokerDatabase = [
-            { id: '30514470', name: 'אב אורית', city: 'מבשרת ציון', activeLeads: 0 },
-            { id: '3008778', name: 'אב אלון שמעון', city: 'מבשרת ציון', activeLeads: 0 },
-            { id: '3183587', name: 'אבאיב אהרון', city: 'ראשון לציון', activeLeads: 0 },
-            { id: '3163298', name: 'אבאייב אלכסנדר', city: 'אור עקיבא', activeLeads: 0 },
-            { id: '3994869', name: 'אבאייב אמנון', city: 'פתח תקווה', activeLeads: 0 },
-            { id: '3135071', name: 'אבגי אוחנה נטלי', city: 'מגדל העמק', activeLeads: 0 },
-            { id: '3151114', name: 'אבגי איתי', city: 'באר שבע', activeLeads: 0 },
-            { id: '312108541', name: 'אבגי אלה', city: 'נתניה', activeLeads: 0 },
-            { id: '3181732', name: 'אבגי טום', city: 'נתניה', activeLeads: 0 },
-            { id: '313375', name: 'אבגר ניצן', city: 'תל אביב - יפו', activeLeads: 0 },
-            { id: '30210094', name: 'אבדור דרור', city: 'תל אביב - יפו', activeLeads: 0 },
-            { id: '30615737', name: 'אסי', city: 'אשקלון', activeLeads: 0 },
-            { id: '3161315', name: 'תמיר חמי נחמה', city: 'נתניה', activeLeads: 0 },
-            { id: '30992464', name: 'תמיר ינון יוסף', city: 'תל אביב - יפו', activeLeads: 0 },
-            // Added some Arab sector and international examples per previous instructions
-            { id: '9000001', name: 'סמיר אינווסט', city: 'נצרת', activeLeads: 0 },
-            { id: '9000002', name: 'אחמד נדלן', city: 'טייבה', activeLeads: 0 },
-            { id: 'JO100', name: 'Amman International', city: 'Amman, Jordan', activeLeads: 0 }
-        ];
+        // --- BROKER DATABASE MANAGEMENT ---
+        let brokerDatabase = [];
+
+        // Load brokers from Local Storage on startup (if admin uploaded them previously)
+        function initBrokerDatabase() {
+            const saved = localStorage.getItem('orizis_brokers');
+            if (saved) {
+                brokerDatabase = JSON.parse(saved);
+            } else {
+                // Default fallback so you can test it immediately without uploading
+                brokerDatabase = [
+                    { id: '30514470', name: 'אב אורית (Test Demo)', city: 'מבשרת ציון', activeLeads: 0 }
+                ];
+            }
+        }
+        initBrokerDatabase();
+
+        // --- CSV PARSER FUNCTION ---
+        document.getElementById('csv-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const text = event.target.result;
+                const rows = text.split(/\r?\n/); // handle both \n and \r\n
+                let newDb = [];
+                
+                // Assuming CSV format: שם המתווך, מס' רשיון, עיר מגורים
+                for(let i=1; i<rows.length; i++) { // Skip header (i=1)
+                    const cols = rows[i].split(',');
+                    if(cols.length >= 3 && cols[1].trim() !== "") {
+                        newDb.push({
+                            name: cols[0].trim(),
+                            id: cols[1].trim(), // License Number acts as ID
+                            city: cols[2].trim(),
+                            activeLeads: 0
+                        });
+                    }
+                }
+                
+                if (newDb.length > 0) {
+                    brokerDatabase = newDb;
+                    // Save to browser memory so it persists!
+                    localStorage.setItem('orizis_brokers', JSON.stringify(brokerDatabase));
+                    renderAdminData();
+                    showToast(`Successfully imported ${brokerDatabase.length} brokers!`);
+                } else {
+                    alert("Error: Could not parse CSV. Please ensure it's the correct format.");
+                }
+            };
+            reader.readAsText(file);
+        });
 
         let loggedInBroker = null;
 
@@ -515,11 +585,10 @@
             { id: 'T2', date: 'August 02 - August 05, 2026', type: 'Baku Urban Off-Plan', seatsTotal: 10, seatsBooked: 9 }
         ];
 
-        // --- PROPERTY MODAL LOGIC ---
+        // --- UI LOGIC ---
         function openPropertyDetails(id) {
             const data = propertiesDB[id];
             if(!data) return;
-            
             document.getElementById('prop-img').src = data.img;
             document.getElementById('prop-tag').innerText = data.tag;
             document.getElementById('prop-title').innerText = data.title;
@@ -527,15 +596,11 @@
             document.getElementById('prop-desc').innerText = data.desc;
             document.getElementById('prop-price').innerText = data.price;
             document.getElementById('prop-yield').innerText = data.yield;
-            
             document.getElementById('property-modal').classList.remove('hidden');
         }
 
-        function closePropertyModal() {
-            document.getElementById('property-modal').classList.add('hidden');
-        }
+        function closePropertyModal() { document.getElementById('property-modal').classList.add('hidden'); }
 
-        // --- LOGIN & AUTH LOGIC ---
         function showToast(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = message;
@@ -572,10 +637,8 @@
                 return;
             }
 
-            // Check Broker against CSV Database
-            // Logic: Username = License Number, Password = License Number
+            // Check Broker
             const broker = brokerDatabase.find(b => b.id === user && pass === user);
-            
             if (broker) {
                 loggedInBroker = broker;
                 toggleLoginModal();
@@ -583,14 +646,13 @@
                 document.getElementById('public-nav').classList.add('hidden');
                 document.getElementById('broker-view').classList.remove('hidden');
                 
-                // Update UI with Broker Name (Hebrew/English dynamically)
                 document.getElementById('broker-name-display').innerText = broker.name;
                 document.getElementById('broker-city-display').innerText = broker.city;
                 
                 renderBrokerData();
                 showToast('Authenticated successfully.');
             } else {
-                alert('Authentication Failed: License number not found in database.');
+                alert('Login Failed: License number not found. Ensure CSV is uploaded in Admin panel.');
             }
         }
 
@@ -602,7 +664,6 @@
             showToast('Logged out securely.');
         }
 
-        // --- BROKER & ADMIN RENDER LOGIC ---
         function switchBrokerTab(tab) {
             ['dashboard', 'book', 'leads'].forEach(t => {
                 document.getElementById('b-content-' + t).classList.add('hidden');
@@ -621,9 +682,7 @@
 
             tours.forEach(t => {
                 const isFull = t.seatsBooked >= t.seatsTotal;
-                if(!isFull) {
-                    select.innerHTML += `<option value="${t.id}">${t.date} - ${t.seatsTotal - t.seatsBooked} seats left</option>`;
-                }
+                if(!isFull) select.innerHTML += `<option value="${t.id}">${t.date} - ${t.seatsTotal - t.seatsBooked} seats left</option>`;
                 const barWidth = (t.seatsBooked / t.seatsTotal) * 100;
                 list.innerHTML += `
                     <div class="glass-panel p-4 flex justify-between items-center ${isFull ? 'opacity-50' : ''}">
@@ -634,8 +693,7 @@
                                 <div class="${isFull ? 'bg-red-500' : 'bg-blue-500'} h-full" style="width: ${barWidth}%"></div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
@@ -646,7 +704,7 @@
         }
 
         function switchAdminTab(tab) {
-            ['dashboard', 'brokers'].forEach(t => {
+            ['dashboard', 'brokers', 'properties'].forEach(t => {
                 document.getElementById('a-content-' + t).classList.add('hidden');
                 document.getElementById('a-tab-' + t).className = 'w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition';
             });
@@ -659,16 +717,22 @@
             document.getElementById('stat-total-brokers').innerText = brokerDatabase.length;
             const tbody = document.getElementById('admin-brokers-tbody');
             tbody.innerHTML = '';
-            brokerDatabase.forEach(b => {
+            
+            // Limit render to first 100 to avoid browser lag, but all are loaded in memory
+            const displayLimit = Math.min(brokerDatabase.length, 100); 
+            for(let i=0; i<displayLimit; i++) {
+                const b = brokerDatabase[i];
                 tbody.innerHTML += `
                     <tr>
                         <td class="p-4 font-semibold text-white">${b.name}</td>
                         <td class="p-4 text-blue-400 font-mono text-xs">${b.id}</td>
                         <td class="p-4 text-slate-400">${b.city}</td>
                         <td class="p-4"><span class="bg-green-900/30 text-green-400 border border-green-800 px-2 py-1 text-xs rounded">Active</span></td>
-                    </tr>
-                `;
-            });
+                    </tr>`;
+            }
+            if(brokerDatabase.length > 100) {
+                tbody.innerHTML += `<tr><td colspan="4" class="p-4 text-center text-slate-500 text-xs">Showing 100 of ${brokerDatabase.length} brokers...</td></tr>`;
+            }
         }
 
         function handlePublicSubmission(e) {
