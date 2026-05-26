@@ -42,8 +42,8 @@
         
         /* Calendar Styles */
         .calendar-day { cursor: not-allowed; color: #475569; }
-        .calendar-day.monday { cursor: pointer; color: #38BDF8; font-weight: bold; background: rgba(56, 189, 248, 0.1); border-radius: 0.25rem; }
-        .calendar-day.monday:hover { background: #38BDF8; color: #fff; }
+        .calendar-day.tuesday { cursor: pointer; color: #38BDF8; font-weight: bold; background: rgba(56, 189, 248, 0.1); border-radius: 0.25rem; }
+        .calendar-day.tuesday:hover { background: #38BDF8; color: #fff; }
     </style>
 </head>
 <body class="antialiased overflow-x-hidden" onload="initApp()">
@@ -194,8 +194,8 @@
                             <!-- Custom Calendar Date Picker -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 relative">
-                                    <label class="block text-[10px] uppercase text-slate-500 font-bold mb-1">Departure (Mondays Only) <span class="text-red-500">*</span></label>
-                                    <input type="text" id="flightDateInput" readonly placeholder="Select a Monday..." required class="w-full bg-transparent text-white font-bold text-lg outline-none cursor-pointer" onclick="toggleCalendar()">
+                                    <label class="block text-[10px] uppercase text-slate-500 font-bold mb-1">Departure (Tuesdays Only) <span class="text-red-500">*</span></label>
+                                    <input type="text" id="flightDateInput" readonly placeholder="Select a Tuesday..." required class="w-full bg-transparent text-white font-bold text-lg outline-none cursor-pointer" onclick="toggleCalendar()">
                                     
                                     <!-- Custom Calendar Dropdown -->
                                     <div id="calendarDropdown" class="hidden absolute top-full left-0 mt-2 bg-slate-900 border border-slate-700 rounded-xl p-4 z-50 w-72 shadow-2xl">
@@ -562,15 +562,15 @@
 
             for (let i = 1; i <= daysInMonth; i++) {
                 const date = new Date(year, month, i);
-                const isMonday = date.getDay() === 1;
+                const isTuesday = date.getDay() === 2;
                 const isValid = date >= today && date <= maxDate;
 
-                if (isMonday && isValid) {
-                    // Monday!
-                    grid.innerHTML += `<div class="p-2 calendar-day monday" onclick="selectDate(${year}, ${month}, ${i})">${i}</div>`;
+                if (isTuesday && isValid) {
+                    // Tuesday!
+                    grid.innerHTML += `<div class="p-2 calendar-day tuesday" onclick="selectDate(${year}, ${month}, ${i})">${i}</div>`;
                 } else {
                     // Disabled
-                    grid.innerHTML += `<div class="p-2 calendar-day ${isMonday ? 'line-through opacity-50' : ''}">${i}</div>`;
+                    grid.innerHTML += `<div class="p-2 calendar-day ${isTuesday ? 'line-through opacity-50' : ''}">${i}</div>`;
                 }
             }
         }
@@ -578,7 +578,7 @@
         function selectDate(year, month, day) {
             const selected = new Date(year, month, day);
             const returnDate = new Date(selected);
-            returnDate.setDate(selected.getDate() + 4); // Friday
+            returnDate.setDate(selected.getDate() + 3); // Friday
 
             const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
             document.getElementById('flightDateInput').value = selected.toLocaleDateString('en-US', options);
