@@ -1,60 +1,73 @@
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ORIZISREAL | Global Real Estate Investment</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; overflow-x: hidden; }
-        .font-serif { font-family: 'Playfair Display', serif; }
-        
-        /* Core UI Classes */
-        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .glass-panel { background: #0f172a; border: 1px solid #1e293b; }
-        .hero-bg { background-image: linear-gradient(to right, rgba(2, 6, 23, 0.9) 0%, rgba(2, 6, 23, 0.4) 100%), url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80'); background-size: cover; background-position: center; background-attachment: fixed; }
-        
-        /* Brand Colors */
-        .brand-dark { color: #1e3a8a; }
-        .brand-light { color: #38bdf8; }
-        .bg-brand-accent { background-color: #2563eb; }
-        .hover-brand-accent:hover { background-color: #1d4ed8; }
 
-        /* Animations */
-        .fade-in { animation: fadeIn 0.5s ease-in-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sapphire: '#1E40AF',
+                        crystal: '#38BDF8',
+                        'luxury-black': '#020617',
+                        'luxury-dark': '#0B0F19',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #020617; color: #f8fafc; scroll-behavior: smooth; }
+        .glass-card { background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
+        .glass-card:hover { border-color: rgba(56, 189, 248, 0.3); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(56, 189, 248, 0.05); }
+        .hero-gradient { background: linear-gradient(to right, rgba(2, 6, 23, 0.95) 0%, rgba(2, 6, 23, 0.5) 100%); }
+        .modal-hidden { display: none; opacity: 0; pointer-events: none; }
+        .modal-visible { display: flex; opacity: 1; pointer-events: auto; }
+        .filter-btn { border-bottom: 2px solid transparent; padding-bottom: 0.5rem; transition: all 0.3s; }
+        .filter-btn.active { border-bottom-color: #38BDF8; color: #38BDF8; font-weight: 600; }
+        .thumb-active { border-color: #38BDF8 !important; opacity: 1 !important; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #020617; }
-        ::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 4px; }
-
-        /* Filter Buttons */
-        .filter-btn { border-bottom: 2px solid transparent; padding-bottom: 0.5rem; transition: all 0.3s; }
-        .filter-btn.active { border-bottom-color: #38bdf8; color: #fff; font-weight: 600; }
+        ::-webkit-scrollbar-thumb { background: #1E40AF; border-radius: 4px; }
         
-        /* Media Thumbnails */
-        .thumb-active { border: 2px solid #38bdf8; opacity: 1 !important; }
+        /* Calendar Styles */
+        .calendar-day { cursor: not-allowed; color: #475569; }
+        .calendar-day.monday { cursor: pointer; color: #38BDF8; font-weight: bold; background: rgba(56, 189, 248, 0.1); border-radius: 0.25rem; }
+        .calendar-day.monday:hover { background: #38BDF8; color: #fff; }
     </style>
 </head>
-<body class="antialiased selection:bg-blue-900 selection:text-white" onload="initApp()">
+<body class="antialiased overflow-x-hidden" onload="initApp()">
 
-    <!-- PUBLIC NAVIGATION -->
-    <nav id="public-nav" class="fixed w-full z-50 transition-all duration-300 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
+    <!-- Custom Notification Box -->
+    <div id="notification" class="fixed top-24 right-4 bg-blue-900/90 backdrop-blur-md text-white px-6 py-4 rounded-lg shadow-2xl border border-blue-500 transform transition-transform duration-300 translate-x-[150%] z-[200] flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-xl text-crystal"></i>
+        <span id="notificationMessage" class="font-medium">Action completed successfully.</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 transition-all duration-300 bg-slate-950/90 backdrop-blur-md border-b border-slate-900" id="navbar">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-2xl md:text-3xl font-bold tracking-widest cursor-pointer" onclick="showPublicView()">
-                <span class="brand-dark">ORIZIS</span><span class="brand-light">REAL</span>
+            <div class="text-2xl md:text-3xl font-black tracking-widest cursor-pointer" onclick="showPublicView()">
+                <span class="text-sapphire">ORIZIS</span><span class="text-crystal">REAL</span>
             </div>
-            
-            <div class="hidden lg:flex gap-8 text-sm font-semibold uppercase tracking-widest text-slate-300">
-                <a href="#about" class="hover:text-blue-400 transition">Orizis Group</a>
-                <a href="#projects" class="hover:text-blue-400 transition">Portfolio</a>
-                <a href="#mission" class="hover:text-blue-400 transition">VIP Mission</a>
+            <div class="hidden lg:flex gap-8 text-xs font-semibold uppercase tracking-widest text-slate-400">
+                <a href="#about-group" class="hover:text-crystal transition">Orizis Group</a>
+                <a href="#projects" class="hover:text-crystal transition">Portfolio</a>
+                <a href="#tour" class="hover:text-crystal transition">VIP Mission</a>
             </div>
-            
             <div class="flex gap-4">
-                <button onclick="document.getElementById('public-booking').scrollIntoView();" class="hidden md:block bg-brand-accent hover-brand-accent text-white px-6 py-2.5 text-sm font-bold uppercase tracking-wide transition shadow-lg shadow-blue-900/50">Book Tour</button>
-                <button onclick="toggleLoginModal()" class="border border-slate-600 text-slate-300 hover:bg-white hover:text-black px-6 py-2.5 text-sm font-bold uppercase tracking-wide transition flex items-center gap-2">
+                <button onclick="document.getElementById('tour').scrollIntoView({behavior: 'smooth'})" class="hidden md:block bg-sapphire hover:bg-blue-700 text-white px-6 py-2.5 text-xs font-bold uppercase tracking-widest transition shadow-lg shadow-blue-900/50">Book Tour</button>
+                <button onclick="toggleLoginModal()" class="border border-slate-700 text-slate-300 hover:bg-white hover:text-black px-6 py-2.5 text-xs font-bold uppercase tracking-widest transition flex items-center gap-2">
                     <i class="fa-solid fa-lock"></i> Partner Login
                 </button>
             </div>
@@ -65,143 +78,212 @@
     <div id="public-view" class="fade-in">
         
         <!-- Hero Section -->
-        <header class="relative min-h-screen flex items-center hero-bg">
-            <div class="max-w-7xl mx-auto px-6 pt-20 w-full relative z-10">
-                <div class="max-w-3xl">
-                    <div class="inline-block border border-blue-500/30 bg-blue-900/20 text-blue-400 px-4 py-1.5 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-6 backdrop-blur-sm">
-                        Global Real Estate Opportunities
+        <section class="relative min-h-screen flex items-center justify-start overflow-hidden pt-20">
+            <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80" alt="Luxury Mansion" class="w-full h-full object-cover object-center scale-105 animate-[pulse_20s_ease-in-out_infinite]" />
+                <div class="absolute inset-0 hero-gradient"></div>
+            </div>
+
+            <div class="relative z-10 max-w-7xl mx-auto px-6 w-full py-20">
+                <div class="max-w-4xl">
+                    <div class="inline-block bg-blue-950/50 border border-blue-500/30 text-crystal px-4 py-1.5 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-6 backdrop-blur-sm">
+                        Global Real Estate Investments
                     </div>
-                    
-                    <h1 class="text-5xl sm:text-6xl md:text-7xl font-serif mb-6 leading-[1.1] text-white">
-                        Institutional-grade real estate. <br>
-                        <span class="italic text-blue-400 font-light">Now accessible from $50,000.</span>
+                    <h1 class="text-4xl sm:text-6xl md:text-7xl font-bold leading-tight mb-6 font-serif drop-shadow-2xl">
+                        Institutional-grade real estate.<br>
+                        <span class="text-crystal">Now accessible from $50,000.</span>
                     </h1>
-                    
-                    <p class="text-lg md:text-xl text-slate-400 mb-10 font-light leading-relaxed border-l-4 border-blue-600 pl-6">
-                        Acquire premium, high-yield assets in Azerbaijan with full legal ownership. Protected by strict Israeli escrow and powered by corporate-grade property management. We handle the asset, you secure the legacy.
+                    <p class="text-lg sm:text-xl text-gray-300 mb-10 font-light leading-relaxed max-w-3xl border-l-4 border-sapphire pl-4">
+                        Acquire premium, high-yield assets in Azerbaijan with full legal ownership (ASAN taboo). 
+                        <br>Protected by strict Israeli escrow and powered by corporate-grade property management. We handle the asset and the tenants, while you secure your financial legacy.
                     </p>
-                    
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#mission" class="bg-brand-accent hover-brand-accent text-white px-8 py-4 text-center font-bold text-sm uppercase tracking-widest transition flex justify-center items-center gap-3">
-                            Discover The 72h Mission <i class="fa-solid fa-arrow-right"></i>
-                        </a>
-                        <a href="#projects" class="glass text-white hover:bg-white/5 px-8 py-4 text-center font-bold text-sm uppercase tracking-widest transition">
-                            View Portfolio
+                        <a href="#tour" class="bg-sapphire text-white px-8 py-4 rounded-none font-bold text-sm uppercase tracking-widest hover:bg-blue-700 transition duration-300 shadow-[0_0_30px_rgba(30,64,175,0.4)] text-center flex items-center justify-center gap-2">
+                            Explore VIP Investor Mission <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        </header>
+        </section>
 
-        <!-- About Orizis Group -->
-        <section id="about" class="py-24 bg-slate-950 border-b border-slate-900">
-            <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+        <!-- Orizis Group Section -->
+        <section id="about-group" class="py-24 bg-slate-950 border-b border-slate-900 relative">
+            <div class="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div>
-                    <h3 class="text-blue-500 text-sm font-bold uppercase tracking-widest mb-2">Corporate Backing</h3>
-                    <h2 class="text-4xl font-serif text-white mb-6">Backed by ORIZIS GROUP</h2>
-                    <p class="text-slate-400 leading-relaxed mb-6">
-                        <strong class="text-white">ORIZISREAL</strong> is the real estate investment arm of <strong>Orizis Group</strong>, a multinational conglomerate operating across global markets. 
+                    <h3 class="text-crystal text-sm font-bold uppercase tracking-widest mb-2">Corporate Backing</h3>
+                    <h2 class="text-4xl font-serif font-bold text-white mb-6">Backed by ORIZIS GROUP</h2>
+                    <p class="text-gray-300 text-lg leading-relaxed mb-6">
+                        <strong class="text-crystal">ORIZISREAL</strong> operates as the official real estate investment arm of <strong class="text-white">Orizis Group</strong> – a multinational conglomerate with diversified holdings across technology, finance, and global infrastructure.
                     </p>
-                    <p class="text-slate-400 leading-relaxed mb-8">
-                        With diversified interests in technology, finance, and infrastructure, Orizis Group provides the financial stability, operational scale, and institutional trust required to execute complex cross-border real estate transactions flawlessly. When you invest through ORIZISREAL, you are partnering with an enterprise designed for scale and security.
+                    <p class="text-gray-400 text-base leading-relaxed mb-8">
+                        Our corporate backing delivers institutional stability, absolute legal protection, and seamless execution. When you invest with ORIZISREAL, you enjoy unparalleled regulatory security and end-to-end property oversight.
                     </p>
                 </div>
-                <div class="relative h-[400px]">
-                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3" alt="Corporate" class="w-full h-full object-cover rounded-sm opacity-80 border border-slate-800">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent"></div>
+                <div class="relative h-[400px] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
+                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3" alt="Corporate" class="w-full h-full object-cover opacity-85">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#020617] to-transparent"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Dynamic Portfolio Showcase -->
-        <section id="projects" class="py-32 bg-slate-950 relative">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="flex flex-col md:flex-row md:justify-between md:items-end mb-12">
-                    <div class="mb-6 md:mb-0">
-                        <h3 class="text-blue-500 text-sm font-bold uppercase tracking-widest mb-2">The Collection</h3>
-                        <h2 class="text-4xl md:text-5xl font-serif text-white">Premium Real Estate Assets</h2>
+        <!-- Dynamic Portfolio Section -->
+        <section id="projects" class="py-24 bg-luxury-black relative">
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                    <div>
+                        <h2 class="text-4xl md:text-5xl font-serif font-bold mb-4">The Collection</h2>
+                        <p class="text-gray-400 text-lg">Select a category to filter our active institutional real estate inventory.</p>
                     </div>
                     
-                    <!-- Filters -->
-                    <div class="flex flex-wrap gap-6 text-slate-400 uppercase tracking-widest text-sm" id="portfolio-filters">
-                        <button class="filter-btn active" onclick="renderPortfolio('all', this)">All Assets</button>
-                        <button class="filter-btn" onclick="renderPortfolio('off-plan', this)">Off-Plan</button>
-                        <button class="filter-btn" onclick="renderPortfolio('apartments', this)">Apartments</button>
-                        <button class="filter-btn" onclick="renderPortfolio('villas', this)">Villas</button>
+                    <div class="flex bg-luxury-dark border border-slate-800 p-1 rounded-full overflow-x-auto" id="categoryFilters">
+                        <button onclick="filterCollection('all', this)" class="shrink-0 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 bg-sapphire text-white">All Assets</button>
+                        <button onclick="filterCollection('off-plan', this)" class="shrink-0 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 text-gray-400 hover:text-white">Off-Plan (+20% Buy-Back)</button>
+                        <button onclick="filterCollection('apartments', this)" class="shrink-0 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 text-gray-400 hover:text-white">Apartments</button>
+                        <button onclick="filterCollection('villas', this)" class="shrink-0 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 text-gray-400 hover:text-white">Villas</button>
                     </div>
                 </div>
 
-                <!-- Portfolio Grid (Populated by JS) -->
-                <div id="portfolio-grid" class="grid lg:grid-cols-3 gap-8 transition-opacity duration-300">
-                    <!-- Cards injected here -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projectsContainer">
+                    <!-- Injected via JS -->
                 </div>
             </div>
         </section>
 
-        <!-- VIP Mission 72h -->
-        <section id="mission" class="py-32 bg-slate-900 border-t border-slate-800">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="grid lg:grid-cols-2 gap-16 items-center">
-                    <div>
-                        <h3 class="text-blue-500 text-sm font-bold uppercase tracking-widest mb-2">The Experience</h3>
-                        <h2 class="text-4xl md:text-5xl font-serif text-white mb-6">72-Hour Investor Mission</h2>
-                        <p class="text-slate-300 text-lg mb-8 leading-relaxed">
-                            We don't sell real estate over Zoom. We fly you to Azerbaijan for a comprehensive, executive-grade due diligence mission. Evaluate the assets, experience the culture, and sign contracts in person.
+        <!-- Flight Booking Portal Style -->
+        <section id="tour" class="relative py-24 bg-luxury-dark border-t border-b border-slate-900 overflow-hidden">
+            <div class="max-w-6xl mx-auto px-6 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                    <!-- Marketing Copy -->
+                    <div class="sticky top-32">
+                        <div class="w-16 h-16 bg-blue-950/50 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/30">
+                            <i class="fa-solid fa-plane-departure text-3xl text-crystal"></i>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-serif font-bold mb-6">72-Hour VIP Investor Mission</h2>
+                        <p class="text-lg text-gray-300 mb-6 font-light leading-relaxed">
+                            Experience the market firsthand. Our 72-hour missions feature 5-star accommodations, chauffeured Mercedes S-Class service, curated fine dining, and direct legal advisory for prompt registration.
                         </p>
                         
-                        <div class="space-y-6 mb-10">
-                            <div class="flex gap-4">
-                                <div class="w-12 h-12 bg-slate-800 text-blue-400 flex items-center justify-center shrink-0 border border-slate-700"><i class="fa-solid fa-plane-arrival"></i></div>
-                                <div>
-                                    <h4 class="text-white font-bold mb-1">Day 1: Arrival & Executive Briefing</h4>
-                                    <p class="text-sm text-slate-400">Airport VIP pickup, 5-star hotel check-in, and a corporate dinner detailing the macroeconomic growth of Azerbaijan.</p>
-                                </div>
+                        <div class="grid grid-cols-2 gap-4 mb-8">
+                            <div class="border border-slate-800 bg-slate-900/50 p-4 rounded-xl">
+                                <i class="fa-solid fa-building-user text-crystal mb-2 text-xl"></i>
+                                <h4 class="text-white font-bold text-sm">Luxury Stay</h4>
+                                <p class="text-xs text-slate-400 mt-1">5-Star accommodations included.</p>
                             </div>
-                            <div class="flex gap-4">
-                                <div class="w-12 h-12 bg-slate-800 text-blue-400 flex items-center justify-center shrink-0 border border-slate-700"><i class="fa-solid fa-building"></i></div>
-                                <div>
-                                    <h4 class="text-white font-bold mb-1">Day 2: Site Tours & Legal Execution</h4>
-                                    <p class="text-sm text-slate-400">Chauffeured tour of Baku and Sea Breeze projects. Private meeting with local notary and lawyers to finalize the property allocation.</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-4">
-                                <div class="w-12 h-12 bg-slate-800 text-blue-400 flex items-center justify-center shrink-0 border border-slate-700"><i class="fa-solid fa-mountain-sun"></i></div>
-                                <div>
-                                    <h4 class="text-white font-bold mb-1">Day 3: The Caucasus Retreat</h4>
-                                    <p class="text-sm text-slate-400">A luxurious day-trip to the tourist hotspots of Gabala or Shahdag to understand the booming tourism demand, followed by departure.</p>
-                                </div>
+                            <div class="border border-slate-800 bg-slate-900/50 p-4 rounded-xl">
+                                <i class="fa-solid fa-utensils text-crystal mb-2 text-xl"></i>
+                                <h4 class="text-white font-bold text-sm">Fine Dining</h4>
+                                <p class="text-xs text-slate-400 mt-1">Curated culinary experiences.</p>
                             </div>
                         </div>
 
-                        <div class="bg-blue-900/20 border border-blue-800 p-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-white font-serif text-2xl">Mission Cost: $870</span>
-                                <span class="bg-blue-600 text-white text-[10px] uppercase tracking-widest px-2 py-1">Fully Refundable</span>
-                            </div>
-                            <p class="text-sm text-blue-200">The $870 covers flights, 5-star lodging, transfers, and fine dining. <strong class="text-white">This entire amount is deducted directly from your property purchase price.</strong></p>
+                        <div class="bg-blue-950/50 border border-blue-900/50 p-5 rounded-xl text-sm text-crystal">
+                            <strong>Base Mission Cost: $870 per investor.</strong><br>
+                            * 25% discount applied for the 2nd passenger sharing a room.<br>
+                            <span class="text-white text-xs mt-2 block">Costs are fully credited and deducted from your property purchase price upon acquisition.</span>
                         </div>
                     </div>
-
-                    <div id="public-booking" class="glass-panel p-10 border-t-4 border-blue-600">
-                        <h3 class="text-2xl font-serif text-white mb-2">Request Mission Access</h3>
-                        <p class="text-slate-400 text-sm mb-8">Submit your details to undergo initial financial pre-qualification.</p>
+                    
+                    <!-- FLIGHT BOOKING STYLE FORM -->
+                    <div id="public-booking" class="glass-card p-8 md:p-10 rounded-2xl border border-slate-800 shadow-2xl relative">
+                        <div class="absolute -top-4 right-8 bg-sapphire text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest rounded-full shadow-lg">Flight & Stay Registration</div>
+                        <h3 class="text-3xl font-serif font-bold text-crystal mb-2">Build Your Itinerary</h3>
+                        <p class="text-slate-400 mb-8 text-xs uppercase tracking-widest">Select your dates and personalize your journey</p>
                         
-                        <form onsubmit="handlePublicSubmission(event)" class="space-y-4">
-                            <input type="text" placeholder="Full Legal Name" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition">
-                            <input type="email" placeholder="Email Address" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition">
-                            <input type="tel" placeholder="Phone Number" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition">
-                            <select required class="w-full bg-slate-950 border border-slate-700 p-4 text-slate-300 focus:border-blue-500 outline-none transition appearance-none">
-                                <option value="" disabled selected>Estimated Investment Capital...</option>
-                                <option>$50,000 - $100,000</option>
-                                <option>$100,000 - $250,000</option>
-                                <option>$250,000+</option>
-                            </select>
-                            <label class="flex items-start gap-3 text-xs text-slate-400 mt-4 cursor-pointer">
-                                <input type="checkbox" required class="mt-1">
-                                <span>I confirm that my investment capital is liquid and held in a personal bank account under my name.</span>
-                            </label>
-                            <button type="submit" class="w-full bg-brand-accent hover-brand-accent text-white font-bold py-4 uppercase tracking-widest text-sm transition mt-6">
-                                Submit Request
+                        <form onsubmit="handlePublicTourForm(event)" class="space-y-6">
+                            
+                            <!-- Custom Calendar Date Picker -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 relative">
+                                    <label class="block text-[10px] uppercase text-slate-500 font-bold mb-1">Departure (Mondays Only) <span class="text-red-500">*</span></label>
+                                    <input type="text" id="flightDateInput" readonly placeholder="Select a Monday..." required class="w-full bg-transparent text-white font-bold text-lg outline-none cursor-pointer" onclick="toggleCalendar()">
+                                    
+                                    <!-- Custom Calendar Dropdown -->
+                                    <div id="calendarDropdown" class="hidden absolute top-full left-0 mt-2 bg-slate-900 border border-slate-700 rounded-xl p-4 z-50 w-72 shadow-2xl">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <button type="button" onclick="changeMonth(-1)" class="text-slate-400 hover:text-white"><i class="fa-solid fa-chevron-left"></i></button>
+                                            <span id="calMonthYear" class="font-bold text-white text-sm"></span>
+                                            <button type="button" onclick="changeMonth(1)" class="text-slate-400 hover:text-white"><i class="fa-solid fa-chevron-right"></i></button>
+                                        </div>
+                                        <div class="grid grid-cols-7 gap-1 text-center text-xs text-slate-500 mb-2">
+                                            <div>Su</div><div class="text-crystal font-bold">Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+                                        </div>
+                                        <div id="calGrid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex items-center justify-between opacity-70">
+                                    <div>
+                                        <label class="block text-[10px] uppercase text-slate-500 font-bold mb-1">Return (Friday)</label>
+                                        <span id="returnDateDisplay" class="text-slate-300 font-bold text-lg">Auto-calculated</span>
+                                    </div>
+                                    <i class="fa-solid fa-plane-arrival text-slate-500 text-2xl"></i>
+                                </div>
+                            </div>
+
+                            <!-- Passengers & Rooms -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[10px] uppercase text-slate-500 font-bold mb-2">Passengers (Max 8) <span class="text-red-500">*</span></label>
+                                    <input type="number" id="paxCount" min="1" max="8" value="1" required onchange="calculateLivePrice()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-crystal transition text-center font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] uppercase text-slate-500 font-bold mb-2">Room Configuration <span class="text-red-500">*</span></label>
+                                    <select required class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-crystal transition cursor-pointer text-sm">
+                                        <option>Double Room (Wide King Bed)</option>
+                                        <option>Double Room (Twin Beds)</option>
+                                        <option>Single Room (Private)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Personalization & Dietary -->
+                            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                                <label class="block text-[10px] uppercase text-slate-500 font-bold mb-3">Dietary & Religious Preferences <span class="text-crystal lowercase font-normal ml-2">(Personalized Menu)</span></label>
+                                <div class="grid grid-cols-2 gap-3 text-sm">
+                                    <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="checkbox" class="accent-crystal"> Kosher (Baku Rabbinate)</label>
+                                    <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="checkbox" class="accent-crystal"> Halal Certified</label>
+                                    <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="checkbox" class="accent-crystal"> Vegetarian / Vegan</label>
+                                    <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="checkbox" class="accent-crystal"> Gluten-Free</label>
+                                </div>
+                            </div>
+
+                            <!-- Passenger Details -->
+                            <div class="border-t border-slate-800 pt-6 space-y-4">
+                                <label class="block text-[10px] uppercase text-slate-500 font-bold mb-2">Lead Passenger Details</label>
+                                
+                                <div>
+                                    <input type="text" placeholder="Full Legal Name" required class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-crystal transition placeholder-gray-500">
+                                    <p class="text-[10px] text-red-500 mt-1">* Required field</p>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <input type="tel" placeholder="Mobile Phone" required class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-crystal transition placeholder-gray-500 text-left" dir="ltr">
+                                        <p class="text-[10px] text-red-500 mt-1">* Required field</p>
+                                    </div>
+                                    <div>
+                                        <input type="email" placeholder="Email Address" required class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-crystal transition placeholder-gray-500">
+                                        <p class="text-[10px] text-red-500 mt-1">* Required field</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Price Calculator -->
+                            <div class="flex justify-between items-center border-t border-slate-800 pt-6 mt-6">
+                                <div>
+                                    <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Estimated Cost</p>
+                                    <p class="text-[10px] text-slate-500">Based on $870 base + 25% sharing discount</p>
+                                </div>
+                                <div class="text-3xl font-bold text-white font-mono" id="livePriceDisplay">$870</div>
+                            </div>
+
+                            <!-- Disclaimer -->
+                            <div class="bg-blue-950/20 p-4 rounded-lg border border-blue-900/50 text-xs text-blue-200 mt-2">
+                                <i class="fa-solid fa-circle-info mr-2 text-crystal"></i> Subject to flight availability and hotel occupancy. <strong>No payment required at this stage.</strong> A senior concierge will contact you to finalize arrangements, verify details, and process secure payment.
+                            </div>
+
+                            <button type="submit" class="w-full bg-sapphire hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition text-sm uppercase tracking-widest shadow-lg shadow-blue-900/20 flex justify-center items-center gap-2">
+                                Request Booking Itinerary <i class="fa-solid fa-paper-plane"></i>
                             </button>
                         </form>
                     </div>
@@ -209,598 +291,442 @@
             </div>
         </section>
 
-        <footer class="bg-[#01030a] py-12 border-t border-slate-900 text-center">
-            <div class="text-xl font-bold tracking-widest mb-4 opacity-50">
-                <span class="brand-dark">ORIZIS</span><span class="brand-light">REAL</span>
+        <!-- Footer -->
+        <footer class="bg-[#01030a] py-16 border-t border-slate-900 text-center">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-2xl font-serif font-bold tracking-[0.2em] mb-4"><span class="text-sapphire">ORIZIS</span><span class="text-crystal">REAL</span></div>
+                <p class="text-gray-500 text-sm">© 2026 ORIZIS GROUP. All rights reserved.</p>
             </div>
-            <p class="text-slate-600 text-sm">© 2026 Orizis Group | Global Real Estate Operations.</p>
         </footer>
     </div>
 
-    <!-- ADVANCED PROPERTY DETAILS MODAL (Media Gallery) -->
-    <div id="property-modal" class="fixed inset-0 z-[110] hidden bg-black/90 backdrop-blur-md overflow-y-auto">
-        <div class="min-h-screen py-10 px-4 md:px-10 flex justify-center items-center">
-            <div class="bg-slate-950 border border-slate-800 w-full max-w-6xl rounded-sm overflow-hidden shadow-2xl relative flex flex-col lg:flex-row">
-                <button onclick="closePropertyModal()" class="absolute top-4 right-4 bg-black/50 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-500 transition z-20"><i class="fa-solid fa-xmark"></i></button>
-                
-                <!-- Media Side -->
-                <div class="lg:w-1/2 flex flex-col bg-black">
-                    <!-- Main Display -->
-                    <div class="h-64 lg:h-[450px] relative w-full flex items-center justify-center bg-black" id="modal-main-media">
-                        <!-- Injected by JS (img or video) -->
+    <!-- PROPERTY DETAILS MODAL -->
+    <div id="propertyModal" class="modal-hidden fixed inset-0 z-[110] items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="closePropertyModal()"></div>
+        <div class="relative w-full max-w-5xl bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col lg:flex-row h-[85vh] lg:h-auto overflow-y-auto">
+            <button onclick="closePropertyModal()" class="absolute top-4 right-4 bg-black/50 hover:bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center z-50 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="lg:w-1/2 bg-black flex flex-col">
+                <div class="flex-1 min-h-[300px] relative" id="modalMainMediaContainer"></div>
+                <div class="flex gap-2 p-4 overflow-x-auto bg-slate-950 border-t border-slate-900" id="modalThumbnailsTrack"></div>
+            </div>
+            <div class="lg:w-1/2 p-8 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span id="modalPropertyTag" class="bg-sapphire text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider"></span>
+                        <span id="modalPropertyLocation" class="text-gray-400 text-sm font-medium"></span>
                     </div>
-                    
-                    <!-- Thumbnails Track -->
-                    <div class="flex gap-2 p-4 overflow-x-auto bg-[#0a0f1c] border-t border-slate-800" id="modal-thumbnails">
-                        <!-- Thumbnails injected by JS -->
-                    </div>
+                    <h3 id="modalPropertyTitle" class="text-3xl font-serif font-bold mb-4 text-white"></h3>
+                    <p id="modalPropertyDesc" class="text-slate-300 text-sm leading-relaxed mb-6"></p>
                 </div>
-                
-                <!-- Content Side -->
-                <div class="lg:w-1/2 p-8 lg:p-10 flex flex-col justify-center">
-                    <div class="flex justify-between items-start mb-2">
-                        <h4 class="text-blue-500 text-xs font-bold uppercase tracking-widest" id="prop-location"></h4>
-                        <span id="prop-tag" class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest"></span>
-                    </div>
-                    <h2 class="text-3xl lg:text-4xl font-serif text-white mb-4" id="prop-title"></h2>
-                    <p class="text-slate-400 text-sm leading-relaxed mb-8" id="prop-desc"></p>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-8">
-                        <div class="border border-slate-800 bg-slate-900/50 p-4">
-                            <p class="text-xs text-slate-500 uppercase tracking-widest mb-1">Starting Price</p>
-                            <p class="text-xl lg:text-2xl font-bold text-white" id="prop-price"></p>
+                <div class="border-t border-slate-900 pt-6 mt-6 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-900/40 p-4 border border-slate-800 rounded-xl">
+                            <span class="block text-xs text-slate-500 mb-1">Acquisition Cost</span>
+                            <span id="modalPropertyPrice" class="text-2xl font-bold text-white font-mono"></span>
                         </div>
-                        <div class="border border-slate-800 bg-slate-900/50 p-4">
-                            <p class="text-xs text-slate-500 uppercase tracking-widest mb-1">Management Plan</p>
-                            <p class="text-xl lg:text-2xl font-bold text-blue-400" id="prop-yield"></p>
+                        <div class="bg-slate-900/40 p-4 border border-slate-800 rounded-xl">
+                            <span class="block text-xs text-slate-500 mb-1">Target Yield / Plan</span>
+                            <span id="modalPropertyYield" class="text-2xl font-bold text-crystal font-mono"></span>
                         </div>
                     </div>
-
-                    <div class="bg-slate-900 p-4 border-l-4 border-blue-500 mb-8">
-                        <h4 class="text-white text-sm font-bold mb-1"><i class="fa-solid fa-shield-halved mr-2"></i> Comprehensive Management</h4>
-                        <p class="text-xs text-slate-400">OrizisReal handles the entire lifecycle: 100% taboo registration in your name via ASAN, tenant sourcing, and monthly cash flow distribution.</p>
-                    </div>
-                    
-                    <button onclick="closePropertyModal(); document.getElementById('public-booking').scrollIntoView();" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 font-bold uppercase tracking-widest text-sm transition mt-auto">
-                        Reserve on Next Mission
+                    <button onclick="closePropertyModal(); document.getElementById('tour').scrollIntoView({behavior: 'smooth'});" class="w-full bg-sapphire text-white font-bold py-4 rounded-none hover:bg-blue-700 transition uppercase tracking-widest text-xs">
+                        Reserve Space on Next Mission
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- LOGIN MODAL -->
-    <div id="login-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity">
-        <div class="glass-panel p-10 w-full max-w-md border-t-4 border-slate-600 relative">
-            <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <div class="text-center mb-8">
-                <i class="fa-solid fa-fingerprint text-4xl text-blue-500 mb-4"></i>
-                <h2 class="text-2xl font-serif text-white">Partner Authentication</h2>
-                <p class="text-sm text-slate-400 mt-2">Log in using your official Broker License Number.</p>
+    <!-- MAIN LOGIN MODAL -->
+    <div id="loginModal" class="modal-hidden fixed inset-0 z-[100] items-center justify-center">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="toggleLoginModal()"></div>
+        <div class="relative glass-card w-full max-w-md p-10 rounded-2xl shadow-2xl border border-slate-800 mx-4">
+            <button onclick="toggleLoginModal()" class="absolute top-6 left-6 text-gray-400 hover:text-white transition bg-black/50 w-8 h-8 rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center mb-10">
+                <div class="w-16 h-16 mx-auto bg-slate-950 border border-slate-800 rounded-full flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-user-shield text-2xl text-crystal"></i>
+                </div>
+                <h3 class="text-2xl font-bold font-serif mb-2">Partner & Admin Access</h3>
+                <p class="text-sm text-gray-400">Log in via broker license ID or admin credentials</p>
             </div>
-            
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <input type="text" id="username" placeholder="License Number (Username)" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition text-center text-lg tracking-widest">
-                <input type="password" id="password" placeholder="Password" required class="w-full bg-slate-950 border border-slate-700 p-4 text-white focus:border-blue-500 outline-none transition text-center text-lg tracking-widest">
-                <button type="submit" class="w-full bg-slate-800 hover:bg-blue-600 text-white font-bold py-4 uppercase tracking-widest text-sm transition mt-2">
-                    Authenticate
+            <form onsubmit="handleLogin(event)" class="space-y-6">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-slate-500 font-bold mb-2">Username / License ID</label>
+                    <input type="text" id="brokerUsername" class="w-full bg-slate-900 border border-slate-800 rounded px-4 py-3.5 text-white focus:outline-none focus:border-crystal transition font-mono text-md text-center" placeholder="License Number or 'admin'" required>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-slate-500 font-bold mb-2">Password</label>
+                    <input type="password" id="brokerPassword" class="w-full bg-slate-900 border border-slate-800 rounded px-4 py-3.5 text-white focus:outline-none focus:border-crystal transition font-mono text-md text-center tracking-widest" placeholder="••••" required>
+                </div>
+                <button type="submit" class="w-full bg-sapphire hover:bg-blue-700 text-white font-bold py-4 rounded-none transition uppercase tracking-widest text-xs mt-8">
+                    Authenticate Account
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- BROKER PORTAL VIEW (Unchanged) -->
-    <div id="broker-view" class="fixed inset-0 z-[60] hidden bg-slate-950 flex overflow-hidden">
-        <!-- ... (Kept existing broker layout to save space, assuming it's intact) ... -->
-        <aside class="w-64 bg-[#0a0f1c] border-r border-slate-800 flex flex-col">
-            <div class="p-6 border-b border-slate-800">
-                <div class="text-xl font-bold tracking-widest"><span class="brand-dark">ORIZIS</span><span class="brand-light">REAL</span></div>
-                <div class="text-[10px] uppercase tracking-widest text-blue-500 mt-1">Broker Partner Portal</div>
-            </div>
-            <div class="p-6 border-b border-slate-800 bg-slate-900/30">
-                <p class="text-xs text-slate-500 mb-1">Welcome back,</p>
-                <p id="broker-name-display" class="text-white font-bold text-sm">--</p>
-                <p id="broker-city-display" class="text-slate-400 text-xs mt-1">--</p>
-                <span class="inline-block mt-2 bg-green-900/30 text-green-400 border border-green-800 text-[10px] px-2 py-0.5 uppercase tracking-wider">Commission Tier: 5%</span>
-            </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <button onclick="switchBrokerTab('dashboard')" id="b-tab-dashboard" class="w-full text-left px-4 py-3 bg-blue-900/20 text-blue-400 text-sm font-semibold transition"><i class="fa-solid fa-chart-pie w-6"></i> Overview</button>
-                <button onclick="switchBrokerTab('book')" id="b-tab-book" class="w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition"><i class="fa-solid fa-plane-departure w-6"></i> Book Mission</button>
-                <button onclick="switchBrokerTab('leads')" id="b-tab-leads" class="w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition"><i class="fa-solid fa-users w-6"></i> My Leads</button>
-            </nav>
-            <div class="p-4 border-t border-slate-800">
-                <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm font-semibold flex items-center gap-2 px-4 py-2"><i class="fa-solid fa-power-off"></i> Secure Logout</button>
-            </div>
-        </aside>
-        <main class="flex-1 overflow-y-auto p-10 bg-slate-950">
-            <div id="b-content-dashboard" class="block">
-                <h2 class="text-3xl font-serif text-white mb-8">Performance Overview</h2>
-                <div class="grid grid-cols-3 gap-6 mb-10">
-                    <div class="glass-panel p-6 border-t-2 border-slate-600">
-                        <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Total Leads</p>
-                        <h3 class="text-4xl font-bold text-white">0</h3>
+    <!-- MASTER ADMIN DASHBOARD MODAL -->
+    <div id="adminModal" class="modal-hidden fixed inset-0 z-[100] items-center justify-center p-4">
+        <div class="absolute inset-0 bg-[#020617]/98 backdrop-blur-md"></div>
+        <div class="relative w-full max-w-7xl h-[92vh] bg-slate-950 rounded-2xl shadow-2xl border border-slate-800 flex flex-col lg:flex-row overflow-hidden">
+            <aside class="w-full lg:w-64 bg-black/40 border-r lg:border-r border-b lg:border-b-0 border-slate-800 p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-8 h-8 rounded-full bg-sapphire flex items-center justify-center text-white text-xs"><i class="fa-solid fa-shield-halved"></i></div>
+                        <span class="text-lg font-serif font-bold text-white tracking-widest">ORIZIS MASTER</span>
                     </div>
-                    <div class="glass-panel p-6 border-t-2 border-blue-500">
-                        <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Active Missions</p>
-                        <h3 class="text-4xl font-bold text-white">0</h3>
-                    </div>
-                    <div class="glass-panel p-6 border-t-2 border-green-500">
-                        <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Earned Commissions</p>
-                        <h3 class="text-4xl font-bold text-green-400">$0</h3>
-                    </div>
+                    <nav class="space-y-2">
+                        <button onclick="switchAdminTab('overview', this)" class="admin-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 bg-sapphire text-white"><i class="fa-solid fa-chart-line mr-2"></i> Dashboard</button>
+                        <button onclick="switchAdminTab('brokers', this)" class="admin-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-300"><i class="fa-solid fa-users mr-2"></i> Authorized Brokers</button>
+                    </nav>
                 </div>
-                <h3 class="text-xl font-serif text-white mb-6">Upcoming Tour Availability (Max 10 Seats)</h3>
-                <div id="broker-tours-list" class="space-y-4"></div>
-            </div>
-            <div id="b-content-book" class="hidden max-w-2xl">
-                <h2 class="text-3xl font-serif text-white mb-2">Register Client for Mission</h2>
-                <p class="text-slate-400 text-sm mb-8">Secure a seat for a qualified investor. Client will be billed $870 (Refundable against property).</p>
-                <form onsubmit="handleBrokerBooking(event)" class="glass-panel p-8 space-y-6">
-                    <div>
-                        <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Select Mission Date</label>
-                        <select id="broker-tour-select" required class="w-full bg-slate-900 border border-slate-700 p-3 text-white outline-none focus:border-blue-500"></select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Client Full Name</label>
-                            <input type="text" id="b-client-name" required class="w-full bg-slate-900 border border-slate-700 p-3 text-white outline-none focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Phone</label>
-                            <input type="tel" required class="w-full bg-slate-900 border border-slate-700 p-3 text-white outline-none focus:border-blue-500">
+                <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm font-semibold flex items-center gap-2 mt-8 lg:mt-0"><i class="fa-solid fa-right-from-bracket"></i> Secure Logout</button>
+            </aside>
+
+            <main class="flex-1 p-8 overflow-y-auto bg-gradient-to-b from-[#020617] to-[#07080a]">
+                <!-- Tab: Overview -->
+                <div id="admin-overview" class="admin-tab-content block space-y-8">
+                    <h3 class="text-3xl font-serif font-bold">Operational Control Center</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
+                            <span class="text-xs text-slate-500 block mb-1">Total Network Brokers</span>
+                            <span id="admin-stat-brokers" class="text-4xl font-bold font-mono text-white">0</span>
                         </div>
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 uppercase tracking-widest text-sm transition">Lock Seat for Client</button>
-                </form>
-            </div>
-            <div id="b-content-leads" class="hidden">
-                <h2 class="text-3xl font-serif text-white mb-8">My Pipeline</h2>
-                <div class="glass-panel overflow-hidden p-6 text-center text-slate-500">
-                    No active leads registered yet. Go to 'Book Mission' to start.
                 </div>
-            </div>
-        </main>
+
+                <!-- Tab: Brokers Database -->
+                <div id="admin-brokers" class="admin-tab-content hidden space-y-6">
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <h3 class="text-3xl font-serif font-bold">Partner Broker Database</h3>
+                            <p class="text-gray-400 text-sm">Pre-loaded active broker network. Manage access below.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-2xl overflow-hidden border border-slate-800">
+                        <div class="max-h-[500px] overflow-y-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-950 border-b border-slate-800 text-gray-400 sticky top-0">
+                                    <tr>
+                                        <th class="p-4">Broker Name</th>
+                                        <th class="p-4">License ID (Login)</th>
+                                        <th class="p-4">City</th>
+                                        <th class="p-4">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-brokers-table-body" class="divide-y divide-slate-900 text-slate-300">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
     </div>
 
-    <!-- ADMIN PORTAL VIEW (Unchanged) -->
-    <div id="admin-view" class="fixed inset-0 z-[70] hidden bg-slate-950 flex overflow-hidden">
-        <!-- ... (Kept existing admin layout) ... -->
-        <aside class="w-64 bg-[#050b14] border-r border-slate-800 flex flex-col">
-            <div class="p-6 border-b border-slate-800">
-                <div class="text-xl font-bold tracking-widest"><span class="brand-dark">ORIZIS</span><span class="brand-light">REAL</span></div>
-                <div class="text-[10px] uppercase tracking-widest text-red-500 mt-1 font-bold">Master Control</div>
-            </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <button onclick="switchAdminTab('dashboard')" id="a-tab-dashboard" class="w-full text-left px-4 py-3 bg-slate-800 text-white text-sm font-semibold transition"><i class="fa-solid fa-earth-americas w-6"></i> HQ Overview</button>
-                <button onclick="switchAdminTab('brokers')" id="a-tab-brokers" class="w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition"><i class="fa-solid fa-network-wired w-6"></i> Broker Database</button>
-                <button onclick="switchAdminTab('properties')" id="a-tab-properties" class="w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition"><i class="fa-solid fa-building w-6"></i> Property Manager</button>
-            </nav>
-            <div class="p-4 border-t border-slate-800">
-                <button onclick="logout()" class="text-slate-500 hover:text-white text-sm font-semibold flex items-center gap-2 px-4 py-2"><i class="fa-solid fa-power-off"></i> Sign Out</button>
-            </div>
-        </aside>
-        <main class="flex-1 overflow-y-auto p-10 bg-slate-900/50">
-            <div id="a-content-dashboard" class="block">
-                <h2 class="text-3xl font-serif text-white mb-8">Global Operations</h2>
-                <div class="grid grid-cols-4 gap-6 mb-10">
-                    <div class="glass-panel p-6 border-t-2 border-slate-500">
-                        <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Registered Brokers</p>
-                        <h3 class="text-3xl font-bold text-white" id="stat-total-brokers">0</h3>
-                    </div>
-                </div>
-            </div>
-            <div id="a-content-brokers" class="hidden">
-                <div class="flex justify-between items-end mb-8">
-                    <div>
-                        <h2 class="text-3xl font-serif text-white mb-2">Broker Database</h2>
-                        <p class="text-slate-400 text-sm">Manage access for partner brokers.</p>
-                    </div>
-                    <div class="glass-panel p-4 flex items-center gap-4">
-                        <div>
-                            <p class="text-xs text-slate-400 font-bold mb-1">Upload Brokers (CSV)</p>
-                            <input type="file" id="csv-upload" accept=".csv" class="text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-900 file:text-white hover:file:bg-blue-800 cursor-pointer">
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-panel overflow-hidden">
-                    <div class="max-h-[600px] overflow-y-auto">
-                        <table class="w-full text-left text-sm relative">
-                            <thead class="bg-slate-900 border-b border-slate-800 sticky top-0">
-                                <tr>
-                                    <th class="p-4 text-slate-400 font-semibold">Broker Name</th>
-                                    <th class="p-4 text-slate-400 font-semibold">License Number (ID)</th>
-                                    <th class="p-4 text-slate-400 font-semibold">City</th>
-                                    <th class="p-4 text-slate-400 font-semibold">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-brokers-tbody" class="divide-y divide-slate-800 text-slate-300">
-                                <!-- Populated by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div id="a-content-properties" class="hidden">
-                <h2 class="text-3xl font-serif text-white mb-2">Property Manager</h2>
-                <p class="text-slate-400 text-sm mb-8">Upload new assets, photos, and videos to the public portfolio.</p>
-                <div class="glass-panel p-8 max-w-3xl">
-                    <form onsubmit="event.preventDefault(); showToast('Asset saved to database (Simulation)');" class="space-y-6">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Project Name</label>
-                                <input type="text" class="w-full bg-slate-900 border border-slate-700 p-3 text-white outline-none focus:border-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Category</label>
-                                <select class="w-full bg-slate-900 border border-slate-700 p-3 text-slate-300 outline-none focus:border-blue-500">
-                                    <option value="off-plan">Off-Plan</option>
-                                    <option value="apartments">Apartments</option>
-                                    <option value="villas">Villas</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2">Upload Images/Video</label>
-                            <div class="border-2 border-dashed border-slate-700 rounded-lg p-10 text-center hover:bg-slate-900 transition cursor-pointer">
-                                <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-500 mb-2"></i>
-                                <p class="text-sm text-slate-400">Drag and drop media files here, or click to browse</p>
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 uppercase tracking-widest text-sm transition">Publish Asset to Website</button>
-                    </form>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 z-[200] glass-panel border-l-4 border-blue-500 p-4 shadow-2xl flex items-center gap-3">
-        <i class="fa-solid fa-circle-check text-blue-400"></i>
-        <span id="toast-msg" class="text-white text-sm font-semibold">Action successful.</span>
-    </div>
-
+    <!-- Script Block -->
     <script>
-        // --- REAL ESTATE DATABASE (Supports 100+ properties) ---
-        // Categories: 'off-plan', 'apartments', 'villas'
+        // --- REAL ESTATE DATABASE ---
         const propertiesDB = [
-            {
-                id: 'p1',
-                category: 'apartments',
-                title: 'Sea Breeze Resort - Polo Residences',
-                location: 'Absheron Coast, Baku',
-                tag: 'High Yield Airbnb',
-                price: 'From $48,000',
-                yield: '10-12% ROI',
-                desc: 'Sea Breeze is a world-class coastal resort city situated on the shores of the Caspian Sea. When you acquire an asset here, you are entering the most lucrative short-term rental market in the region. Properties are managed completely by our internal operations, ensuring zero vacancy during peak tourist seasons.',
-                media: [
-                    { type: 'image', url: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3' },
-                    { type: 'image', url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3' },
-                    { type: 'image', url: 'https://images.unsplash.com/photo-1502672260266-1c1de2d93688?ixlib=rb-4.0.3' }
-                ]
-            },
-            {
-                id: 'p2',
-                category: 'off-plan',
-                title: 'White City Tower Phase 3',
-                location: 'Downtown Baku',
-                tag: 'Off-Plan (Buy-Back)',
-                price: 'From $55,000',
-                yield: 'Corporate Leasing',
-                desc: 'Baku White City is one of the largest modern urban development projects globally. This asset is strictly targeted at long-term corporate rentals. For off-plan investors, Orizis Group offers a contractual 20% buy-back guarantee upon project completion, creating a virtually risk-free capital appreciation play.',
-                media: [
-                    { type: 'image', url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3' },
-                    { type: 'image', url: 'https://images.unsplash.com/photo-1600607687920-4e2a09be1587?ixlib=rb-4.0.3' }
-                ]
-            },
-            {
-                id: 'p3',
-                category: 'villas',
-                title: 'Absheron Royal Villas',
-                location: 'Elite Suburbs, Baku',
-                tag: 'Ultra-Premium',
-                price: 'From $250,000',
-                yield: 'Capital Appreciation',
-                desc: 'The Royal Villas represent the apex of luxury living in Azerbaijan. Situated on private lands with premium amenities, these assets are designed for aggressive year-over-year capital growth due to extreme land scarcity in the premier coastal zones.',
-                media: [
-                    // Example of a video in the media array
-                    { type: 'video', url: 'https://joy.videvo.net/videvo_files/video/free/2019-09/large_watermarked/190828_27_SuperTrees_HD_17_preview.mp4' },
-                    { type: 'image', url: 'https://images.unsplash.com/photo-1613490908236-4700f5317789?ixlib=rb-4.0.3' },
-                    { type: 'image', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3' }
-                ]
-            },
-            {
-                id: 'p4',
-                category: 'apartments',
-                title: 'Grand Hayat Complex',
-                location: 'Tbilisi Avenue, Baku',
-                tag: 'Ready to Move',
-                price: 'From $90,000',
-                yield: '8% ROI',
-                desc: 'A massive residential complex in one of the most bustling avenues of Baku. High demand from local professionals and expats. Full gym, spa, and supermarket integration.',
-                media: [
-                    { type: 'image', url: 'https://images.unsplash.com/photo-1460317442991-0ec209397118?ixlib=rb-4.0.3' }
-                ]
-            }
+            { id: 'seabreeze', category: 'apartments', title: 'Sea Breeze Resort', location: 'Absheron Coastline, Baku', tag: 'High Yield Airbnb', price: '$65,000', yield: '9%-12% ROI', desc: 'Premium beachfront apartments with private coastline access, upscale yacht clubs, and elite dining integration.', media: [{ type: 'image', url: 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3' }, { type: 'image', url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3' }] },
+            { id: 'whitecity', category: 'off-plan', title: 'White City Residences', location: 'Downtown Baku Metro area', tag: 'Off-Plan (Buy-Back)', price: '$85,000', yield: 'Lease Contract', desc: 'Urban luxury apartments positioned in Bakus premier corporate development zone. Backed by a strict 20% buy-back guarantee.', media: [{ type: 'image', url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3' }, { type: 'image', url: 'https://images.unsplash.com/photo-1600607687920-4e2a09be1587?ixlib=rb-4.0.3' }] },
+            { id: 'villas', category: 'villas', title: 'Absheron Royal Villas', location: 'Elite Residential Suburbs', tag: 'Exclusive Stock', price: '$150,000', yield: '15%+ Growth YOY', desc: 'Breathtaking estates with private landscape gardens, pools, and high-end security. Perfect capital appreciation asset.', media: [{ type: 'image', url: 'https://images.unsplash.com/photo-1613490908236-4700f5317789?ixlib=rb-4.0.3' }, { type: 'image', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3' }] }
         ];
+
+        // --- PRE-LOADED BROKER DATABASE (No CSV Required) ---
+        let brokerDatabase = [];
+        
+        function initBrokerDatabase() {
+            const saved = localStorage.getItem('orizis_brokers');
+            if (saved) {
+                brokerDatabase = JSON.parse(saved);
+            } else {
+                brokerDatabase = [
+                    { id: '30514470', name: 'אב אורית', city: 'מבשרת ציון' },
+                    { id: '3008778', name: 'אב אלון שמעון', city: 'מבשרת ציון' },
+                    { id: '3183587', name: 'אבאיב אהרון', city: 'ראשון לציון' },
+                    { id: '3163298', name: 'אבאייב אלכסנדר', city: 'אור עקיבא' },
+                    { id: '3151114', name: 'אבגי איתי', city: 'באר שבע' },
+                    { id: '3161315', name: 'תמיר חמי נחמה', city: 'נתניה' },
+                    { id: '30992464', name: 'תמיר ינון יוסף', city: 'תל אביב - יפו' },
+                    { id: '311104035', name: 'תמסוט אורי', city: 'אשדוד' },
+                    { id: '9000001', name: 'Samir Real Estate', city: 'Nazareth' },
+                    { id: '9000002', name: 'Ahmad Investments', city: 'Tayibe' },
+                    { id: 'JO100', name: 'Amman International', city: 'Amman, Jordan' }
+                ];
+                localStorage.setItem('orizis_brokers', JSON.stringify(brokerDatabase));
+            }
+        }
 
         // --- APP INITIALIZATION ---
         function initApp() {
             initBrokerDatabase();
-            renderPortfolio('all', document.querySelector('.filter-btn.active'));
+            renderCollection('all');
+            initCalendar();
         }
 
-        // --- DYNAMIC PORTFOLIO RENDERING ---
-        function renderPortfolio(filter, btnElement) {
-            // Update active button state
-            if(btnElement) {
-                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active', 'text-white'));
-                btnElement.classList.add('active', 'text-white');
-            }
-
-            const grid = document.getElementById('portfolio-grid');
-            grid.style.opacity = '0'; // fade out
-
-            setTimeout(() => {
-                grid.innerHTML = '';
-                
-                const filtered = filter === 'all' 
-                    ? propertiesDB 
-                    : propertiesDB.filter(p => p.category === filter);
-
-                filtered.forEach(prop => {
-                    // Use the first media item as the cover
-                    const cover = prop.media[0];
-                    const coverHtml = cover.type === 'video' 
-                        ? `<video src="${cover.url}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" muted loop playsinline autoplay></video>`
-                        : `<img src="${cover.url}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">`;
-
-                    grid.innerHTML += `
-                        <div class="glass-panel group cursor-pointer hover:border-blue-500 transition" onclick="openPropertyDetails('${prop.id}')">
-                            <div class="h-64 overflow-hidden relative">
-                                ${coverHtml}
-                                <div class="absolute top-4 right-4 bg-slate-900/90 text-white text-xs font-bold px-3 py-1 uppercase tracking-widest border border-slate-700">${prop.tag}</div>
-                                ${cover.type === 'video' ? '<div class="absolute bottom-4 left-4 bg-black/70 text-white text-[10px] px-2 py-1 uppercase"><i class="fa-solid fa-play mr-1"></i> Video</div>' : ''}
-                            </div>
-                            <div class="p-6 relative">
-                                <div class="absolute -top-6 right-6 bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-arrow-right"></i></div>
-                                <h3 class="text-2xl font-serif text-white mb-1 line-clamp-1">${prop.title}</h3>
-                                <p class="text-blue-400 text-sm mb-4"><i class="fa-solid fa-location-dot mr-1"></i> ${prop.location}</p>
-                                <p class="text-slate-400 text-sm mb-6 line-clamp-3">${prop.desc}</p>
-                                <div class="border-t border-slate-800 pt-4 flex justify-between">
-                                    <span class="text-white font-bold">${prop.price}</span>
-                                    <span class="text-blue-400 font-bold">${prop.yield}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                grid.style.opacity = '1'; // fade in
-            }, 300);
+        function showNotification(message, isError = false) {
+            const notif = document.getElementById('notification');
+            const msgEl = document.getElementById('notificationMessage');
+            notif.classList.remove('translate-x-[150%]');
+            msgEl.innerText = message;
+            setTimeout(() => { notif.classList.add('translate-x-[150%]'); }, 4000);
         }
 
-        // --- MEDIA GALLERY MODAL LOGIC ---
-        let currentPropMedia = [];
-        
-        function openPropertyDetails(id) {
-            const data = propertiesDB.find(p => p.id === id);
-            if(!data) return;
-            
-            currentPropMedia = data.media;
-            
-            document.getElementById('prop-tag').innerText = data.tag;
-            document.getElementById('prop-title').innerText = data.title;
-            document.getElementById('prop-location').innerText = data.location;
-            document.getElementById('prop-desc').innerText = data.desc;
-            document.getElementById('prop-price').innerText = data.price;
-            document.getElementById('prop-yield').innerText = data.yield;
-            
-            // Render Thumbnails
-            const thumbContainer = document.getElementById('modal-thumbnails');
-            thumbContainer.innerHTML = '';
-            
-            if (currentPropMedia.length > 1) {
-                currentPropMedia.forEach((media, index) => {
-                    const icon = media.type === 'video' ? '<i class="fa-solid fa-play text-white absolute inset-0 m-auto flex items-center justify-center text-xl drop-shadow-md"></i>' : '';
-                    // Generate thumbnail (if video, we can't easily auto-gen a poster without backend, so we show a video icon box)
-                    const bg = media.type === 'image' ? `background-image: url('${media.url}');` : 'background-color: #1e293b;';
-                    
-                    thumbContainer.innerHTML += `
-                        <div onclick="setMainMedia(${index})" class="w-24 h-16 shrink-0 relative cursor-pointer bg-cover bg-center opacity-60 hover:opacity-100 transition thumb-item" style="${bg}" id="thumb-${index}">
-                            ${icon}
-                        </div>
-                    `;
-                });
-                thumbContainer.classList.remove('hidden');
-            } else {
-                thumbContainer.classList.add('hidden'); // hide if only 1 image
-            }
-
-            setMainMedia(0); // Show first media item
-            document.getElementById('property-modal').classList.remove('hidden');
-        }
-
-        function setMainMedia(index) {
-            const media = currentPropMedia[index];
-            const mainContainer = document.getElementById('modal-main-media');
-            
-            if(media.type === 'image') {
-                mainContainer.innerHTML = `<img src="${media.url}" class="w-full h-full object-contain">`;
-            } else if (media.type === 'video') {
-                mainContainer.innerHTML = `<video src="${media.url}" controls autoplay class="w-full h-full object-contain"></video>`;
-            }
-
-            // Update thumbnail borders
-            document.querySelectorAll('.thumb-item').forEach(el => el.classList.remove('thumb-active'));
-            const activeThumb = document.getElementById(`thumb-${index}`);
-            if(activeThumb) activeThumb.classList.add('thumb-active');
-        }
-
-        function closePropertyModal() { 
-            document.getElementById('property-modal').classList.add('hidden'); 
-            // Stop video playing by clearing container
-            document.getElementById('modal-main-media').innerHTML = '';
-        }
-
-        // --- BROKER DATABASE & AUTH (Unchanged functionality) ---
-        let brokerDatabase = [];
-        function initBrokerDatabase() {
-            const saved = localStorage.getItem('orizis_brokers');
-            if (saved) brokerDatabase = JSON.parse(saved);
-        }
-
-        document.getElementById('csv-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const text = event.target.result;
-                const rows = text.split(/\r?\n/);
-                let newDb = [];
-                for(let i=1; i<rows.length; i++) {
-                    const cols = rows[i].split(',');
-                    if(cols.length >= 3 && cols[1].trim() !== "") {
-                        newDb.push({ name: cols[0].trim(), id: cols[1].trim(), city: cols[2].trim(), activeLeads: 0 });
-                    }
-                }
-                if (newDb.length > 0) {
-                    brokerDatabase = newDb;
-                    localStorage.setItem('orizis_brokers', JSON.stringify(brokerDatabase));
-                    renderAdminData();
-                    showToast(`Successfully imported ${brokerDatabase.length} brokers!`);
-                }
-            };
-            reader.readAsText(file);
-        });
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = message;
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
-        }
-
-        function showPublicView() {
-            document.getElementById('public-view').classList.remove('hidden');
-            document.getElementById('broker-view').classList.add('hidden');
-            document.getElementById('admin-view').classList.add('hidden');
-            document.getElementById('public-nav').classList.remove('hidden');
-        }
-
-        function toggleLoginModal() {
-            const modal = document.getElementById('login-modal');
-            modal.classList.toggle('hidden');
-            modal.classList.toggle('flex');
-        }
-
-        function handleLogin(e) {
+        // --- PUBLIC BOOKING LOGIC ---
+        function handlePublicTourForm(e) {
             e.preventDefault();
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('password').value.trim();
+            showNotification('Booking request received. Our advisory team will contact you within 24 hours to confirm payment.');
+            e.target.reset();
+            calculateLivePrice(); // reset price
+            document.getElementById('flightDateInput').value = '';
+            document.getElementById('returnDateDisplay').innerText = 'Auto-calculated';
+        }
+
+        // --- DYNAMIC PRICING CALCULATOR ---
+        function calculateLivePrice() {
+            const input = document.getElementById('paxCount');
+            let pax = parseInt(input.value) || 1;
             
-            if(user === 'admin' && pass === 'admin') {
-                toggleLoginModal();
-                document.getElementById('public-view').classList.add('hidden');
-                document.getElementById('public-nav').classList.add('hidden');
-                document.getElementById('admin-view').classList.remove('hidden');
-                renderAdminData();
-                showToast('Welcome, Master Admin.');
-                return;
-            }
+            // Limit max to 8 via JS just in case
+            if (pax > 8) { pax = 8; input.value = 8; }
+            if (pax < 1) { pax = 1; input.value = 1; }
 
-            const broker = brokerDatabase.find(b => b.id === user && pass === user);
-            if (broker) {
-                toggleLoginModal();
-                document.getElementById('public-view').classList.add('hidden');
-                document.getElementById('public-nav').classList.add('hidden');
-                document.getElementById('broker-view').classList.remove('hidden');
-                document.getElementById('broker-name-display').innerText = broker.name;
-                document.getElementById('broker-city-display').innerText = broker.city;
-                renderBrokerTours();
-                showToast('Authenticated successfully.');
-            } else {
-                alert('Login Failed: License number not found.');
-            }
+            const basePrice = 870;
+            const discountedPrice = 870 * 0.75; // 25% off for 2nd passenger
+
+            const pairs = Math.floor(pax / 2);
+            const singles = pax % 2;
+            
+            // Each pair is 1 full price + 1 discounted price
+            const totalPrice = (pairs * (basePrice + discountedPrice)) + (singles * basePrice);
+            
+            document.getElementById('livePriceDisplay').innerText = '$' + totalPrice.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
         }
 
-        function logout() {
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            showPublicView();
-            showToast('Logged out securely.');
+        // --- CUSTOM CALENDAR LOGIC (Mondays Only) ---
+        let calMonth = new Date().getMonth();
+        let calYear = new Date().getFullYear();
+
+        function toggleCalendar() {
+            const cal = document.getElementById('calendarDropdown');
+            cal.classList.toggle('hidden');
         }
 
-        let tours = [
-            { id: 'T1', date: 'July 15 - July 18, 2026', type: 'Baku + Sea Breeze', seatsTotal: 10, seatsBooked: 0 },
-            { id: 'T2', date: 'August 02 - August 05, 2026', type: 'Baku Urban Off-Plan', seatsTotal: 10, seatsBooked: 0 }
-        ];
-
-        function switchBrokerTab(tab) {
-            ['dashboard', 'book', 'leads'].forEach(t => {
-                document.getElementById('b-content-' + t).classList.add('hidden');
-                document.getElementById('b-tab-' + t).className = 'w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition';
+        function initCalendar() {
+            renderCalendar(calMonth, calYear);
+            
+            // Close calendar if clicking outside
+            document.addEventListener('click', function(event) {
+                const cal = document.getElementById('calendarDropdown');
+                const input = document.getElementById('flightDateInput');
+                if (!cal.contains(event.target) && event.target !== input) {
+                    cal.classList.add('hidden');
+                }
             });
-            document.getElementById('b-content-' + tab).classList.remove('hidden');
-            document.getElementById('b-content-' + tab).classList.add('block');
-            document.getElementById('b-tab-' + tab).className = 'w-full text-left px-4 py-3 bg-blue-900/20 text-blue-400 text-sm font-semibold transition';
         }
 
-        function renderBrokerTours() {
-            const select = document.getElementById('broker-tour-select');
-            select.innerHTML = '<option value="">Select available mission...</option>';
-            const list = document.getElementById('broker-tours-list');
-            list.innerHTML = '';
-            tours.forEach(t => {
-                const isFull = t.seatsBooked >= t.seatsTotal;
-                if(!isFull) select.innerHTML += `<option value="${t.id}">${t.date} - ${t.seatsTotal - t.seatsBooked} seats left</option>`;
-                const barWidth = (t.seatsBooked / t.seatsTotal) * 100;
-                list.innerHTML += `
-                    <div class="glass-panel p-4 flex justify-between items-center ${isFull ? 'opacity-50' : ''}">
-                        <div><div class="text-white font-bold">${t.date}</div><div class="text-xs text-slate-400">${t.type}</div></div>
-                        <div class="text-right w-1/3">
-                            <div class="text-xs text-slate-400 mb-1">${t.seatsBooked} / ${t.seatsTotal} Booked</div>
-                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden"><div class="${isFull ? 'bg-red-500' : 'bg-blue-500'} h-full" style="width: ${barWidth}%"></div></div>
+        function changeMonth(dir) {
+            calMonth += dir;
+            if (calMonth > 11) { calMonth = 0; calYear++; }
+            if (calMonth < 0) { calMonth = 11; calYear--; }
+            renderCalendar(calMonth, calYear);
+        }
+
+        function renderCalendar(month, year) {
+            const grid = document.getElementById('calGrid');
+            grid.innerHTML = '';
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calMonthYear').innerText = `${monthNames[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            // Allow booking up to exactly 1 year in advance
+            const maxDate = new Date();
+            maxDate.setFullYear(today.getFullYear() + 1);
+
+            for (let i = 0; i < firstDay; i++) {
+                grid.innerHTML += `<div></div>`;
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const date = new Date(year, month, i);
+                const isMonday = date.getDay() === 1;
+                const isValid = date >= today && date <= maxDate;
+
+                if (isMonday && isValid) {
+                    // Monday!
+                    grid.innerHTML += `<div class="p-2 calendar-day monday" onclick="selectDate(${year}, ${month}, ${i})">${i}</div>`;
+                } else {
+                    // Disabled
+                    grid.innerHTML += `<div class="p-2 calendar-day ${isMonday ? 'line-through opacity-50' : ''}">${i}</div>`;
+                }
+            }
+        }
+
+        function selectDate(year, month, day) {
+            const selected = new Date(year, month, day);
+            const returnDate = new Date(selected);
+            returnDate.setDate(selected.getDate() + 4); // Friday
+
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            document.getElementById('flightDateInput').value = selected.toLocaleDateString('en-US', options);
+            document.getElementById('returnDateDisplay').innerText = returnDate.toLocaleDateString('en-US', options);
+            
+            toggleCalendar(); // hide calendar
+        }
+
+        // --- RENDER PORTFOLIO ---
+        function renderCollection(category) {
+            const container = document.getElementById('projectsContainer');
+            container.innerHTML = '';
+            const filtered = category === 'all' ? propertiesDB : propertiesDB.filter(p => p.category === category);
+
+            filtered.forEach(p => {
+                container.innerHTML += `
+                    <div class="glass-card rounded-2xl overflow-hidden group cursor-pointer relative flex flex-col" onclick="openPropertyModal('${p.id}')">
+                        <div class="absolute top-4 left-4 bg-[#020617]/90 backdrop-blur text-white text-xs font-bold px-3 py-1.5 rounded border border-slate-800 z-10">${p.tag}</div>
+                        <div class="absolute top-4 right-4 bg-sapphire text-white text-sm font-black px-4 py-1.5 rounded-full z-10 shadow-lg">From ${p.price}</div>
+                        <div class="h-64 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition z-10"></div>
+                            <img src="${p.media[0].url}" alt="${p.title}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                        </div>
+                        <div class="p-8 flex-1 flex flex-col">
+                            <h3 class="text-2xl font-bold mb-2 text-white font-serif">${p.title}</h3>
+                            <p class="text-crystal text-sm mb-4"><i class="fa-solid fa-location-dot mr-2"></i> ${p.location}</p>
+                            <p class="text-sm text-gray-400 mb-6 line-clamp-3">${p.desc}</p>
                         </div>
                     </div>`;
             });
         }
 
-        function handleBrokerBooking(e) {
-            e.preventDefault();
-            showToast('Client reserved successfully under your ID.');
-            e.target.reset();
-        }
-
-        function switchAdminTab(tab) {
-            ['dashboard', 'brokers', 'properties'].forEach(t => {
-                document.getElementById('a-content-' + t).classList.add('hidden');
-                document.getElementById('a-tab-' + t).className = 'w-full text-left px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-900 text-sm font-semibold transition';
+        function filterCollection(category, btn) {
+            document.querySelectorAll('#categoryFilters button').forEach(b => {
+                b.classList.remove('bg-sapphire', 'text-white');
+                b.classList.add('text-gray-400', 'hover:text-white');
             });
-            document.getElementById('a-content-' + tab).classList.remove('hidden');
-            document.getElementById('a-content-' + tab).classList.add('block');
-            document.getElementById('a-tab-' + tab).className = 'w-full text-left px-4 py-3 bg-slate-800 text-white text-sm font-semibold transition';
+            btn.classList.remove('text-gray-400', 'hover:text-white');
+            btn.classList.add('bg-sapphire', 'text-white');
+            renderCollection(category);
         }
 
-        function renderAdminData() {
-            document.getElementById('stat-total-brokers').innerText = brokerDatabase.length;
-            const tbody = document.getElementById('admin-brokers-tbody');
-            tbody.innerHTML = '';
-            const displayLimit = Math.min(brokerDatabase.length, 100); 
-            for(let i=0; i<displayLimit; i++) {
-                const b = brokerDatabase[i];
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="p-4 font-semibold text-white">${b.name}</td>
-                        <td class="p-4 text-blue-400 font-mono text-xs">${b.id}</td>
-                        <td class="p-4 text-slate-400">${b.city}</td>
-                        <td class="p-4"><span class="bg-green-900/30 text-green-400 border border-green-800 px-2 py-1 text-xs rounded">Active</span></td>
-                    </tr>`;
+        // --- PROPERTY MODALS ---
+        function openPropertyModal(id) {
+            const prop = propertiesDB.find(p => p.id === id);
+            if (!prop) return;
+            currentPropMedia = prop.media;
+            document.getElementById('modalPropertyTag').innerText = prop.tag;
+            document.getElementById('modalPropertyTitle').innerText = prop.title;
+            document.getElementById('modalPropertyPrice').innerText = prop.price;
+            document.getElementById('modalPropertyYield').innerText = prop.yield;
+            
+            const mainContainer = document.getElementById('modalMainMediaContainer');
+            mainContainer.innerHTML = `<img src="${currentPropMedia[0].url}" class="w-full h-full object-cover">`;
+            
+            const modal = document.getElementById('propertyModal');
+            modal.classList.remove('modal-hidden');
+            modal.classList.add('modal-visible');
+        }
+
+        function closePropertyModal() {
+            document.getElementById('propertyModal').classList.remove('modal-visible');
+            document.getElementById('propertyModal').classList.add('modal-hidden');
+        }
+
+        // --- ADMIN / LOGIN ---
+        function toggleLoginModal() {
+            const modal = document.getElementById('loginModal');
+            modal.classList.toggle('modal-hidden');
+            modal.classList.toggle('modal-visible');
+        }
+
+        function showPublicView() {
+            document.getElementById('public-view').classList.remove('hidden');
+            document.getElementById('adminModal').classList.add('modal-hidden');
+            document.getElementById('adminModal').classList.remove('modal-visible');
+            document.getElementById('navbar').classList.remove('hidden');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('brokerUsername').value.trim();
+            const pass = document.getElementById('brokerPassword').value.trim();
+
+            if (user === 'admin' && pass === 'admin') {
+                toggleLoginModal();
+                openAdminPanel();
+            } else {
+                showNotification('Invalid License ID. Hint: use admin/admin', true);
             }
         }
 
-        function handlePublicSubmission(e) {
-            e.preventDefault();
-            showToast('Request submitted securely to HQ.');
-            e.target.reset();
+        function logout() {
+            document.getElementById('brokerUsername').value = '';
+            document.getElementById('brokerPassword').value = '';
+            showPublicView();
+            showNotification('Successfully logged out.');
+        }
+
+        function openAdminPanel() {
+            document.getElementById('public-view').classList.add('hidden');
+            document.getElementById('navbar').classList.add('hidden');
+            const adminModal = document.getElementById('adminModal');
+            adminModal.classList.remove('modal-hidden');
+            adminModal.classList.add('modal-visible');
+            
+            document.getElementById('admin-stat-brokers').innerText = brokerDatabase.length;
+            renderAdminBrokers();
+        }
+
+        function renderAdminBrokers() {
+            const tbody = document.getElementById('admin-brokers-table-body');
+            tbody.innerHTML = '';
+            brokerDatabase.forEach(b => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-white/5 transition border-b border-slate-800">
+                        <td class="p-4 font-bold text-white">${b.name}</td>
+                        <td class="p-4 font-mono text-crystal text-md">${b.id}</td>
+                        <td class="p-4 text-gray-400">${b.city}</td>
+                        <td class="p-4">
+                            <button onclick="deleteBroker('${b.id}')" class="bg-red-900/50 hover:bg-red-600 text-red-400 hover:text-white px-3 py-1.5 rounded transition" title="Delete Broker">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteBroker(id) {
+            brokerDatabase = brokerDatabase.filter(b => b.id !== id);
+            localStorage.setItem('orizis_brokers', JSON.stringify(brokerDatabase));
+            document.getElementById('admin-stat-brokers').innerText = brokerDatabase.length;
+            renderAdminBrokers();
+            showNotification('Broker removed successfully.');
+        }
+
+        function switchAdminTab(tab, btn) {
+            document.querySelectorAll('.admin-tab-btn').forEach(b => {
+                b.className = 'admin-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-300';
+            });
+            btn.className = 'admin-tab-btn w-full text-left px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 bg-sapphire text-white';
+
+            document.querySelectorAll('.admin-tab-content').forEach(c => {
+                c.classList.add('hidden');
+                c.classList.remove('block');
+            });
+            document.getElementById('admin-' + tab).classList.remove('hidden');
+            document.getElementById('admin-' + tab).classList.add('block');
         }
     </script>
 </body>
