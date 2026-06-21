@@ -1,13 +1,18 @@
+<!DOCTYPE html>
 <html lang="he" dir="rtl" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ORIZISREAL | השקעות נדל"ן מוסדיות</title>
+    <title>ORIZISREAL | השתלטות שיווקית נדל"ן אזרבייג'ן</title>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
+    <!-- Firebase SDKs (Compat version) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
@@ -16,191 +21,292 @@
             theme: {
                 extend: {
                     colors: {
-                        sapphire: '#1E40AF', crystal: '#38BDF8',
-                        'luxury-black': '#020617', 'luxury-dark': '#0B0F19', gold: '#D4AF37'
+                        sapphire: '#1E40AF',
+                        crystal: '#38BDF8',
+                        'luxury-black': '#020617',
+                        'luxury-dark': '#0B0F19',
+                        gold: '#D4AF37'
                     },
-                    fontFamily: { sans: ['Heebo', 'sans-serif'], serif: ['Playfair Display', 'serif'] }
+                    fontFamily: {
+                        sans: ['Heebo', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
                 }
             }
         }
     </script>
+
     <style>
-        body { background-color: #020617; color: #f8fafc; font-family: 'Heebo', sans-serif; overflow-x: hidden; }
+        body { background-color: #020617; color: #f8fafc; scroll-behavior: smooth; font-family: 'Heebo', sans-serif; }
         h1, h2, h3, .font-serif { font-family: 'Heebo', sans-serif; font-weight: 800; }
         .glass-card { background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
         .glass-card:hover { border-color: rgba(56, 189, 248, 0.3); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(56, 189, 248, 0.05); }
         .hero-gradient { background: linear-gradient(to left, rgba(2, 6, 23, 0.95) 0%, rgba(2, 6, 23, 0.4) 100%); }
-        .modal-hidden { display: none; opacity: 0; pointer-events: none; }
-        .modal-visible { display: flex; opacity: 1; pointer-events: auto; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .modal-hidden { display: none !important; opacity: 0; pointer-events: none; }
+        .modal-visible { display: flex !important; opacity: 1; pointer-events: auto; }
+        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #1E40AF; border-radius: 4px; }
-        .calendar-day { cursor: not-allowed; color: #475569; padding: 0.75rem 0.25rem; }
-        .calendar-day.tuesday { cursor: pointer; color: #38BDF8; font-weight: bold; background: rgba(56, 189, 248, 0.1); border-radius: 0.25rem; }
-        .calendar-day.tuesday:hover { background: #38BDF8; color: #fff; }
-        .ltr-dir { direction: ltr; display: inline-block; }
-        @keyframes float-wa { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        
+        .calendar-day { cursor: not-allowed; color: #475569; padding: 0.75rem 0.25rem; border-radius: 0.25rem; transition: all 0.2s;}
+        .calendar-day.active-day { cursor: pointer; color: #38BDF8; font-weight: bold; background: rgba(56, 189, 248, 0.1); }
+        .calendar-day.active-day:hover { background: #38BDF8; color: #fff; }
+        
+        @media (max-width: 640px) {
+            .calendar-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); font-size: 0.85rem; }
+            .calendar-day { padding: 0.5rem 0; }
+            #calendarDropdown { left: 0; right: 0; width: 100%; }
+        }
+
+        @keyframes float-wa { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
         .wa-float { animation: float-wa 3s ease-in-out infinite; }
-        @media print { .no-print { display: none !important; } }
+        .ltr-dir { direction: ltr; display: inline-block; }
+        .dir-ltr { direction: ltr; }
     </style>
 </head>
-<body onload="initApp()">
+<body class="antialiased overflow-x-hidden" onload="initApp()">
 
-    <!-- Notification -->
-    <div id="notification" class="fixed top-20 left-4 md:top-24 md:left-4 bg-blue-900/95 backdrop-blur-md text-white px-4 py-3 md:px-6 md:py-4 rounded-lg shadow-2xl border border-blue-500 transform transition-transform duration-300 -translate-x-[150%] z-[200] flex items-center gap-3 w-[90%] md:w-auto">
+    <!-- UI ALERTS & NOTIFICATIONS -->
+    <div id="notification" class="fixed top-20 left-4 md:top-24 md:left-4 bg-blue-900/95 backdrop-blur-md text-white px-4 py-3 md:px-6 md:py-4 rounded-lg shadow-2xl border border-blue-500 transform transition-transform duration-300 -translate-x-[150%] z-[300] flex items-center gap-3 w-[90%] md:w-auto">
         <i class="fa-solid fa-circle-check text-xl text-crystal shrink-0"></i>
-        <span id="notificationMessage" class="font-medium text-sm md:text-base">הפעולה בוצעה.</span>
+        <span id="notificationMessage" class="font-medium text-sm md:text-base">הפעולה בוצעה בהצלחה.</span>
     </div>
 
-    <!-- Custom Confirm Modal (Fixed) -->
-    <div id="confirmModal" class="modal-hidden fixed inset-0 z-[250] items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeConfirm()"></div>
-        <div class="relative glass-card w-full max-w-sm p-6 rounded-2xl shadow-2xl border border-slate-800 text-center">
-            <div class="w-16 h-16 mx-auto bg-red-900/30 border border-red-500/50 rounded-full flex items-center justify-center mb-4">
+    <!-- CUSTOM CONFIRM MODAL -->
+    <div id="customConfirmModal" class="modal-hidden fixed inset-0 z-[400] items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeConfirmModal()"></div>
+        <div class="relative bg-slate-900 border border-slate-700 p-6 rounded-xl shadow-2xl max-w-sm w-full text-center">
+            <div class="w-16 h-16 bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/50">
                 <i class="fa-solid fa-triangle-exclamation text-3xl text-red-500"></i>
             </div>
-            <h3 id="confirmTitle" class="text-xl font-bold mb-2">אישור פעולה</h3>
-            <p id="confirmMessage" class="text-gray-400 text-sm mb-6">האם אתה בטוח?</p>
+            <h3 class="text-xl font-bold text-white mb-2" id="confirmModalTitle">האם אתה בטוח?</h3>
+            <p class="text-gray-400 text-sm mb-6" id="confirmModalText">פעולה זו בלתי הפיכה ולא ניתן לבטלה.</p>
             <div class="flex gap-3">
-                <button onclick="closeConfirm()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-lg font-bold transition">ביטול</button>
-                <button id="confirmBtn" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-bold transition">אשר מחיקה</button>
+                <button onclick="closeConfirmModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-lg transition text-sm">ביטול</button>
+                <button id="confirmModalActionBtn" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 rounded-lg transition text-sm shadow-lg shadow-red-900/50">אשר מחיקה</button>
             </div>
         </div>
     </div>
 
+    <!-- SYSTEM BROADCAST BANNER -->
+    <div id="broadcastBanner" class="hidden fixed top-0 w-full z-[200] bg-gradient-to-r from-crystal to-sapphire text-white py-2 px-4 text-center text-sm font-bold shadow-lg">
+        <i class="fa-solid fa-bullhorn mr-2"></i> <span id="broadcastText"></span>
+        <button onclick="document.getElementById('broadcastBanner').classList.add('hidden')" class="absolute left-4 top-2 text-white/80 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
     <!-- Floating WhatsApp -->
-    <a id="wa-btn" href="#" target="_blank" class="fixed bottom-6 right-6 z-[90] bg-green-500 text-white w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-3xl shadow-[0_4px_14px_0_rgba(34,197,94,0.39)] hover:scale-110 transition-all wa-float no-print">
+    <a id="wa-btn" href="#" target="_blank" class="fixed bottom-6 right-6 z-[90] bg-green-500 text-white w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-3xl md:text-4xl shadow-[0_4px_14px_0_rgba(34,197,94,0.39)] hover:bg-green-400 hover:scale-110 transition-all wa-float">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
     <!-- Navbar -->
-    <nav class="fixed w-full z-50 transition-all duration-300 bg-slate-950/90 backdrop-blur-md border-b border-slate-900 no-print" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 flex justify-between items-center">
-            <div class="text-xl md:text-3xl font-black tracking-widest cursor-pointer ltr-dir" onclick="switchView('public')">
+    <nav class="fixed w-full z-50 transition-all duration-300 bg-slate-950/90 backdrop-blur-md border-b border-slate-900" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
+            <div class="text-xl md:text-3xl font-black tracking-widest cursor-pointer ltr-dir" onclick="showPublicView()">
                 <span class="text-sapphire">ORIZIS</span><span class="text-crystal">REAL</span>
             </div>
-            <div class="hidden lg:flex gap-6 text-sm font-semibold text-slate-300">
-                <a href="#mega-projects" class="hover:text-crystal transition">הזדמנות באזרבייג'ן</a>
-                <a href="#property-management" class="hover:text-crystal transition">ניהול נכסים (ROI)</a>
-                <a href="#projects" class="hover:text-crystal transition">קולקציית פרימיום</a>
+            <div class="hidden lg:flex gap-8 text-sm font-semibold text-slate-300">
+                <a href="#about-group" class="hover:text-crystal transition">הזדמנות באזרבייג'ן</a>
+                <a href="#mega-projects" class="hover:text-crystal transition">פרויקטי מגה</a>
+                <a href="#legal-tax" class="hover:text-crystal transition">מיסוי ותושבות</a>
+                <a href="#projects" class="hover:text-crystal transition">פורטפוליו</a>
             </div>
-            <div class="flex gap-2">
-                <button onclick="document.getElementById('tour').scrollIntoView({behavior: 'smooth'})" class="hidden md:block bg-sapphire hover:bg-blue-700 text-white px-5 py-2 text-sm font-bold transition rounded-md shadow-[0_0_15px_rgba(30,64,175,0.5)]">סיור VIP</button>
-                <button onclick="toggleLoginModal()" id="navLoginBtn" class="border border-slate-700 text-slate-300 hover:bg-white hover:text-black px-4 py-2 text-xs font-bold transition flex items-center gap-2 rounded-md">
-                    <i class="fa-solid fa-lock"></i> <span class="hidden md:inline">התחברות שותפים</span>
+            <div class="flex gap-2 md:gap-4">
+                <button onclick="document.getElementById('tour').scrollIntoView({behavior: 'smooth'})" class="hidden md:block bg-sapphire hover:bg-blue-700 text-white px-6 py-2.5 text-sm font-bold transition shadow-lg shadow-blue-900/50 rounded-md">תיאום סיור VIP</button>
+                <button onclick="toggleLoginModal()" class="border border-slate-700 text-slate-300 hover:bg-white hover:text-black px-4 py-2 md:px-6 md:py-2.5 text-xs font-bold transition flex items-center gap-2 rounded-md">
+                    <i class="fa-solid fa-lock"></i> <span class="hidden md:inline">כניסת שותפים</span>
                 </button>
             </div>
         </div>
     </nav>
 
-    <div id="view-public" class="fade-in block">
+    <!-- PUBLIC VIEW -->
+    <div id="public-view" class="fade-in">
         
-        <!-- Hero Section (Dynamic CMS) -->
-        <section class="relative min-h-[90vh] flex items-center justify-start overflow-hidden pt-20">
+        <!-- Hero Section -->
+        <section class="relative min-h-[90vh] md:min-h-screen flex items-center justify-start overflow-hidden pt-20">
             <div class="absolute inset-0 z-0">
-                <img id="cms-hero-img" src="https://images.unsplash.com/photo-1613490908236-4700f5317789?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80" class="w-full h-full object-cover object-center scale-105 animate-[pulse_20s_ease-in-out_infinite]" />
+                <img id="publicHeroImg" src="https://images.unsplash.com/photo-1613490908236-4700f5317789?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80" alt="Luxury Mansion" class="w-full h-full object-cover object-center scale-105 animate-[pulse_20s_ease-in-out_infinite]" />
                 <div class="absolute inset-0 hero-gradient"></div>
             </div>
+
             <div class="relative z-10 max-w-7xl mx-auto px-4 md:px-6 w-full py-12 md:py-20">
                 <div class="max-w-4xl">
-                    <div class="inline-block bg-blue-950/50 border border-blue-500/30 text-crystal px-4 py-1.5 rounded-full text-xs font-bold tracking-widest mb-6 backdrop-blur-sm">
+                    <div class="inline-block bg-blue-950/50 border border-blue-500/30 text-crystal px-4 py-1.5 rounded-full text-[10px] md:text-sm font-bold tracking-widest mb-4 md:mb-6 backdrop-blur-sm">
                         השקעות נדל"ן גלובליות מבית ORIZIS GROUP
                     </div>
-                    <h1 id="cms-hero-title" class="text-4xl sm:text-6xl md:text-7xl font-bold leading-tight mb-6 drop-shadow-2xl text-white">
-                        נדל"ן ברמה מוסדית.<br><span class="text-crystal">עכשיו נגיש מ-$50,000.</span>
+                    <h1 id="publicHeroTitle" class="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-4 md:mb-6 drop-shadow-2xl">
+                        נדל"ן ברמה מוסדית.<br>
+                        <span class="text-crystal">עכשיו נגיש החל מ-$50,000.</span>
                     </h1>
-                    <p id="cms-hero-subtitle" class="text-lg md:text-xl text-gray-300 mb-10 font-light leading-relaxed max-w-3xl border-r-4 border-sapphire pr-4">
-                        רכשו נכסי פרימיום מניבים באזרבייג'ן עם בעלות מלאה בטאבו (Outright Ownership). נהלו סיכונים עם 0% מס רכישה, קבלו אופק לתושבות והכנסות משכירות.
+                    <p id="publicHeroText" class="text-base sm:text-lg md:text-xl text-gray-300 mb-8 md:mb-10 font-light leading-relaxed max-w-3xl border-r-4 border-sapphire pr-4">
+                        רכשו נכסי פרימיום מניבים באזרבייג'ן עם בעלות מלאה בטאבו. ההזדמנות שלכם להשתלב בכלכלה צומחת, ליהנות מ-0% מס רכישה, ולקבל אופק לתושבות זרה. 
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#tour" class="bg-sapphire text-white px-8 py-4 rounded-md font-bold text-base hover:bg-blue-700 transition shadow-[0_0_30px_rgba(30,64,175,0.4)] flex justify-center items-center gap-3">
-                            הצטרפו למשלחת VIP (48 שעות) <i class="fa-solid fa-arrow-left"></i>
+                        <a href="#tour" class="bg-sapphire text-white px-8 py-4 rounded-md font-bold text-sm md:text-base hover:bg-blue-700 transition duration-300 shadow-[0_0_30px_rgba(30,64,175,0.4)] text-center flex items-center justify-center gap-3">
+                            הצטרפו לסיור משקיעים VIP <i class="fa-solid fa-arrow-left"></i>
+                        </a>
+                        <a href="#mega-projects" class="bg-transparent border border-white text-white px-8 py-4 rounded-md font-bold text-sm md:text-base hover:bg-white hover:text-black transition duration-300 text-center flex items-center justify-center">
+                            גלו את פרויקטי הענק
                         </a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="property-management" class="py-16 bg-slate-950 border-b border-slate-900 relative">
-            <div class="max-w-7xl mx-auto px-4 md:px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <span class="text-crystal font-bold tracking-widest text-sm mb-2 block">ראש שקט למשקיע (Turnkey)</span>
-                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">חברת ניהול מקומית מחויבת ל-10 שנים</h2>
-                        <p class="text-gray-300 text-base leading-relaxed mb-6">
-                            ההשקעה שלכם לא נגמרת ברכישת הנכס. חברת הניהול המקצועית שלנו באזרבייג'ן לוקחת שליטה מלאה על הנכס מרגע מסירת המפתח, ומתחייבת לתפעול אופטימלי למשך עשור.
+        <!-- Why Azerbaijan -->
+        <section id="about-group" class="py-12 bg-slate-900 border-b border-slate-800 relative z-20 -mt-10 mx-4 md:mx-12 rounded-xl shadow-2xl">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 text-center">
+                    <div class="p-4">
+                        <i class="fa-solid fa-plane-arrival text-4xl text-crystal mb-4"></i>
+                        <h4 class="text-white font-bold text-lg mb-2">נגישות תחבורתית</h4>
+                        <p class="text-sm text-gray-400">כ-3 שעות טיסה ישירה בלבד מישראל, עם חברות כגון אל על וישראייר.</p>
+                    </div>
+                    <div class="p-4 border-r border-slate-800">
+                        <i class="fa-solid fa-percent text-4xl text-crystal mb-4"></i>
+                        <h4 class="text-white font-bold text-lg mb-2">מקלט מס נדל"ני</h4>
+                        <p class="text-sm text-gray-400">0% מס רכישה. רק 15% מס שבח על הרווח ההוני בעת המכירה.</p>
+                    </div>
+                    <div class="p-4 border-r border-slate-800">
+                        <i class="fa-solid fa-passport text-4xl text-crystal mb-4"></i>
+                        <h4 class="text-white font-bold text-lg mb-2">תושבות מהשקעה</h4>
+                        <p class="text-sm text-gray-400">אשרת תושב החל מהשקעה של כ-60,000$ בלבד (100,000 מנאט).</p>
+                    </div>
+                    <div class="p-4 border-r border-slate-800">
+                        <i class="fa-solid fa-building-circle-check text-4xl text-crystal mb-4"></i>
+                        <h4 class="text-white font-bold text-lg mb-2">חברת ניהול ל-10 שנים</h4>
+                        <p class="text-sm text-gray-400">שקט נפשי מלא. השכרה קצרת טווח (Airbnb/Booking) מנוהלת מקצה לקצה.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mega Projects Section -->
+        <section id="mega-projects" class="py-16 md:py-24 bg-luxury-black relative">
+            <div class="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
+                <div class="text-center mb-16">
+                    <h3 class="text-crystal text-sm font-bold tracking-widest mb-2">מיקרו-כלכלה ריבונית</h3>
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">ערי עתיד. לא רק פרויקטים.</h2>
+                    <p class="text-gray-400 text-lg max-w-3xl mx-auto">
+                        אזרבייג'ן עוברת טרנספורמציה מבנית מואצת. ההשקעה היא לא רק בבטון, אלא בהשתתפות בחזון ממשלתי ויזמי בסדר גודל שמשנה את פני הקווקז והמזרח התיכון.
+                    </p>
+                </div>
+
+                <!-- Sea Breeze Showcase -->
+                <div class="glass-card rounded-2xl overflow-hidden flex flex-col lg:flex-row mb-12">
+                    <div class="lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+                        <span class="bg-sapphire text-white text-xs font-bold px-3 py-1 rounded-full w-max mb-4">פרויקט הדגל</span>
+                        <h3 class="text-3xl font-bold text-white mb-4 ltr-dir text-right w-full">Sea Breeze Resort</h3>
+                        <p class="text-gray-300 text-base mb-6 leading-relaxed">
+                            עיר עתיד תיירותית וכלכלית לחופי הים הכספי. בשטח של למעלה מ-1,600 דונם והשקעות צפויות של 5 מיליארד דולר. מתחם סגור המספק הכל, כולל התחייבות לניהול נכס אקסקלוסיבי ל-10 שנים קדימה.
                         </p>
-                        <ul class="space-y-4 text-gray-400">
-                            <li class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-green-500 mt-1"></i> <span><strong>שכירות קצרת טווח:</strong> ניהול רישומים שוטף בפלטפורמות גלובליות כמו Airbnb ו-Booking.com כדי למקסם תשואה תיירותית מול אלפי המבקרים בריזורט.</span></li>
-                            <li class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-green-500 mt-1"></i> <span><strong>תחזוקה ואופרציה:</strong> שירותי ניקיון, צ'ק-אין/צ'ק-אאוט לאורחים, ותיקון תקלות טכניות בזמן אמת בנכס שלכם.</span></li>
-                            <li class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-green-500 mt-1"></i> <span><strong>שקיפות פיננסית:</strong> העברת הכנסות מסודרת ישירות לחשבון המשקיע, עם דוחות רווח והפסד תקופתיים שוטפים.</span></li>
+                        <ul class="space-y-3 text-gray-400 mb-8 text-sm">
+                            <li><i class="fa-solid fa-check text-crystal ml-2"></i> <strong class="text-white">קזינו בינלאומי:</strong> הגדול באירופה (90,000 מ"ר) הנבנה כעת.</li>
+                            <li><i class="fa-solid fa-check text-crystal ml-2"></i> <strong class="text-white">אי חצי הירח:</strong> אי מלאכותי בדומה לדובאי (50 הקטר).</li>
+                            <li><i class="fa-solid fa-check text-crystal ml-2"></i> <strong class="text-white">מגדל צ'יפריאני:</strong> מגדל יוקרה בשיתוף מותג העל.</li>
                         </ul>
                     </div>
-                    <div class="bg-black border border-slate-800 p-8 rounded-2xl shadow-2xl relative">
-                        <div class="absolute -top-4 -right-4 w-24 h-24 bg-sapphire rounded-full blur-2xl opacity-50"></div>
-                        <h3 class="text-2xl font-bold text-white mb-6 text-center border-b border-slate-800 pb-4">סימולטור השקעה (ROI)</h3>
-                        
-                        <label class="block text-xs text-slate-500 font-bold mb-2">סכום השקעה בנכס (USD)</label>
-                        <input type="range" id="roiInput" min="50000" max="500000" step="10000" value="100000" class="w-full mb-2 accent-crystal" oninput="calculateROI()">
-                        <div class="flex justify-between text-white font-mono font-bold mb-6 ltr-dir"><span id="roiValueDisplay">$100,000</span></div>
-                        
-                        <div class="space-y-4 text-sm bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-                            <div class="flex justify-between items-center text-gray-300">
-                                <span>הכנסה שנתית משוערת משכירות (8%)</span>
-                                <span class="font-mono text-green-400 font-bold ltr-dir" id="roiAnnual">$8,000</span>
-                            </div>
-                            <div class="flex justify-between items-center text-gray-300">
-                                <span>השבחת הון משוערת ב-5 שנים (10%/שנה)</span>
-                                <span class="font-mono text-crystal font-bold ltr-dir" id="roiCapital">$61,051</span>
-                            </div>
-                            <div class="flex justify-between items-center text-white border-t border-slate-700 pt-3 mt-3">
-                                <strong>שווי כולל משוער לאחר 5 שנים</strong>
-                                <span class="font-mono text-xl font-bold ltr-dir" id="roiTotal">$201,051</span>
-                            </div>
+                    <div class="lg:w-1/2 h-64 lg:h-auto relative">
+                        <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Sea Breeze Luxury Resort" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-r from-[#020617] via-transparent to-transparent"></div>
+                    </div>
+                </div>
+
+                <!-- Urban & Nature Split -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="glass-card rounded-2xl p-8 relative overflow-hidden group">
+                        <div class="absolute inset-0 z-0 opacity-40 group-hover:opacity-60 transition duration-500">
+                            <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="White City Architecture" class="w-full h-full object-cover">
                         </div>
-                        <p class="text-[10px] text-gray-500 mt-4 text-center">* הסימולציה מבוססת על ממוצעי שוק ואינה מהווה הבטחה לתשואה. ללא התחשבות במיסוי מקומי.</p>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/20 z-10"></div>
+                        <div class="relative z-20 h-full flex flex-col justify-end">
+                            <h3 class="text-2xl font-bold text-white mb-2">Baku White City</h3>
+                            <p class="text-crystal font-bold mb-4">יוקרה אורבנית והתחדשות הנדסית</p>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                מרכז העיר החדש והחכם של באקו. מוקד משיכה לדיפלומטים וזרים, המבטיח גידור מפני אינפלציה וביקוש מתמיד לשכירות. נכסי פרימיום בעלי נזילות אדירה וסמל סטטוס.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-8 relative overflow-hidden group">
+                        <div class="absolute inset-0 z-0 opacity-40 group-hover:opacity-60 transition duration-500">
+                            <img src="https://images.unsplash.com/photo-1542224566-6e85f2e6772f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Gabala Mountain Scenery" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/20 z-10"></div>
+                        <div class="relative z-20 h-full flex flex-col justify-end">
+                            <h3 class="text-2xl font-bold text-white mb-2">Gabala (גבאלה)</h3>
+                            <p class="text-crystal font-bold mb-4">פנינת הטבע והריזורטים של הקווקז</p>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                "שוויץ של אזרבייג'ן". מפלט אקלימי אולטימטיבי לתיירי המפרץ וישראל, הכולל אתר סקי בינלאומי. השקעה בוילות פרטיות עם תשואה גבוהה בעונות השיא.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="projects" class="py-16 md:py-24 bg-luxury-black relative">
+        <!-- Dynamic Portfolio Section -->
+        <section id="projects" class="py-16 md:py-24 bg-slate-950 border-t border-slate-900 relative">
             <div class="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
-                <div class="flex flex-col lg:flex-row justify-between lg:items-end mb-10 gap-6">
+                <div class="flex flex-col lg:flex-row justify-between lg:items-end mb-10 md:mb-16 gap-6">
                     <div>
-                        <h2 class="text-3xl md:text-5xl font-bold mb-2">קולקציית הנכסים</h2>
-                        <p class="text-gray-400 text-sm md:text-lg">נכסי פרימיום מסונכרנים בזמן אמת מהענן. בחר קטגוריה.</p>
+                        <h2 class="text-3xl md:text-5xl font-bold mb-2 md:mb-4">קולקציית הנכסים</h2>
+                        <p class="text-gray-400 text-sm md:text-lg">בחרו קטגוריה לצפייה במלאי הנדל"ן המוסדי המעודכן בזמן אמת.</p>
                     </div>
-                    <div class="flex bg-luxury-dark border border-slate-800 p-1 rounded-md overflow-x-auto hide-scrollbar" id="categoryFilters">
-                        <button onclick="filterCollection('all', this)" class="shrink-0 px-6 py-2.5 rounded-md text-sm font-bold bg-sapphire text-white">הכל</button>
-                        <button onclick="filterCollection('seabreeze', this)" class="shrink-0 px-6 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white">Sea Breeze</button>
-                        <button onclick="filterCollection('urban', this)" class="shrink-0 px-6 py-2.5 rounded-md text-sm font-bold text-gray-400 hover:text-white">Baku City</button>
+                    
+                    <div class="flex bg-luxury-dark border border-slate-800 p-1 rounded-md overflow-x-auto w-full lg:w-auto hide-scrollbar" id="categoryFilters">
+                        <button onclick="filterCollection('all', this)" class="shrink-0 px-4 md:px-6 py-2.5 rounded-md text-sm font-bold transition-all duration-300 bg-sapphire text-white">כל הנכסים</button>
+                        <button onclick="filterCollection('seabreeze', this)" class="shrink-0 px-4 md:px-6 py-2.5 rounded-md text-sm font-bold transition-all duration-300 text-gray-400 hover:text-white">Sea Breeze</button>
+                        <button onclick="filterCollection('urban', this)" class="shrink-0 px-4 md:px-6 py-2.5 rounded-md text-sm font-bold transition-all duration-300 text-gray-400 hover:text-white">יוקרה עירונית</button>
+                        <button onclick="filterCollection('villas', this)" class="shrink-0 px-4 md:px-6 py-2.5 rounded-md text-sm font-bold transition-all duration-300 text-gray-400 hover:text-white">וילות וטבע</button>
                     </div>
                 </div>
 
-                <div id="projectsLoader" class="text-center py-10"><i class="fa-solid fa-circle-notch fa-spin text-3xl text-crystal"></i></div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 hidden" id="projectsContainer"></div>
+                <div id="projectsLoader" class="text-center py-10">
+                    <i class="fa-solid fa-circle-notch fa-spin text-3xl text-crystal"></i>
+                    <p class="text-slate-500 mt-3 text-sm">טוען נתונים מהענן...</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 hidden" id="projectsContainer">
+                    <!-- Injected via JS -->
+                </div>
             </div>
         </section>
 
-        <section id="tour" class="py-16 bg-luxury-dark border-t border-slate-900">
-            <div class="max-w-6xl mx-auto px-4 md:px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+        <!-- VIP Tour Booking Section (Flights from TLV) -->
+        <section id="tour" class="relative py-16 md:py-24 bg-luxury-dark border-t border-b border-slate-900 overflow-hidden">
+            <div class="max-w-6xl mx-auto px-4 md:px-6 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-start">
+                    
                     <div class="lg:sticky lg:top-32">
-                        <h2 class="text-3xl md:text-5xl font-bold mb-6">משלחת משקיעים VIP<br>של 48 שעות</h2>
-                        <p class="text-gray-300 mb-6 font-light">יציאה ביום שלישי, חזרה ביום חמישי. סיור בנכסים ב-Sea Breeze ובגבאלה, מלונות 5 כוכבים, וייעוץ משפטי להסדרת רכישה מהירה.</p>
-                        <div class="bg-blue-950/50 p-5 rounded-xl border border-blue-900/50 text-sm text-crystal mb-6 shadow-[0_0_15px_rgba(30,64,175,0.3)]">
-                            <strong>עלות בסיס: <span id="cms-tour-price" class="ltr-dir">$870</span> למשקיע.</strong><br>
-                            <span class="text-white text-xs mt-1 block">העלות מתקזזת במלואה מרכישת נכס. 25% הנחה לזוג בחדר משותף.</span>
+                        <div class="w-12 h-12 md:w-16 md:h-16 bg-blue-950/50 rounded-2xl flex items-center justify-center mb-4 md:mb-6 border border-blue-500/30">
+                            <i class="fa-solid fa-plane-departure text-2xl md:text-3xl text-crystal"></i>
+                        </div>
+                        <h2 class="text-3xl md:text-5xl font-bold mb-4 md:mb-6">משלחת משקיעים VIP<br>של 48 שעות</h2>
+                        <p class="text-base md:text-lg text-gray-300 mb-6 font-light leading-relaxed">
+                            יציאות בימי שני ושלישי מנתב"ג. המשלחת כוללת סיור מקיף בפרויקט Sea Breeze, נסיעה ייעודית לגבאלה, ופגישות אסטרטגיות לבחינת המימון הבנקאי.
+                        </p>
+                        
+                        <div class="bg-blue-950/50 border border-blue-900/50 p-4 md:p-5 rounded-xl text-xs md:text-sm text-crystal mb-6">
+                            <strong>עלות בסיס: <span id="publicBasePriceDisplay">870$</span> למשקיע.</strong><br>
+                            * 25% הנחה לנוסע שני החולק חדר.<br>
+                            <span class="text-white text-[10px] md:text-xs mt-2 block">העלויות יקוזזו במלואן ממחיר רכישת הנכס במקרה של עסקה.</span>
                         </div>
                     </div>
                     
-                    <div class="glass-card p-6 md:p-8 rounded-2xl border border-slate-800 shadow-2xl relative">
-                        <form onsubmit="submitTourForm(event)" class="space-y-5">
-                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 relative">
-                                <label class="block text-[10px] text-slate-500 font-bold mb-1">תאריך יציאה (שלישי)</label>
-                                <input type="text" id="flightDateInput" readonly placeholder="בחר תאריך יציאה..." required class="w-full bg-transparent text-white font-bold text-lg outline-none cursor-pointer ltr-dir text-right" onclick="toggleCalendar()">
+                    <!-- FLIGHT BOOKING FORM -->
+                    <div id="public-booking" class="glass-card p-6 md:p-10 rounded-2xl border border-slate-800 shadow-2xl relative mt-8 lg:mt-0 w-full">
+                        <div class="absolute -top-3 left-4 md:-top-4 md:left-8 bg-sapphire text-white text-[10px] font-bold px-3 py-1 uppercase rounded-md shadow-lg">טיסות מתל-אביב (TLV)</div>
+                        <h3 class="text-2xl md:text-3xl font-bold text-crystal mb-2">הרכיבו את המסע שלכם</h3>
+                        <p class="text-slate-400 mb-6 md:mb-8 text-xs">טיסות ישירות מנתב"ג בלבד. ימי שני ושלישי.</p>
+                        
+                        <form onsubmit="handlePublicTourForm(event)" class="space-y-5 md:space-y-6">
+                            
+                            <!-- Custom Calendar Date Picker -->
+                            <div class="relative w-full">
+                                <label class="block text-[10px] text-slate-500 font-bold mb-1">תאריך יציאה (ימי שני / שלישי) <span class="text-red-500 text-sm">*</span></label>
+                                <input type="text" id="flightDateInput" readonly placeholder="בחר תאריך יציאה..." required class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-white font-bold outline-none cursor-pointer ltr-dir text-right" onclick="toggleCalendar()">
                                 
                                 <div id="calendarDropdown" class="hidden absolute top-full right-0 mt-2 bg-slate-900 border border-slate-700 rounded-xl p-4 z-50 w-full shadow-2xl">
                                     <div class="flex justify-between items-center mb-4 dir-ltr">
@@ -209,420 +315,429 @@
                                         <button type="button" onclick="changeMonth(1)" class="text-slate-400 hover:text-white p-2"><i class="fa-solid fa-chevron-right"></i></button>
                                     </div>
                                     <div class="grid grid-cols-7 gap-1 text-center text-xs text-slate-500 mb-2" dir="ltr">
-                                        <div>Su</div><div>Mo</div><div class="text-crystal font-bold">Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+                                        <div>Su</div><div class="text-crystal font-bold">Mo</div><div class="text-crystal font-bold">Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
                                     </div>
                                     <div id="calGrid" class="grid grid-cols-7 gap-1 text-center text-sm calendar-grid" dir="ltr"></div>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs text-slate-500 font-bold mb-2">שם מלא (באנגלית)</label>
-                                    <input type="text" id="clientNameInput" required class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-white outline-none ltr-dir text-right">
-                                </div>
-                                <div>
-                                    <label class="block text-xs text-slate-500 font-bold mb-2">טלפון נייד</label>
-                                    <input type="tel" id="clientPhoneInput" required class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-white outline-none text-right" dir="ltr">
+                            <!-- Dynamic Flight Selection -->
+                            <div class="bg-blue-950/20 p-4 rounded-xl border border-blue-900/30 transition-all" id="flightSelectionBox">
+                                <label class="block text-[10px] text-crystal font-bold mb-2"><i class="fa-solid fa-plane-up ml-1"></i> טיסות ישירות לתאריך הנבחר (TLV - GYD)</label>
+                                <select id="flightSelect" required disabled class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none text-sm cursor-not-allowed opacity-50 ltr-dir text-right">
+                                    <option value="" disabled selected>יש לבחור תאריך תחילה</option>
+                                </select>
+                                <div class="mt-2 text-[10px] text-gray-500 flex justify-between">
+                                    <span>* חזרה משוערת: <strong id="returnDateDisplay" class="text-gray-300 ltr-dir">--</strong></span>
                                 </div>
                             </div>
-                            
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs text-slate-500 font-bold mb-2">מספר נוסעים</label>
-                                    <input type="number" id="paxCount" min="1" max="8" value="1" required onchange="calculateLivePrice()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-white text-center font-bold outline-none">
+                                    <label class="block text-[10px] text-slate-500 font-bold mb-2">נוסעים (עד 8) <span class="text-red-500 text-sm">*</span></label>
+                                    <input type="number" id="paxCount" min="1" max="8" value="1" required onchange="calculateLivePrice()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-crystal transition text-center font-bold">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-slate-500 font-bold mb-2">סוכן מפנה (אופציונלי)</label>
-                                    <!-- Populated dynamically via JS -->
-                                    <select id="publicBrokerSelect" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-white outline-none cursor-pointer text-sm">
-                                        <option value="">ללא סוכן (הגעה ישירה)</option>
+                                    <label class="block text-[10px] text-slate-500 font-bold mb-2">סוכן מפנה (אופציונלי)</label>
+                                    <select id="publicBrokerSelect" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-white focus:outline-none focus:border-crystal transition cursor-pointer text-sm">
+                                        <option value="">ללא סוכן / הגעה עצמאית</option>
+                                        <!-- Injected via JS -->
                                     </select>
                                 </div>
                             </div>
 
-                            <div class="flex justify-between items-center border-t border-slate-800 pt-5">
-                                <span class="text-xs text-slate-500 font-bold">עלות משוערת:</span>
-                                <span class="text-2xl font-bold text-white font-mono ltr-dir" id="livePriceDisplay">$870</span>
+                            <div class="border-t border-slate-800 pt-5 space-y-4">
+                                <label class="block text-[10px] text-slate-500 font-bold mb-2">פרטי איש קשר מרכזי</label>
+                                <div>
+                                    <input type="text" id="clientNameInput" placeholder="שם מלא (באנגלית כמו בדרכון) *" required class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-crystal transition placeholder-gray-500 text-sm md:text-base ltr-dir text-right">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <input type="tel" id="clientPhoneInput" placeholder="טלפון נייד *" required class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-crystal transition placeholder-gray-500 text-right text-sm md:text-base" dir="ltr">
+                                    </div>
+                                    <div>
+                                        <input type="email" placeholder="כתובת דוא״ל *" required class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-crystal transition placeholder-gray-500 text-right text-sm md:text-base ltr-dir">
+                                    </div>
+                                </div>
                             </div>
 
-                            <button type="submit" class="w-full bg-sapphire hover:bg-blue-700 text-white font-bold py-4 rounded-md transition text-sm flex items-center justify-center gap-2">
-                                שליחת בקשה למערכת <i class="fa-solid fa-paper-plane"></i>
+                            <div class="flex justify-between items-center border-t border-slate-800 pt-5 mt-5">
+                                <div>
+                                    <p class="text-xs text-slate-500 font-bold">עלות משוערת</p>
+                                    <p class="text-[10px] text-slate-500 mt-1">מבוסס על תעריף בסיס + 25% הנחת חדר משותף</p>
+                                </div>
+                                <div class="text-2xl md:text-3xl font-bold text-white font-mono ltr-dir" id="livePriceDisplay">$870</div>
+                            </div>
+
+                            <button type="submit" class="w-full bg-sapphire hover:bg-blue-700 text-white font-bold py-4 rounded-md transition text-sm shadow-lg shadow-blue-900/20 flex justify-center items-center gap-2">
+                                שליחת בקשה למערכת <i class="fa-solid fa-cloud-arrow-up transform scale-x-[-1]"></i>
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
         </section>
-        
-        <footer class="bg-[#01030a] py-8 border-t border-slate-900 text-center"><p class="text-gray-500 text-xs">© 2026 ORIZIS GROUP. כל הזכויות שמורות. מופעל ע"י Google Firebase.</p></footer>
+
+        <!-- Footer -->
+        <footer class="bg-[#01030a] py-12 border-t border-slate-900 text-center px-4">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-xl md:text-2xl font-black tracking-widest mb-4 ltr-dir"><span class="text-sapphire">ORIZIS</span><span class="text-crystal">REAL</span></div>
+                <p class="text-gray-500 text-xs md:text-sm">© 2026 ORIZIS GROUP. כל הזכויות שמורות.</p>
+            </div>
+        </footer>
     </div>
 
-    <div id="view-agent" class="fade-in hidden min-h-screen bg-slate-950 pt-24 pb-12 px-4 md:px-8">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
+    <!-- PROPERTY DETAILS MODAL -->
+    <div id="propertyModal" class="modal-hidden fixed inset-0 z-[110] items-center justify-center p-0 md:p-4">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="closePropertyModal()"></div>
+        <div class="relative w-full h-[100vh] md:h-[90vh] md:max-w-5xl bg-slate-950 md:rounded-2xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col lg:flex-row overflow-y-auto">
+            <button onclick="closePropertyModal()" class="absolute top-4 left-4 bg-black/50 hover:bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center z-50 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="lg:w-1/2 bg-black flex flex-col">
+                <div class="flex-1 h-64 md:min-h-[300px] relative" id="modalMainMediaContainer"></div>
+            </div>
+            <div class="lg:w-1/2 p-6 md:p-8 flex flex-col justify-between">
                 <div>
-                    <h2 class="text-3xl font-bold text-white">פורטל סוכן <span id="agentNameDisplay" class="text-crystal"></span></h2>
-                    <p class="text-gray-400 text-sm mt-1">נהל את הלידים שלך, עקוב אחר עמלות והתקדם ליעדים.</p>
+                    <div class="flex justify-between items-center mb-4">
+                        <span id="modalPropertyTag" class="bg-sapphire text-white text-[10px] md:text-xs font-bold px-3 py-1 rounded-md"></span>
+                        <span id="modalPropertyLocation" class="text-gray-400 text-xs md:text-sm font-medium"></span>
+                    </div>
+                    <h3 id="modalPropertyTitle" class="text-2xl md:text-3xl font-bold mb-4 text-white"></h3>
+                    <p id="modalPropertyDesc" class="text-slate-300 text-sm leading-relaxed mb-6"></p>
                 </div>
-                <button onclick="logout()" class="text-red-400 hover:text-white transition bg-red-900/20 px-4 py-2 rounded-md text-sm font-bold w-max"><i class="fa-solid fa-right-from-bracket"></i> התנתק</button>
-            </div>
-            
-            <!-- Agent Alerts / Broadcasts -->
-            <div id="agentBroadcastArea" class="hidden bg-gold/20 border border-gold/50 text-gold p-4 rounded-xl mb-8 font-bold animate-pulse text-center text-lg"></div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div class="bg-black border border-slate-800 p-5 rounded-xl">
-                    <span class="text-xs text-slate-400 block mb-1">נוסעים שהוטסו</span>
-                    <span id="agentStatPax" class="text-3xl font-bold text-white font-mono">0</span>
-                </div>
-                <div class="bg-black border border-slate-800 p-5 rounded-xl">
-                    <span class="text-xs text-slate-400 block mb-1">עסקאות שנסגרו</span>
-                    <span id="agentStatSales" class="text-3xl font-bold text-crystal font-mono">0</span>
-                </div>
-                <div class="bg-black border border-slate-800 p-5 rounded-xl">
-                    <span class="text-xs text-slate-400 block mb-1">בונוס מצטבר (הערכה)</span>
-                    <span id="agentStatCommissions" class="text-3xl font-bold text-green-400 font-mono ltr-dir">$0</span>
-                </div>
-                <div class="bg-blue-900/20 border border-blue-800 p-5 rounded-xl flex flex-col justify-center">
-                    <span class="text-xs text-blue-300 block mb-2">קישור שותף להרשמת לקוחות</span>
-                    <button onclick="copyLink('agentAffiliateLink')" class="bg-sapphire hover:bg-blue-600 text-white text-xs px-3 py-2.5 rounded transition w-full font-bold">העתק קישור הפצה <i class="fa-solid fa-link"></i></button>
-                    <input type="hidden" id="agentAffiliateLink">
-                </div>
-            </div>
-
-            <!-- Gamification Progress -->
-            <div class="bg-black border border-slate-800 p-6 rounded-xl mb-8 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-32 h-32 bg-crystal rounded-full blur-3xl opacity-10"></div>
-                <h3 class="text-lg font-bold text-white mb-4"><i class="fa-solid fa-trophy text-gold ml-2"></i> התקדמות למתנת הדירה (70,000$)</h3>
-                <p class="text-xs text-gray-400 mb-4">יעד: 200 נוסעים מטיסים אותך לדירה משלך ב-Sea Breeze. המערכת מחשבת אוטומטית גם את הבונוסים בדרך (10 נוסעים = טיסה, 50 = סופ"ש, 100 = 10,000$).</p>
-                <div class="w-full bg-slate-900 rounded-full h-4 border border-slate-700">
-                    <div id="agentAptProgress" class="bg-gradient-to-l from-crystal to-sapphire h-4 rounded-full transition-all duration-1000" style="width: 0%"></div>
-                </div>
-                <div class="flex justify-between text-xs mt-3 text-slate-400 font-mono">
-                    <span>0 נוסעים</span>
-                    <span id="agentAptText" class="text-crystal font-bold bg-blue-900/30 px-3 py-1 rounded-full"></span>
-                    <span>200 נוסעים</span>
-                </div>
-            </div>
-
-            <!-- Mini CRM -->
-            <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
-                <h3 class="text-xl font-bold text-white mb-4">צינור מכירות (Sales Pipeline)</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right text-sm min-w-[600px]">
-                        <thead class="text-slate-400 border-b border-slate-800">
-                            <tr><th class="p-3">שם לקוח</th><th class="p-3">טלפון</th><th class="p-3">נוסעים</th><th class="p-3">תאריך סיור</th><th class="p-3">סטטוס מכירה</th></tr>
-                        </thead>
-                        <tbody id="agentClientsTable" class="divide-y divide-slate-800/50 text-white"></tbody>
-                    </table>
+                <div class="border-t border-slate-900 pt-6 mt-2 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-900/40 p-4 border border-slate-800 rounded-xl">
+                            <span class="block text-xs text-slate-500 mb-1">מחיר כניסה מ-</span>
+                            <span id="modalPropertyPrice" class="text-xl md:text-2xl font-bold text-white font-mono ltr-dir"></span>
+                        </div>
+                        <div class="bg-slate-900/40 p-4 border border-slate-800 rounded-xl">
+                            <span class="block text-xs text-slate-500 mb-1">צפי תשואה / תוכנית</span>
+                            <span id="modalPropertyYield" class="text-xl md:text-2xl font-bold text-crystal font-mono ltr-dir"></span>
+                        </div>
+                    </div>
+                    <button onclick="closePropertyModal(); document.getElementById('tour').scrollIntoView({behavior: 'smooth'});" class="w-full bg-sapphire text-white font-bold py-4 rounded-md hover:bg-blue-700 transition text-sm mt-4">
+                        הבטיחו מקום במשלחת לסיור בנכס
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="view-manager" class="fade-in hidden min-h-screen bg-slate-950 pt-24 pb-12 px-4 md:px-8">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
+    <!-- MAIN LOGIN MODAL -->
+    <div id="loginModal" class="modal-hidden fixed inset-0 z-[100] items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="toggleLoginModal()"></div>
+        <div class="relative glass-card w-full max-w-md p-8 md:p-10 rounded-2xl shadow-2xl border border-slate-800">
+            <button onclick="toggleLoginModal()" class="absolute top-4 left-4 md:top-6 md:left-6 text-gray-400 hover:text-white transition bg-black/50 w-8 h-8 rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center mb-8 md:mb-10">
+                <div class="w-12 h-12 mx-auto bg-slate-950 border border-slate-800 rounded-full flex items-center justify-center mb-4">
+                    <i class="fa-solid fa-user-shield text-xl text-crystal"></i>
+                </div>
+                <h3 class="text-xl md:text-2xl font-bold mb-2">כניסת מערכת</h3>
+                <p class="text-xs md:text-sm text-gray-400">אדמין | מנהלי מכירות | סוכנים</p>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-4 md:space-y-6">
                 <div>
-                    <h2 class="text-3xl font-bold text-white">פורטל מנהל צוות <span id="managerNameDisplay" class="text-crystal"></span></h2>
-                    <p class="text-gray-400 text-sm mt-1">ניהול סוכנים משויכים, תגמולים ופתיחת חשבונות (100$ לטיסה, 1000$ לסגירה, 50$ לסוכן).</p>
-                </div>
-                <button onclick="logout()" class="text-red-400 hover:text-white transition bg-red-900/20 px-4 py-2 rounded-md text-sm font-bold w-max"><i class="fa-solid fa-right-from-bracket"></i> התנתק</button>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div class="bg-black border border-slate-800 p-5 rounded-xl">
-                    <span class="text-xs text-slate-400 block mb-1">סוכנים פעילים תחתיי</span>
-                    <span id="mgrStatAgents" class="text-3xl font-bold text-white font-mono">0</span>
-                </div>
-                <div class="bg-black border border-slate-800 p-5 rounded-xl">
-                    <span class="text-xs text-slate-400 block mb-1">סך נוסעים (כלל הצוות)</span>
-                    <span id="mgrStatPax" class="text-3xl font-bold text-crystal font-mono">0</span>
-                </div>
-                <div class="bg-black border border-slate-800 p-5 rounded-xl">
-                    <span class="text-xs text-slate-400 block mb-1">בונוס ארנק דיגיטלי לצוות</span>
-                    <span id="mgrStatWallet" class="text-3xl font-bold text-green-400 font-mono ltr-dir">$0</span>
-                </div>
-                <div class="bg-blue-900/20 border border-blue-800 p-5 rounded-xl flex flex-col justify-center">
-                    <span class="text-xs text-blue-300 block mb-2">קישור ציבורי לגיוס סוכן</span>
-                    <button onclick="copyLink('mgrAffiliateLink')" class="bg-sapphire hover:bg-blue-600 text-white text-xs px-3 py-2.5 rounded transition w-full font-bold">העתק קישור <i class="fa-solid fa-link"></i></button>
-                    <input type="hidden" id="mgrAffiliateLink">
-                </div>
-            </div>
-
-            <!-- Free Ticket Alert -->
-            <div id="mgrFreeTicketAlert" class="hidden bg-gradient-to-r from-green-900/50 to-emerald-900/50 border border-green-500/50 p-5 rounded-xl mb-8 flex items-center gap-4 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
-                <div class="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-ticket text-2xl text-green-400"></i>
+                    <label class="block text-xs text-slate-500 font-bold mb-2">שם משתמש / מספר רישיון</label>
+                    <input type="text" id="loginUsername" class="w-full bg-slate-900 border border-slate-800 rounded-md px-4 py-3 text-white focus:outline-none focus:border-crystal transition font-mono text-sm text-center ltr-dir" required>
                 </div>
                 <div>
-                    <h4 class="text-white font-bold text-lg">זכאות לכרטיס טיסה חינם!</h4>
-                    <p class="text-sm text-green-200">הצוות שלך הביא מעל 12 נוסעים לסיור קרוב. צור קשר עם ההנהלה למשיכת הכרטיס ולהצטרפות למשלחת.</p>
+                    <label class="block text-xs text-slate-500 font-bold mb-2">סיסמה</label>
+                    <input type="password" id="loginPassword" class="w-full bg-slate-900 border border-slate-800 rounded-md px-4 py-3 text-white focus:outline-none focus:border-crystal transition font-mono text-sm text-center tracking-widest ltr-dir" required>
                 </div>
-            </div>
+                <button type="submit" class="w-full bg-sapphire hover:bg-blue-700 text-white font-bold py-3 md:py-4 rounded-md transition text-sm mt-6 md:mt-8">
+                    התחברות למערכת
+                </button>
+            </form>
+        </div>
+    </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Leaderboard -->
-                <div class="lg:col-span-2">
-                    <h3 class="text-xl font-bold text-white mb-4">ביצועי סוכנים (Leaderboard)</h3>
-                    <div class="glass-card rounded-xl overflow-hidden border border-slate-800 p-4 overflow-x-auto">
-                        <table class="w-full text-right text-sm min-w-[500px]">
-                            <thead class="text-slate-400 border-b border-slate-800">
-                                <tr><th class="p-3">שם סוכן</th><th class="p-3">נוסעים שהטיס</th><th class="p-3">עסקאות שסגר</th><th class="p-3">הישג מוביל</th></tr>
+    <!-- MASTER ADMIN DASHBOARD MODAL -->
+    <div id="adminModal" class="modal-hidden fixed inset-0 z-[100] items-center justify-center p-0 md:p-4">
+        <div class="absolute inset-0 bg-[#020617]/98 backdrop-blur-md"></div>
+        <div class="relative w-full h-[100vh] md:h-[92vh] md:max-w-7xl bg-slate-950 md:rounded-2xl shadow-2xl border border-slate-800 flex flex-col lg:flex-row overflow-hidden">
+            <aside class="w-full lg:w-64 bg-black/40 border-b lg:border-l lg:border-b-0 border-slate-800 p-4 md:p-6 flex flex-col justify-between shrink-0">
+                <div>
+                    <div class="flex items-center gap-3 mb-6 md:mb-8 ltr-dir">
+                        <div class="w-8 h-8 rounded-full bg-sapphire flex items-center justify-center text-white text-xs"><i class="fa-solid fa-crown"></i></div>
+                        <span class="text-base md:text-lg font-black text-white tracking-widest">MASTER ADMIN</span>
+                    </div>
+                    <nav class="space-y-1 md:space-y-2 flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 hide-scrollbar">
+                        <button onclick="switchAdminTab('overview', this)" class="shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-2 md:py-3 rounded-lg text-sm font-semibold transition-all duration-300 bg-sapphire text-white"><i class="fa-solid fa-chart-line ml-2"></i> סקירה כללית</button>
+                        <button onclick="switchAdminTab('managers', this)" class="shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-2 md:py-3 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-300"><i class="fa-solid fa-briefcase ml-2"></i> מנהלי מכירות</button>
+                        <button onclick="switchAdminTab('brokers', this)" class="shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-2 md:py-3 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-300"><i class="fa-solid fa-users ml-2"></i> כלל הסוכנים</button>
+                        <button onclick="switchAdminTab('bookings', this)" class="shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-2 md:py-3 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-300"><i class="fa-solid fa-plane-departure ml-2"></i> הזמנות לסיורים</button>
+                        <button onclick="switchAdminTab('properties', this)" class="shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-2 md:py-3 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-300"><i class="fa-solid fa-building ml-2"></i> ניהול נכסים (CMS)</button>
+                        <button onclick="switchAdminTab('settings', this)" class="shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-2 md:py-3 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-300"><i class="fa-solid fa-gear ml-2"></i> הגדרות תוכן ותמחור</button>
+                    </nav>
+                </div>
+                <button onclick="logout()" class="hidden lg:flex text-red-400 hover:text-red-300 text-sm font-semibold items-center gap-2 mt-8 lg:mt-0"><i class="fa-solid fa-right-from-bracket transform scale-x-[-1]"></i> יציאה מאובטחת</button>
+                <button onclick="logout()" class="lg:hidden absolute top-4 left-4 text-slate-400"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            </aside>
+
+            <main class="flex-1 p-4 md:p-8 overflow-y-auto bg-gradient-to-b from-[#020617] to-[#07080a]">
+                
+                <!-- Tab: Overview -->
+                <div id="admin-overview" class="admin-tab-content block space-y-6">
+                    <h3 class="text-2xl md:text-3xl font-bold">מרכז שליטה תפעולי עליון</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+                        <div class="bg-slate-900/50 border border-slate-800 p-4 md:p-6 rounded-2xl relative">
+                            <span class="text-xs text-slate-500 block mb-1">סך סוכני רשת</span>
+                            <span id="admin-stat-brokers" class="text-3xl md:text-4xl font-bold font-mono text-white ltr-dir">0</span>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-800 p-4 md:p-6 rounded-2xl relative">
+                            <div class="absolute top-2 left-2 flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div><span class="text-[8px] text-green-500">LIVE</span></div>
+                            <span class="text-xs text-slate-500 block mb-1">הזמנות לסיורים במערכת</span>
+                            <span id="admin-stat-bookings" class="text-3xl md:text-4xl font-bold font-mono text-crystal ltr-dir">0</span>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-800 p-4 md:p-6 rounded-2xl relative">
+                            <span class="text-xs text-slate-500 block mb-1">נכסים פעילים באתר</span>
+                            <span id="admin-stat-properties" class="text-3xl md:text-4xl font-bold font-mono text-white ltr-dir">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Managers -->
+                <div id="admin-managers" class="admin-tab-content hidden space-y-6">
+                    <div class="flex justify-between items-end mb-4">
+                        <h3 class="text-2xl font-bold">מנהלי מכירות (ראשי צוותים)</h3>
+                        <button onclick="window.print()" class="text-xs bg-slate-800 text-white px-3 py-1 rounded hover:bg-slate-700"><i class="fa-solid fa-print"></i> הדפס דוח</button>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border border-slate-800 mb-6 max-w-2xl">
+                        <h4 class="text-sm font-bold text-crystal mb-3">הוספת מנהל מכירות חדש</h4>
+                        <form onsubmit="addManager(event)" class="flex gap-2">
+                            <input type="text" id="newManagerName" placeholder="שם המנהל" required class="flex-1 bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white">
+                            <input type="text" id="newManagerUsername" placeholder="שם משתמש" required class="flex-1 bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white ltr-dir">
+                            <input type="text" id="newManagerPass" placeholder="סיסמה ראשונית" required class="flex-1 bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white ltr-dir">
+                            <button type="submit" class="bg-sapphire text-white px-4 py-2 rounded text-sm font-bold">הוסף</button>
+                        </form>
+                    </div>
+                    <div class="glass-card rounded-xl overflow-hidden border border-slate-800 overflow-x-auto">
+                        <table class="w-full text-right text-sm whitespace-nowrap min-w-[600px]">
+                            <thead class="bg-slate-950 text-gray-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3 font-normal">שם מנהל</th>
+                                    <th class="p-3 font-normal">שם משתמש</th>
+                                    <th class="p-3 font-normal">סיסמה</th>
+                                    <th class="p-3 font-normal text-left">פעולות</th>
+                                </tr>
                             </thead>
-                            <tbody id="mgrAgentsTable" class="divide-y divide-slate-800/50 text-white"></tbody>
+                            <tbody id="admin-managers-table-body" class="divide-y divide-slate-900 text-slate-300"></tbody>
                         </table>
                     </div>
                 </div>
-                
-                <!-- Add Agent Form -->
-                <div>
-                    <h3 class="text-xl font-bold text-white mb-4">פתיחת חשבון לסוכן חדש</h3>
-                    <div class="glass-card p-6 rounded-xl border border-slate-800">
-                        <p class="text-xs text-gray-400 mb-4">יצירת משתמש וסיסמה ידנית כדי שתוכל להעביר לסוכן בוואטסאפ.</p>
-                        <form onsubmit="managerAddAgent(event)" class="space-y-4">
-                            <div><label class="text-xs text-slate-400 block mb-1">שם מלא</label><input type="text" id="newAgtName" required class="w-full bg-slate-900 border border-slate-700 p-2.5 text-sm text-white rounded outline-none"></div>
-                            <div><label class="text-xs text-slate-400 block mb-1">שם משתמש (מספר רישיון / מזהה)</label><input type="text" id="newAgtUser" required class="w-full bg-slate-900 border border-slate-700 p-2.5 text-sm text-white rounded outline-none ltr-dir text-right"></div>
-                            <div><label class="text-xs text-slate-400 block mb-1">סיסמה זמנית למסירה לסוכן</label><input type="text" id="newAgtPass" required class="w-full bg-slate-900 border border-slate-700 p-2.5 text-sm text-white rounded outline-none ltr-dir text-right"></div>
-                            <button type="submit" class="w-full bg-crystal hover:bg-blue-400 text-black font-bold py-3 rounded text-sm transition mt-2 shadow-[0_0_15px_rgba(56,189,248,0.4)]">פתח חשבון וסנכרן לצוות</button>
-                        </form>
+
+                <!-- Tab: All Brokers -->
+                <div id="admin-brokers" class="admin-tab-content hidden space-y-6">
+                    <div class="flex justify-between items-end mb-4">
+                        <h3 class="text-2xl font-bold">כלל סוכני הרשת</h3>
+                        <button onclick="window.print()" class="text-xs bg-slate-800 text-white px-3 py-1 rounded hover:bg-slate-700"><i class="fa-solid fa-print"></i> הדפס דוח</button>
+                    </div>
+                    <div class="glass-card rounded-xl overflow-hidden border border-slate-800 overflow-x-auto">
+                        <table class="w-full text-right text-sm whitespace-nowrap min-w-[800px]">
+                            <thead class="bg-slate-950 text-gray-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3 font-normal">שם סוכן</th>
+                                    <th class="p-3 font-normal">יוזר / סיסמה</th>
+                                    <th class="p-3 font-normal">משויך למנהל</th>
+                                    <th class="p-3 font-normal text-center">נוסעים</th>
+                                    <th class="p-3 font-normal text-center">עסקאות (סגרו)</th>
+                                    <th class="p-3 font-normal text-left">פעולות עריכה</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-brokers-table-body" class="divide-y divide-slate-900 text-slate-300"></tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <div id="view-admin" class="fade-in hidden min-h-screen bg-slate-950 flex flex-col lg:flex-row overflow-hidden">
-        <aside class="w-full lg:w-64 bg-black/40 border-b lg:border-l border-slate-800 p-4 md:p-6 flex flex-col shrink-0 no-print z-20">
-            <div class="flex items-center gap-3 mb-8 ltr-dir">
-                <i class="fa-solid fa-cloud text-crystal text-xl"></i>
-                <span class="text-lg font-black text-white tracking-widest">MASTER ADMIN</span>
-            </div>
-            <nav class="space-y-2 flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible hide-scrollbar flex-1 pb-2 lg:pb-0">
-                <button onclick="switchAdminTab('dash', this)" class="shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-3 rounded-lg text-sm font-bold bg-sapphire text-white"><i class="fa-solid fa-chart-pie ml-2"></i> לוח בקרה</button>
-                <button onclick="switchAdminTab('bookings', this)" class="shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-3 rounded-lg text-sm font-bold text-gray-400 hover:bg-white/5"><i class="fa-solid fa-plane ml-2"></i> ניהול לקוחות (CRM)</button>
-                <button onclick="switchAdminTab('users', this)" class="shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-3 rounded-lg text-sm font-bold text-gray-400 hover:bg-white/5"><i class="fa-solid fa-users ml-2"></i> מנהלים וסוכנים</button>
-                <button onclick="switchAdminTab('props', this)" class="shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-3 rounded-lg text-sm font-bold text-gray-400 hover:bg-white/5"><i class="fa-solid fa-building ml-2"></i> ניהול נכסים וחיזוי</button>
-                <button onclick="switchAdminTab('cms', this)" class="shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-3 rounded-lg text-sm font-bold text-gray-400 hover:bg-white/5"><i class="fa-solid fa-pen-to-square ml-2"></i> תוכן אתר והגדרות</button>
-            </nav>
-            <button onclick="logout()" class="mt-4 text-red-400 hover:text-white text-sm font-bold flex items-center gap-2"><i class="fa-solid fa-right-from-bracket"></i> התנתק</button>
-        </aside>
-
-        <main class="flex-1 p-4 md:p-8 overflow-y-auto bg-gradient-to-b from-[#020617] to-[#07080a] z-10 relative">
-            
-            <!-- Admin: Dashboard -->
-            <div id="admin-dash" class="admin-tab-content block space-y-6">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 no-print mb-4">
-                    <h3 class="text-3xl font-bold text-white">סיכום פעילות בענן</h3>
-                    <button onclick="window.print()" class="bg-slate-800 text-white px-4 py-2.5 rounded text-sm hover:bg-slate-700 transition font-bold"><i class="fa-solid fa-print ml-2"></i> הדפס דוח מלא</button>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-xl"><span class="text-xs text-slate-400 block mb-1">סך בקשות סיורים</span><span id="adStatBooks" class="text-3xl font-bold text-crystal font-mono">0</span></div>
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-xl"><span class="text-xs text-slate-400 block mb-1">סוכנים רשומים</span><span id="adStatAgts" class="text-3xl font-bold text-white font-mono">0</span></div>
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-xl"><span class="text-xs text-slate-400 block mb-1">מנהלי מכירות</span><span id="adStatMgrs" class="text-3xl font-bold text-white font-mono">0</span></div>
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-xl"><span class="text-xs text-slate-400 block mb-1">עסקאות שנסגרו (ROI)</span><span id="adStatSales" class="text-3xl font-bold text-green-400 font-mono">0</span></div>
-                </div>
-            </div>
-
-            <!-- Admin: Bookings CRM -->
-            <div id="admin-bookings" class="admin-tab-content hidden space-y-6">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-2xl md:text-3xl font-bold text-white">ניהול לקוחות וסטטוס (CRM)</h3>
-                </div>
-                <p class="text-sm text-gray-400">שינוי סטטוס ל"סגר עסקה!" יעדכן אוטומטית את העמלות וההישגים של הסוכן והמנהל בענן.</p>
-                <div class="glass-card p-4 rounded-xl border border-slate-800 overflow-x-auto">
-                    <table class="w-full text-right text-sm min-w-[800px]">
-                        <thead class="text-slate-400 border-b border-slate-800">
-                            <tr>
-                                <th class="p-3">שם לקוח</th>
-                                <th class="p-3">טלפון</th>
-                                <th class="p-3">נוסעים</th>
-                                <th class="p-3">תאריך סיור</th>
-                                <th class="p-3 text-crystal">סוכן שותף (Affiliate)</th>
-                                <th class="p-3">עדכון סטטוס עסקה</th>
-                                <th class="p-3 text-left no-print">מחק</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminBookingsTable" class="divide-y divide-slate-800/50 text-white"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Admin: Users -->
-            <div id="admin-users" class="admin-tab-content hidden space-y-6">
-                <h3 class="text-2xl md:text-3xl font-bold text-white">מנהלים וסוכנים (הרשאות)</h3>
-                <p class="text-sm text-gray-400">צפה בסיסמאות, שייך סוכנים למנהלים, וקדם סוכנים באופן ידני (טקסט חופשי או קביעת יעדים).</p>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Managers Table -->
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <h4 class="text-xl font-bold text-crystal">מנהלי מכירות</h4>
-                            <button onclick="openUserModal('manager')" class="bg-green-600/30 border border-green-500/50 text-green-400 hover:bg-green-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">+ הוסף מנהל חדש</button>
-                        </div>
-                        <div class="glass-card rounded-xl border border-slate-800 overflow-x-auto">
-                            <table class="w-full text-right text-sm min-w-[400px]">
-                                <thead class="text-slate-400 border-b border-slate-800"><tr><th class="p-3">שם מנהל</th><th class="p-3">משתמש/סיסמה</th><th class="p-3 text-left">פעולות</th></tr></thead>
-                                <tbody id="adminManagersTable" class="divide-y divide-slate-800/50 text-white"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
-                    <!-- Agents Table -->
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <h4 class="text-xl font-bold text-white">כלל הסוכנים (Brokers)</h4>
-                            <button onclick="openUserModal('agent')" class="bg-blue-600/30 border border-blue-500/50 text-blue-400 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded text-xs font-bold transition">+ הוסף סוכן חדש</button>
-                        </div>
-                        <div class="glass-card rounded-xl border border-slate-800 overflow-x-auto">
-                            <table class="w-full text-right text-sm min-w-[500px]">
-                                <thead class="text-slate-400 border-b border-slate-800"><tr><th class="p-3">שם סוכן</th><th class="p-3">משתמש/סיסמה</th><th class="p-3">משויך למנהל</th><th class="p-3 text-gold">קידום אישי</th><th class="p-3 text-left">פעולות</th></tr></thead>
-                                <tbody id="adminAgentsTable" class="divide-y divide-slate-800/50 text-white"></tbody>
-                            </table>
-                        </div>
+                <!-- Tab: Tour Bookings -->
+                <div id="admin-bookings" class="admin-tab-content hidden space-y-6">
+                    <h3 class="text-2xl font-bold flex items-center gap-3">הזמנות למשלחות VIP <span class="bg-green-500/20 text-green-400 text-[10px] px-2 py-1 rounded-full animate-pulse border border-green-500/30">Live</span></h3>
+                    <div class="glass-card rounded-xl border border-slate-800 overflow-hidden overflow-x-auto">
+                        <table class="w-full text-right text-sm whitespace-nowrap min-w-[900px]">
+                            <thead class="bg-slate-950 text-gray-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3 font-normal">לקוח / טלפון</th>
+                                    <th class="p-3 font-normal">פרטי טיסה (TLV)</th>
+                                    <th class="p-3 font-normal">נוסעים</th>
+                                    <th class="p-3 font-normal text-crystal">סוכן מפנה</th>
+                                    <th class="p-3 font-normal">סטטוס מכירה</th>
+                                    <th class="p-3 font-normal text-left">מחיקה</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-bookings-table-body" class="divide-y divide-slate-900 text-slate-300"></tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
 
-            <!-- Admin: Properties -->
-            <div id="admin-props" class="admin-tab-content hidden space-y-6">
-                <h3 class="text-2xl md:text-3xl font-bold text-white">ניהול מלאי נכסים (Live)</h3>
-                <p class="text-sm text-gray-400">הנכסים שתעלה כאן יופיעו אוטומטית באתר הציבורי. התמונה תכווץ ותעלה ל-Firestore (Base64).</p>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 glass-card p-6 rounded-xl border border-slate-800">
-                        <form onsubmit="adminAddProperty(event)" class="space-y-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div><label class="text-xs text-slate-400 mb-1 block">שם הפרויקט</label><input type="text" id="propTitle" required class="w-full bg-slate-900 border border-slate-700 p-2.5 text-white rounded outline-none"></div>
-                                <div><label class="text-xs text-slate-400 mb-1 block">מיקום (Location)</label><input type="text" id="propLoc" required class="w-full bg-slate-900 border border-slate-700 p-2.5 text-white rounded outline-none"></div>
+                <!-- Tab: Property Management & Image Upload -->
+                <div id="admin-properties" class="admin-tab-content hidden space-y-6">
+                    <h3 class="text-2xl font-bold">ניהול נכסים והוספת מלאי</h3>
+                    <div class="glass-card p-6 rounded-xl border border-slate-800 max-w-2xl">
+                        <form id="addPropertyForm" onsubmit="addNewProperty(event)" class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs text-slate-500 font-bold mb-1">שם הפרויקט</label>
+                                    <input type="text" id="newPropTitle" required class="w-full bg-slate-900 border border-slate-800 p-2.5 text-white rounded outline-none text-sm ltr-dir text-right">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-500 font-bold mb-1">מיקום</label>
+                                    <input type="text" id="newPropLocation" required class="w-full bg-slate-900 border border-slate-800 p-2.5 text-white rounded outline-none text-sm">
+                                </div>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div><label class="text-xs text-slate-400 mb-1 block">מחיר כניסה מ-</label><input type="text" id="propPrice" placeholder="למשל: $115,000" required class="w-full bg-slate-900 border border-slate-700 p-2.5 text-white rounded outline-none ltr-dir text-right"></div>
-                                <div><label class="text-xs text-slate-400 mb-1 block">קטגוריה</label>
-                                    <select id="propCat" class="w-full bg-slate-900 border border-slate-700 p-2.5 text-white rounded outline-none cursor-pointer">
-                                        <option value="seabreeze">Sea Breeze</option>
-                                        <option value="urban">יוקרה עירונית (Baku)</option>
-                                        <option value="villas">וילות וטבע (Gabala)</option>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs text-slate-500 font-bold mb-1">מחיר</label>
+                                    <input type="text" id="newPropPrice" required class="w-full bg-slate-900 border border-slate-800 p-2.5 text-white rounded outline-none text-sm ltr-dir text-right">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-500 font-bold mb-1">קטגוריה</label>
+                                    <select id="newPropCategory" class="w-full bg-slate-900 border border-slate-800 p-2.5 text-slate-300 rounded outline-none text-sm">
+                                        <option value="seabreeze">Sea Breeze</option><option value="urban">יוקרה עירונית</option><option value="villas">וילות וטבע</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div><label class="text-xs text-slate-400 mb-1 block">תגית צפה (למשל: "מלאי מוגבל")</label><input type="text" id="propTag" value="חדש באתר" class="w-full bg-slate-900 border border-slate-700 p-2.5 text-white rounded outline-none"></div>
-                                <div><label class="text-xs text-slate-400 mb-1 block">צפי תשואה / הערה קצרה</label><input type="text" id="propYield" value="ניהול מלונאי (ROI)" class="w-full bg-slate-900 border border-slate-700 p-2.5 text-white rounded outline-none"></div>
-                            </div>
                             <div>
-                                <label class="text-xs text-slate-400 mb-1 block">העלאת תמונת נכס (חובה)</label>
-                                <input type="file" id="propImage" accept="image/*" required class="w-full text-sm text-slate-400 file:ml-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-sapphire file:text-white cursor-pointer bg-slate-900 border border-slate-700 p-2 rounded">
+                                <label class="block text-xs text-slate-500 font-bold mb-1">תמונה (יועלה ויכווץ אוטומטית לענן)</label>
+                                <input type="file" id="newPropFile" accept="image/*" class="w-full text-sm text-slate-400 file:ml-4 file:py-1 file:px-3 file:rounded file:border-0 file:font-bold file:bg-sapphire file:text-white cursor-pointer bg-slate-900 border border-slate-800 p-1.5 rounded">
                             </div>
-                            <button type="submit" class="w-full bg-crystal hover:bg-blue-400 text-black font-bold py-3 rounded transition shadow-[0_0_15px_rgba(56,189,248,0.4)]">
-                                כווץ תמונה ופרסם נכס לענן
-                            </button>
+                            <button type="submit" class="w-full bg-sapphire text-white font-bold py-3 rounded hover:bg-blue-700 transition text-sm">העלה נכס למסד הנתונים</button>
                         </form>
                     </div>
                     
-                    <div class="glass-card p-4 rounded-xl border border-slate-800 overflow-x-auto hide-scrollbar max-h-[500px]">
-                        <h4 class="text-white font-bold mb-3 border-b border-slate-800 pb-2">מלאי קיים (למחיקה)</h4>
-                        <table class="w-full text-right text-sm">
-                            <tbody id="adminPropsTable" class="divide-y divide-slate-800/50 text-white"></tbody>
-                        </table>
+                    <!-- Delete Properties List -->
+                    <div class="glass-card rounded-xl border border-slate-800 p-4 mt-8">
+                        <h4 class="text-sm font-bold text-white mb-4">ניהול נכסים קיימים</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-right text-sm">
+                                <tbody id="admin-prop-del-table" class="divide-y divide-slate-900 text-slate-300"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Admin: CMS -->
-            <div id="admin-cms" class="admin-tab-content hidden space-y-6">
-                <h3 class="text-2xl md:text-3xl font-bold text-white">תוכן אתר והגדרות מערכת (CMS)</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- CMS Form -->
-                    <div class="glass-card p-6 rounded-xl border border-slate-800">
-                        <h4 class="text-xl font-bold text-white mb-4"><i class="fa-solid fa-image text-crystal ml-2"></i> טקסטים ותמונת פתיחה (Hero)</h4>
-                        <form onsubmit="saveCMS(event)" class="space-y-4">
-                            <div><label class="text-xs text-slate-400 mb-1 block">כותרת ענקית</label><input type="text" id="cmsTitle" class="w-full bg-slate-900 border border-slate-700 p-2.5 text-white rounded outline-none"></div>
-                            <div><label class="text-xs text-slate-400 mb-1 block">תת-כותרת שיווקית</label><textarea id="cmsSub" rows="3" class="w-full bg-slate-900 border border-slate-700 p-2.5 text-white rounded outline-none"></textarea></div>
-                            <div>
-                                <label class="text-xs text-slate-400 mb-1 block">החלפת תמונת רקע לאתר (אופציונלי)</label>
-                                <input type="file" id="cmsImageFile" accept="image/*" class="w-full text-xs text-slate-400 file:ml-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-slate-700 file:text-white cursor-pointer bg-slate-900 border border-slate-700 p-1.5 rounded">
-                            </div>
-                            <button type="submit" class="w-full bg-sapphire text-white font-bold py-3 rounded transition hover:bg-blue-600">שמור תוכן באתר</button>
-                        </form>
-                    </div>
-
-                    <!-- System Config & Broadcast -->
-                    <div class="space-y-6">
+                <!-- Tab: System Settings & Content CMS -->
+                <div id="admin-settings" class="admin-tab-content hidden space-y-6">
+                    <h3 class="text-2xl font-bold">הגדרות מערכת ותוכן אתר (CMS)</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="glass-card p-6 rounded-xl border border-slate-800">
-                            <h4 class="text-xl font-bold text-white mb-4"><i class="fa-solid fa-bullhorn text-gold ml-2"></i> הודעות לסוכנים (Broadcast)</h4>
-                            <p class="text-xs text-gray-400 mb-3">הודעה שתקפוץ באזור האישי של כל סוכן.</p>
-                            <div class="flex gap-2">
-                                <input type="text" id="cmsBroadcastMsg" placeholder="למשל: בונוס כפול השבוע!" class="flex-1 bg-slate-900 border border-slate-700 p-2.5 text-white rounded outline-none">
-                                <button onclick="saveBroadcast()" class="bg-gold hover:bg-yellow-500 text-black font-bold px-4 rounded transition">שדר עכשיו</button>
-                            </div>
-                            <button onclick="clearBroadcast()" class="text-xs text-slate-500 mt-3 underline hover:text-white">נקה הודעה פעילה</button>
-                        </div>
-                        
-                        <div class="glass-card p-6 rounded-xl border border-slate-800">
-                            <h4 class="text-xl font-bold text-white mb-4"><i class="fa-solid fa-gear text-slate-400 ml-2"></i> הגדרות בסיס</h4>
+                            <h4 class="font-bold text-crystal mb-4">תקשורת ועלויות</h4>
                             <div class="space-y-4">
-                                <div><label class="text-xs text-slate-400 mb-1 block">מספר וואטסאפ (ללא '+')</label><input type="text" id="cmsWa" class="w-full bg-slate-900 border border-slate-700 p-2.5 text-white rounded outline-none ltr-dir text-right"></div>
-                                <div><label class="text-xs text-slate-400 mb-1 block">מחיר בסיס לסיור משקיעים</label><input type="text" id="cmsTourPrice" class="w-full bg-slate-900 border border-slate-700 p-2.5 text-white rounded outline-none ltr-dir text-right"></div>
-                                <button onclick="saveConfig()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded transition">שמור הגדרות</button>
+                                <div>
+                                    <label class="block text-xs text-slate-500 mb-1">וואטסאפ לתמיכה הכללי (ללא +)</label>
+                                    <input type="text" id="adminWaInput" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-white outline-none ltr-dir text-right">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-500 mb-1">מחיר בסיס לסיור משקיעים ($)</label>
+                                    <input type="number" id="adminTourPrice" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-white outline-none ltr-dir text-right">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-6 rounded-xl border border-slate-800">
+                            <h4 class="font-bold text-crystal mb-4">הודעת מערכת מתפרצת (Broadcast)</h4>
+                            <p class="text-[10px] text-gray-400 mb-2">טקסט שיופיע בפס זוהר בראש האתר לכלל הגולשים.</p>
+                            <input type="text" id="adminBroadcastInput" placeholder="לדוגמה: מבצע סוף שנה - דירה על כל 100 נוסעים!" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-white outline-none mb-3">
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-xl border border-slate-800">
+                        <h4 class="font-bold text-crystal mb-4">טקסטים בעמוד הראשי</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs text-slate-500 mb-1">כותרת ראשית גדולה (H1)</label>
+                                <textarea id="adminHeroTitle" rows="2" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-white outline-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-500 mb-1">טקסט משני (תחת הכותרת)</label>
+                                <textarea id="adminHeroText" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-white outline-none"></textarea>
                             </div>
                         </div>
                     </div>
+                    
+                    <button onclick="saveSystemSettings()" class="bg-sapphire text-white font-bold py-3 px-8 rounded hover:bg-blue-700 transition text-sm">שמור והחל על כל המערכת</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- BROKER / MANAGER PORTAL MODAL -->
+    <div id="userPortalModal" class="modal-hidden fixed inset-0 z-[100] items-center justify-center p-0 md:p-4">
+        <div class="absolute inset-0 bg-[#020617]/98 backdrop-blur-md"></div>
+        <div class="relative w-full h-[100vh] md:h-[90vh] md:max-w-6xl bg-slate-950 md:rounded-2xl shadow-2xl border border-slate-800 flex flex-col overflow-hidden">
+            
+            <header class="bg-slate-900 border-b border-slate-800 p-4 md:p-6 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-crystal/20 flex items-center justify-center border border-crystal/50 text-crystal">
+                        <i class="fa-solid fa-user-tie text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg md:text-xl font-bold text-white" id="portalUserName">שם משתמש</h2>
+                        <span class="text-xs text-crystal bg-crystal/10 px-2 py-0.5 rounded" id="portalUserRole">תפקיד</span>
+                    </div>
+                </div>
+                <button onclick="logout()" class="text-red-400 hover:text-white bg-red-900/30 px-4 py-2 rounded text-sm font-bold transition">התנתק</button>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-4 md:p-8" id="portalContent">
+                <!-- Injected via JS based on role -->
+            </div>
+        </div>
+    </div>
+
+    <!-- QUICK EDIT MODAL (Admin overrides) -->
+    <div id="quickEditModal" class="modal-hidden fixed inset-0 z-[200] items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeQuickEdit()"></div>
+        <div class="relative bg-slate-900 border border-slate-700 p-6 rounded-xl shadow-2xl max-w-sm w-full">
+            <h3 class="text-xl font-bold text-white mb-4">עריכת נתונים מהירה</h3>
+            <div class="space-y-3">
+                <input type="hidden" id="editUserId">
+                <input type="hidden" id="editUserCollection">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">שם מלא</label>
+                    <input type="text" id="editName" class="w-full bg-black border border-slate-700 rounded p-2 text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">שם משתמש (התחברות)</label>
+                    <input type="text" id="editUser" class="w-full bg-black border border-slate-700 rounded p-2 text-white ltr-dir">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">סיסמה</label>
+                    <input type="text" id="editPass" class="w-full bg-black border border-slate-700 rounded p-2 text-white ltr-dir">
+                </div>
+                <div id="editBrokerFields" class="hidden space-y-3">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">שיוך מנהל מכירות (ID)</label>
+                        <select id="editManagerId" class="w-full bg-black border border-slate-700 rounded p-2 text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">נוסעים (ידני)</label>
+                        <input type="number" id="editPax" class="w-full bg-black border border-slate-700 rounded p-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">עסקאות שנסגרו (ידני)</label>
+                        <input type="number" id="editSales" class="w-full bg-black border border-slate-700 rounded p-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-crystal font-bold mb-1">סטטוס קידום (ידרוס אוטומציה)</label>
+                        <input type="text" id="editPromo" placeholder="למשל: זכה בחופשה!" class="w-full bg-blue-900/30 border border-blue-700 rounded p-2 text-white">
+                    </div>
                 </div>
             </div>
-        </main>
-    </div>
-
-    <!-- Edit User Modal (Admin Only) -->
-    <div id="userModal" class="modal-hidden fixed inset-0 z-[160] items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeUserModal()"></div>
-        <div class="relative glass-card w-full max-w-md p-6 rounded-2xl shadow-2xl border border-slate-800">
-            <h3 id="userModalTitle" class="text-xl font-bold mb-4">עריכת משתמש / הגדרת יעדים</h3>
-            <form id="userForm" onsubmit="saveUser(event)" class="space-y-3">
-                <input type="hidden" id="umId">
-                <input type="hidden" id="umRole">
-                <div><label class="text-xs text-slate-400">שם מלא</label><input type="text" id="umName" required class="w-full bg-slate-900 border border-slate-700 p-2 text-white rounded"></div>
-                <div><label class="text-xs text-slate-400">שם משתמש (User ID / רישיון)</label><input type="text" id="umUser" required class="w-full bg-slate-900 border border-slate-700 p-2 text-white rounded ltr-dir text-right"></div>
-                <div><label class="text-xs text-slate-400">סיסמה</label><input type="text" id="umPass" required class="w-full bg-slate-900 border border-slate-700 p-2 text-white rounded ltr-dir text-right"></div>
-                
-                <!-- Agent specifics (Gamification Override) -->
-                <div id="umAgentFields" class="hidden space-y-3 border-t border-slate-800 pt-3 mt-3">
-                    <div><label class="text-xs text-slate-400">שיוך למנהל מכירות</label><select id="umManager" class="w-full bg-slate-900 border border-slate-700 p-2 text-white rounded"></select></div>
-                    <div><label class="text-xs text-gold font-bold">קידום סטטוס אישי (מוצג לסוכן)</label><input type="text" id="umPromo" placeholder="למשל: זכית בחופשה זוגית!" class="w-full bg-slate-900 border border-slate-700 p-2 text-white rounded"></div>
-                    <div class="flex gap-2">
-                        <div class="flex-1"><label class="text-xs text-slate-400">כמות נוסעים (עריכה ידנית)</label><input type="number" id="umPax" class="w-full bg-slate-900 border border-slate-700 p-2 text-white rounded text-center"></div>
-                        <div class="flex-1"><label class="text-xs text-slate-400">עסקאות שנסגרו</label><input type="number" id="umSales" class="w-full bg-slate-900 border border-slate-700 p-2 text-white rounded text-center"></div>
-                    </div>
-                    <p class="text-[10px] text-gray-500">עריכה ידנית של נוסעים ועסקאות תגבר על החישוב האוטומטי ממערכת הסיורים.</p>
-                </div>
-                
-                <div class="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-800">
-                    <button type="button" onclick="closeUserModal()" class="bg-slate-800 text-white px-4 py-2 rounded">ביטול</button>
-                    <button type="submit" class="bg-crystal text-black font-bold px-4 py-2 rounded">שמור נתונים</button>
-                </div>
-            </form>
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeQuickEdit()" class="flex-1 bg-slate-800 text-white rounded p-2 text-sm">ביטול</button>
+                <button onclick="saveQuickEdit()" class="flex-1 bg-crystal text-black font-bold rounded p-2 text-sm">שמור שינויים</button>
+            </div>
         </div>
     </div>
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal-hidden fixed inset-0 z-[150] items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="toggleLoginModal()"></div>
-        <div class="relative glass-card w-full max-w-sm p-8 rounded-2xl shadow-2xl border border-slate-800 text-center">
-            <button onclick="toggleLoginModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white bg-black/50 w-8 h-8 rounded-full flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-            <i class="fa-solid fa-user-shield text-4xl text-crystal mb-4 block"></i>
-            <h3 class="text-2xl font-bold mb-2">כניסת שותפים</h3>
-            <p class="text-xs text-gray-400 mb-6">סוכנים, מנהלים ואדמין. (סיסמאות דרך אדמין)</p>
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <input type="text" id="loginUser" class="w-full bg-slate-900 border border-slate-800 rounded-md p-3 text-white outline-none ltr-dir text-center" placeholder="שם משתמש / מס' רישיון" required>
-                <input type="password" id="loginPass" class="w-full bg-slate-900 border border-slate-800 rounded-md p-3 text-white outline-none ltr-dir text-center tracking-widest" placeholder="סיסמה" required>
-                <button type="submit" class="w-full bg-sapphire hover:bg-blue-700 text-white font-bold py-3 rounded-md transition mt-2 shadow-lg">התחבר למערכת</button>
-            </form>
-        </div>
-    </div>
-
+    <!-- MAIN FIREBASE SCRIPT -->
     <script>
-        // 1. Firebase Config
+        // 1. Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyB32AlVvDNuxtgUTQVBIbHe02MJw-fx7Iw",
             authDomain: "orizisreal.firebaseapp.com",
@@ -631,474 +746,959 @@
             messagingSenderId: "292168300123",
             appId: "1:292168300123:web:cb59aa942da7c12aeb317e"
         };
+
+        // 2. Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 2. Global State Arrays
-        let dbProps = [], dbAgents = [], dbMgrs = [], dbBooks = [], dbCMS = {};
-        let currentUser = null; // Holds login state { role: 'admin'|'manager'|'agent', id, name }
+        // 3. Global App State
+        let propertiesDB = [];
+        let brokerDatabase = [];
+        let managersDB = [];
+        let bookingsDB = [];
+        let currentPropMedia = [];
+        let globalSettings = {
+            whatsapp: '972542456102',
+            tourPrice: 870,
+            heroTitle: 'נדל"ן ברמה מוסדית.\nעכשיו נגיש החל מ-$50,000.',
+            heroText: 'רכשו נכסי פרימיום מניבים באזרבייג\'ן עם בעלות מלאה בטאבו. ההזדמנות שלכם להשתלב בכלכלה צומחת, ליהנות מ-0% מס רכישה, ולקבל אופק לתושבות זרה.',
+            broadcast: ''
+        };
+        let currentUser = null; // { role: 'admin'|'manager'|'broker', data: {...} }
 
-        // 3. Utils: Image Compressor (Canvas approach to avoid 1MB limit for heavy uploads without Storage)
-        function compressImage(file, callback) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 1000; const MAX_HEIGHT = 800;
-                    let width = img.width; let height = img.height;
-                    if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
-                    else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
-                    canvas.width = width; canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    callback(canvas.toDataURL('image/jpeg', 0.6)); // 60% quality jpeg
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
+        // Realistic Flight Options for TLV (Mondays/Tuesdays)
+        const flightOptionsTLV = [
+            { id: 'F1', text: 'El Al (אל על) - טיסה LY 211 | שעה 09:00 | ישיר' },
+            { id: 'F2', text: 'Azerbaijan Airlines (AZAL) - טיסה J2 22 | שעה 12:30 | ישיר' },
+            { id: 'F3', text: 'Israir (ישראייר) - טיסה 6H 171 | שעה 15:40 | ישיר' },
+            { id: 'F4', text: 'Arkia (ארקיע) - טיסה IZ 411 | שעה 10:15 | ישיר' }
+        ];
 
-        // Utils: UI
-        function showNotification(msg, isError = false) {
-            const n = document.getElementById('notification');
-            const icon = n.querySelector('i');
-            if(isError){ n.classList.replace('border-blue-500','border-red-500'); icon.className='fa-solid fa-circle-exclamation text-xl text-red-500 shrink-0'; }
-            else { n.classList.replace('border-red-500','border-blue-500'); icon.className='fa-solid fa-circle-check text-xl text-crystal shrink-0'; }
-            document.getElementById('notificationMessage').innerText = msg;
-            n.classList.remove('-translate-x-[150%]');
-            setTimeout(() => n.classList.add('-translate-x-[150%]'), 4000);
-        }
-
-        let confirmCallback = null;
-        function showConfirm(title, message, callback) {
-            document.getElementById('confirmTitle').innerText = title;
-            document.getElementById('confirmMessage').innerText = message;
-            confirmCallback = callback; // Store the function
-            const m = document.getElementById('confirmModal');
-            m.classList.remove('modal-hidden'); m.classList.add('modal-visible');
-            
-            // Re-bind the confirm button logic to execute the callback properly
-            document.getElementById('confirmBtn').onclick = () => {
-                const cb = confirmCallback; // cache the callback
-                closeConfirm();             // Close the modal visually and nullify confirmCallback
-                if(cb) cb();                // Execute the cached callback to perform the Firebase delete
-            };
-        }
-        function closeConfirm() { 
-            document.getElementById('confirmModal').classList.add('modal-hidden'); 
-            document.getElementById('confirmModal').classList.remove('modal-visible'); 
-            confirmCallback = null; 
-        }
-
-        function copyLink(inputId) {
-            const input = document.getElementById(inputId);
-            input.type = 'text'; input.select(); document.execCommand('copy'); input.type = 'hidden';
-            showNotification('קישור שותפים הועתק ללוח.');
-        }
-
-        // 4. Init App
+        // 4. Initialization
         function initApp() {
+            initFirebaseListeners();
             initCalendar();
             
-            // Listen to CMS (Site Content)
-            db.collection("site_content").doc("main").onSnapshot(doc => {
-                if (doc.exists) { dbCMS = doc.data(); } 
-                else { dbCMS = { heroTitle: 'נדל"ן ברמה מוסדית.<br><span class="text-crystal">עכשיו נגיש מ-$50,000.</span>', heroSub: 'רכשו נכסי פרימיום מניבים באזרבייג\'ן...', heroImg: 'https://images.unsplash.com/photo-1613490908236-4700f5317789?ixlib=rb-4.0.3', tourPrice: '$870', wa: '972542456102', broadcast: '' }; }
-                applyCMS();
+            // Check Affiliate/Referral Link
+            const urlParams = new URLSearchParams(window.location.search);
+            const refId = urlParams.get('broker_ref');
+            if(refId) {
+                // We will auto-select this broker when the list loads
+                localStorage.setItem('orizis_ref', refId);
+            }
+        }
+
+        function initFirebaseListeners() {
+            // Listen to Settings (CMS)
+            db.collection("settings").doc("global").onSnapshot((doc) => {
+                if (doc.exists) {
+                    const s = doc.data();
+                    globalSettings = { ...globalSettings, ...s };
+                    applyGlobalSettings();
+                }
             });
 
             // Listen to Properties
-            db.collection("properties").onSnapshot(snap => {
-                dbProps = []; snap.forEach(doc => dbProps.push({ id: doc.id, ...doc.data() }));
-                document.getElementById('projectsLoader').classList.add('hidden');
+            db.collection("properties").onSnapshot((snapshot) => {
+                propertiesDB = [];
+                snapshot.forEach((doc) => { propertiesDB.push({ firestoreId: doc.id, ...doc.data() }); });
+                
+                const loader = document.getElementById('projectsLoader');
+                if(loader) loader.classList.add('hidden');
                 document.getElementById('projectsContainer').classList.remove('hidden');
-                renderCollection('all'); renderAdminProps(); updateDashboards();
+                
+                renderCollection('all');
+                renderAdminProperties();
+                if(currentUser && currentUser.role === 'admin') updateAdminStats();
             });
 
-            // Listen to Managers, Agents, Bookings
-            db.collection("managers").onSnapshot(snap => { dbMgrs = []; snap.forEach(doc => dbMgrs.push({ id: doc.id, ...doc.data() })); updateDashboards(); });
-            db.collection("agents").onSnapshot(snap => { dbAgents = []; snap.forEach(doc => dbAgents.push({ id: doc.id, ...doc.data() })); updateDashboards(); updatePublicBrokers(); });
-            db.collection("bookings").orderBy('timestamp', 'desc').onSnapshot(snap => { dbBooks = []; snap.forEach(doc => dbBooks.push({ id: doc.id, ...doc.data() })); updateDashboards(); });
-
-            checkUrlRef();
-        }
-
-        // Smart Affiliate Check
-        function checkUrlRef() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const agentRef = urlParams.get('agent_ref');
-            const mgrRef = urlParams.get('mgr_ref'); // Future-proof if a manager recruits an agent via link
-            if(agentRef) { sessionStorage.setItem('ref_agent', agentRef); showNotification('קוד סוכן הופעל. הבקשה תשויך אוטומטית.'); }
-        }
-
-        // CMS Apply to UI
-        function applyCMS() {
-            document.getElementById('cms-hero-title').innerHTML = dbCMS.heroTitle;
-            document.getElementById('cms-hero-subtitle').innerText = dbCMS.heroSub;
-            document.getElementById('cms-hero-img').src = dbCMS.heroImg;
-            document.getElementById('cms-tour-price').innerText = dbCMS.tourPrice;
-            document.getElementById('wa-btn').href = 'https://wa.me/' + dbCMS.wa;
-            
-            // Broadcasts for agents
-            const bArea = document.getElementById('agentBroadcastArea');
-            if(dbCMS.broadcast && dbCMS.broadcast !== '') { bArea.innerText = dbCMS.broadcast; bArea.classList.remove('hidden'); } 
-            else { bArea.classList.add('hidden'); }
-            
-            // Populate Admin Inputs
-            document.getElementById('cmsTitle').value = dbCMS.heroTitle.replace(/<br>/g, '').replace(/<span class="text-crystal">/g, '').replace(/<\/span>/g, ''); // Basic strip for edit
-            document.getElementById('cmsSub').value = dbCMS.heroSub;
-            document.getElementById('cmsTourPrice').value = dbCMS.tourPrice;
-            document.getElementById('cmsWa').value = dbCMS.wa;
-            document.getElementById('cmsBroadcastMsg').value = dbCMS.broadcast || '';
-            
-            calculateLivePrice(); // update form price if base changed
-        }
-
-        function switchView(view) {
-            ['public','agent','manager','admin'].forEach(v => {
-                const el = document.getElementById('view-' + v);
-                if(v === view) { el.classList.remove('hidden'); el.classList.add('block'); }
-                else { el.classList.remove('block'); el.classList.add('hidden'); }
-            });
-            const nav = document.getElementById('navbar');
-            if(view === 'public') nav.classList.remove('hidden'); else nav.classList.add('hidden');
-            if(view === 'public') currentUser = null;
-        }
-
-        function toggleLoginModal() {
-            const m = document.getElementById('loginModal');
-            if(m.classList.contains('modal-hidden')){ m.classList.remove('modal-hidden'); m.classList.add('modal-visible'); }
-            else { m.classList.add('modal-hidden'); m.classList.remove('modal-visible'); }
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const u = document.getElementById('loginUser').value.trim();
-            const p = document.getElementById('loginPass').value.trim();
-            
-            if(u === 'admin' && p === 'admin') {
-                currentUser = { role: 'admin', name: 'Master Admin' };
-                toggleLoginModal(); switchView('admin'); showNotification('מחובר כ-Admin'); updateDashboards();
-                return;
-            }
-            
-            const mgr = dbMgrs.find(m => m.user === u && m.pass === p);
-            if(mgr) {
-                currentUser = { role: 'manager', id: mgr.id, name: mgr.name };
-                toggleLoginModal(); switchView('manager'); showNotification('מחובר כמנהל מחוז');
-                document.getElementById('managerNameDisplay').innerText = mgr.name;
-                document.getElementById('mgrAffiliateLink').value = window.location.origin + window.location.pathname + '?mgr_ref=' + mgr.id;
-                updateDashboards(); return;
-            }
-            
-            const agt = dbAgents.find(a => a.user === u && a.pass === p);
-            if(agt) {
-                currentUser = { role: 'agent', id: agt.id, name: agt.name };
-                toggleLoginModal(); switchView('agent'); showNotification('מחובר כסוכן');
-                document.getElementById('agentNameDisplay').innerText = agt.name;
-                document.getElementById('agentAffiliateLink').value = window.location.origin + window.location.pathname + '?agent_ref=' + agt.id;
-                updateDashboards(); return;
-            }
-            
-            showNotification('פרטי התחברות שגויים', true);
-        }
-        function logout() { document.getElementById('loginUser').value=''; document.getElementById('loginPass').value=''; switchView('public'); showNotification('נותקת.'); }
-
-        function updateDashboards() {
-            if(!currentUser) return;
-            
-            if(currentUser.role === 'admin') {
-                document.getElementById('adStatBooks').innerText = dbBooks.length;
-                document.getElementById('adStatAgts').innerText = dbAgents.length;
-                document.getElementById('adStatMgrs').innerText = dbMgrs.length;
-                document.getElementById('adStatSales').innerText = dbBooks.filter(b => b.status === 'סגר עסקה!').length;
-                renderAdminBookings(); renderAdminUsers();
-            }
-            else if(currentUser.role === 'manager') {
-                const myAgents = dbAgents.filter(a => a.mgrId === currentUser.id);
-                document.getElementById('mgrStatAgents').innerText = myAgents.length;
-                
-                let teamPax = 0; let teamSales = 0; let wallet = myAgents.length * 50; // 50$ per signed agent
-                const table = document.getElementById('mgrAgentsTable'); table.innerHTML = '';
-                
-                myAgents.forEach(agt => {
-                    const agtBooks = dbBooks.filter(b => b.agentId === agt.id);
-                    let apax = agt.overridePax != null ? agt.overridePax : 0; 
-                    let asales = agt.sales != null ? agt.sales : 0;
-                    
-                    if(agt.overridePax == null) agtBooks.forEach(b => apax += parseInt(b.pax||0));
-                    if(agt.sales == null) agtBooks.filter(b => b.status === 'סגר עסקה!').forEach(() => asales++);
-                    
-                    teamPax += apax; teamSales += asales;
-                    let topAch = agt.promo || (apax >= 200 ? 'דירה ב-Sea Breeze!' : apax >= 100 ? 'בונוס 10,000$' : apax >= 50 ? 'חופשה זוגית' : apax >= 10 ? 'טיסה חינם' : 'מתחיל את דרכו');
-                    table.innerHTML += `<tr class="hover:bg-white/5 border-b border-slate-800/50"><td class="p-3">${agt.name}</td><td class="p-3 font-mono">${apax}</td><td class="p-3 font-mono text-crystal">${asales}</td><td class="p-3 text-gold">${topAch}</td></tr>`;
-                });
-                
-                document.getElementById('mgrStatPax').innerText = teamPax;
-                wallet += (teamPax * 100) + (teamSales * 1000);
-                document.getElementById('mgrStatWallet').innerText = '$' + wallet.toLocaleString();
-                
-                // Free Ticket logic for manager (12 pax in a single tour date from team)
-                const datesCount = {};
-                myAgents.forEach(agt => { dbBooks.filter(b => b.agentId === agt.id).forEach(b => { datesCount[b.tourDate] = (datesCount[b.tourDate]||0) + parseInt(b.pax||0); }); });
-                const hasFree = Object.values(datesCount).some(c => c >= 12);
-                if(hasFree) document.getElementById('mgrFreeTicketAlert').classList.remove('hidden'); else document.getElementById('mgrFreeTicketAlert').classList.add('hidden');
-            }
-            else if(currentUser.role === 'agent') {
-                const me = dbAgents.find(a => a.id === currentUser.id);
-                if(!me) return;
-                
-                const myBooks = dbBooks.filter(b => b.agentId === currentUser.id);
-                let myPax = me.overridePax != null ? me.overridePax : 0; 
-                let mySales = me.sales != null ? me.sales : 0;
-                
-                if(me.overridePax == null) myBooks.forEach(b => myPax += parseInt(b.pax||0));
-                if(me.sales == null) myBooks.filter(b => b.status === 'סגר עסקה!').forEach(() => mySales++);
-                
-                document.getElementById('agentStatPax').innerText = myPax;
-                document.getElementById('agentStatSales').innerText = mySales;
-                document.getElementById('agentStatCommissions').innerText = '$' + ((myPax*500)+(mySales*2000)).toLocaleString(); // Agent dummy logic
-                
-                // Gamification Progress
-                const aptProg = document.getElementById('agentAptProgress');
-                const aptTxt = document.getElementById('agentAptText');
-                
-                if(me.promo) { aptTxt.innerText = me.promo; aptProg.style.width = '100%'; aptProg.className = 'bg-gold h-4 rounded-full transition-all duration-1000'; }
-                else if(myPax >= 200) { aptTxt.innerText = "זכית בדירה ב-Sea Breeze!"; aptProg.style.width = '100%'; aptProg.className = 'bg-gold h-4 rounded-full transition-all duration-1000'; }
-                else { 
-                    let pct = Math.min((myPax/200)*100, 100); 
-                    aptProg.style.width = pct + '%'; 
-                    let nextGoal = myPax < 10 ? 'חסרים '+(10-myPax)+' לטיסה חינם' : myPax < 50 ? 'חסרים '+(50-myPax)+' לחופשה' : myPax < 100 ? 'חסרים '+(100-myPax)+' לבונוס $10K' : 'חסרים '+(200-myPax)+' לדירה!';
-                    aptTxt.innerText = nextGoal;
+            // Listen to Managers
+            db.collection("managers").onSnapshot((snapshot) => {
+                managersDB = [];
+                snapshot.forEach((doc) => { managersDB.push({ firestoreId: doc.id, ...doc.data() }); });
+                if(currentUser && currentUser.role === 'admin') {
+                    renderAdminManagers();
+                    populateManagerDropdowns();
                 }
-                
-                const crm = document.getElementById('agentClientsTable'); crm.innerHTML = '';
-                myBooks.forEach(b => {
-                    let stColor = b.status==='סגר עסקה!' ? 'text-green-400' : 'text-crystal';
-                    crm.innerHTML += `<tr class="hover:bg-white/5 border-b border-slate-800/50"><td class="p-3">${b.name}</td><td class="p-3 ltr-dir text-xs">${b.phone}</td><td class="p-3">${b.pax}</td><td class="p-3">${b.tourDate}</td><td class="p-3 font-bold ${stColor}">${b.status}</td></tr>`;
-                });
+            });
+
+            // Listen to Brokers
+            db.collection("brokers").onSnapshot((snapshot) => {
+                brokerDatabase = [];
+                snapshot.forEach((doc) => { brokerDatabase.push({ firestoreId: doc.id, ...doc.data() }); });
+                populatePublicBrokerSelect();
+                if(currentUser && currentUser.role === 'admin') {
+                    renderAdminBrokers();
+                    updateAdminStats();
+                }
+                if(currentUser && currentUser.role === 'manager') renderManagerPortal();
+            });
+
+            // Listen to Bookings
+            db.collection("bookings").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+                bookingsDB = [];
+                snapshot.forEach((doc) => { bookingsDB.push({ firestoreId: doc.id, ...doc.data() }); });
+                if(currentUser && currentUser.role === 'admin') {
+                    renderAdminBookings();
+                    updateAdminStats();
+                }
+                if(currentUser && currentUser.role === 'broker') renderBrokerPortal();
+                if(currentUser && currentUser.role === 'manager') renderManagerPortal();
+            });
+        }
+
+        function applyGlobalSettings() {
+            // Update Public UI
+            document.getElementById('wa-btn').href = 'https://wa.me/' + globalSettings.whatsapp;
+            document.getElementById('publicHeroTitle').innerHTML = globalSettings.heroTitle.replace(/\n/g, '<br>');
+            document.getElementById('publicHeroText').innerHTML = globalSettings.heroText;
+            document.getElementById('publicBasePriceDisplay').innerText = globalSettings.tourPrice + '$';
+            calculateLivePrice();
+
+            // Broadcast Banner
+            const banner = document.getElementById('broadcastBanner');
+            if(globalSettings.broadcast && globalSettings.broadcast.trim() !== '') {
+                document.getElementById('broadcastText').innerText = globalSettings.broadcast;
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+
+            // Update Admin Inputs if logged in
+            if(document.getElementById('adminWaInput')) {
+                document.getElementById('adminWaInput').value = globalSettings.whatsapp;
+                document.getElementById('adminTourPrice').value = globalSettings.tourPrice;
+                document.getElementById('adminBroadcastInput').value = globalSettings.broadcast || '';
+                document.getElementById('adminHeroTitle').value = globalSettings.heroTitle;
+                document.getElementById('adminHeroText').value = globalSettings.heroText;
             }
         }
 
-        function switchAdminTab(t, btn) {
-            document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.replace('bg-sapphire','text-gray-400'));
-            document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.replace('text-white','hover:bg-white/5'));
-            btn.className = 'shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-3 rounded-lg text-sm font-bold bg-sapphire text-white';
-            ['dash','bookings','users','props','cms'].forEach(x => {
-                const e = document.getElementById('admin-'+x);
-                if(x===t){ e.classList.remove('hidden'); e.classList.add('block'); } else { e.classList.add('hidden'); e.classList.remove('block'); }
-            });
-        }
-
-        function renderAdminBookings() {
-            const t = document.getElementById('adminBookingsTable'); t.innerHTML = '';
-            dbBooks.forEach(b => {
-                const agt = dbAgents.find(a => a.id === b.agentId);
-                const agtName = agt ? agt.name : 'ישיר מהאתר';
-                t.innerHTML += `
-                    <tr class="hover:bg-white/5 border-b border-slate-800">
-                        <td class="p-3">${b.name}</td><td class="p-3 ltr-dir text-gray-400 text-xs">${b.phone}</td><td class="p-3">${b.pax}</td><td class="p-3">${b.tourDate}</td><td class="p-3 text-crystal">${agtName}</td>
-                        <td class="p-3">
-                            <select onchange="updateBookStatus('${b.id}', this.value)" class="bg-slate-900 border border-slate-700 rounded p-1 text-xs outline-none text-white cursor-pointer w-full max-w-[120px]">
-                                <option value="בהמתנה לאישור" ${b.status==='בהמתנה לאישור'?'selected':''}>בהמתנה לאישור</option>
-                                <option value="טס בפועל" ${b.status==='טס בפועל'?'selected':''}>טס בפועל</option>
-                                <option value="סגר עסקה!" ${b.status==='סגר עסקה!'?'selected':''}>סגר עסקה!</option>
-                            </select>
-                        </td>
-                        <td class="p-3 text-left no-print"><button onclick="deleteDoc('bookings','${b.id}')" class="text-slate-500 hover:text-red-500 transition px-2 py-1"><i class="fa-solid fa-trash"></i></button></td>
-                    </tr>`;
-            });
-        }
-
-        function updateBookStatus(id, stat) { db.collection("bookings").doc(id).update({ status: stat }); showNotification('סטטוס עודכן בשרת. עמלות יסונכרנו בהתאם.'); }
-
-        function renderAdminUsers() {
-            const mt = document.getElementById('adminManagersTable'); mt.innerHTML = '';
-            const mgrSel = document.getElementById('umManager'); mgrSel.innerHTML = '<option value="">ללא מנהל (עצמאי)</option>';
+        function populatePublicBrokerSelect() {
+            const select = document.getElementById('publicBrokerSelect');
+            if(!select) return;
+            const refId = localStorage.getItem('orizis_ref');
             
-            dbMgrs.forEach(m => {
-                mt.innerHTML += `<tr class="hover:bg-white/5 border-b border-slate-800"><td class="p-3">${m.name}</td><td class="p-3 ltr-dir text-gray-400 text-xs">${m.user} / ${m.pass}</td><td class="p-3 text-left"><button onclick="editUser('manager','${m.id}')" class="text-blue-400 ml-3"><i class="fa-solid fa-pen"></i></button><button onclick="deleteDoc('managers','${m.id}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button></td></tr>`;
-                mgrSel.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+            let html = '<option value="">ללא סוכן / הגעה עצמאית</option>';
+            brokerDatabase.forEach(b => {
+                html += `<option value="${b.firestoreId}" ${b.firestoreId === refId ? 'selected' : ''}>${b.name || b.licenseId}</option>`;
             });
-
-            const at = document.getElementById('adminAgentsTable'); at.innerHTML = '';
-            dbAgents.forEach(a => {
-                const mgr = dbMgrs.find(m => m.id === a.mgrId);
-                at.innerHTML += `<tr class="hover:bg-white/5 border-b border-slate-800"><td class="p-3">${a.name}</td><td class="p-3 ltr-dir text-gray-400 text-xs">${a.user} / ${a.pass}</td><td class="p-3 text-xs">${mgr?mgr.name:'-'}</td><td class="p-3 text-gold text-xs">${a.promo||'-'}</td><td class="p-3 text-left"><button onclick="editUser('agent','${a.id}')" class="text-blue-400 ml-3"><i class="fa-solid fa-pen"></i></button><button onclick="deleteDoc('agents','${a.id}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button></td></tr>`;
-            });
+            select.innerHTML = html;
         }
 
-        function renderAdminProps() {
-            const t = document.getElementById('adminPropsTable'); t.innerHTML = '';
-            dbProps.forEach(p => { 
-                t.innerHTML += `<tr class="border-b border-slate-800 hover:bg-white/5"><td class="p-2 py-3">${p.title}</td><td class="p-2 ltr-dir text-crystal font-bold text-xs">${p.price}</td><td class="p-2 text-left"><button onclick="deleteDoc('properties','${p.id}')" class="text-slate-500 hover:text-red-500 transition px-2"><i class="fa-solid fa-trash"></i></button></td></tr>`; 
-            });
-        }
-
-        // Generic Delete using Custom Confirm
-        function deleteDoc(collection, id) { 
-            showConfirm('אזהרת מחיקה', 'פעולה זו תמחק את הרשומה מכל המערכות. האם להמשיך?', () => { 
-                db.collection(collection).doc(id).delete()
-                .then(() => showNotification('הרשומה נמחקה והענן סונכרן.'))
-                .catch((error) => showNotification('שגיאה במחיקה: בדוק חוקי אבטחה ב-Firebase.', true)); 
-            }); 
-        }
-
-        function openUserModal(role) {
-            document.getElementById('umRole').value = role; document.getElementById('umId').value = '';
-            document.getElementById('userForm').reset();
-            document.getElementById('userModalTitle').innerText = role==='manager' ? 'הוספת/עריכת מנהל' : 'הוספת/עריכת סוכן';
-            document.getElementById('umAgentFields').style.display = role==='agent' ? 'block' : 'none';
-            document.getElementById('userModal').classList.replace('modal-hidden', 'modal-visible');
-        }
-        function closeUserModal() { document.getElementById('userModal').classList.replace('modal-visible', 'modal-hidden'); }
-        
-        function editUser(role, id) {
-            openUserModal(role);
-            const user = role==='manager' ? dbMgrs.find(u=>u.id===id) : dbAgents.find(u=>u.id===id);
-            if(!user) return;
-            document.getElementById('umId').value = user.id; document.getElementById('umName').value = user.name;
-            document.getElementById('umUser').value = user.user; document.getElementById('umPass').value = user.pass;
-            if(role==='agent') {
-                document.getElementById('umManager').value = user.mgrId || ''; document.getElementById('umPromo').value = user.promo || '';
-                document.getElementById('umPax').value = user.overridePax != null ? user.overridePax : ''; 
-                document.getElementById('umSales').value = user.sales != null ? user.sales : '';
+        function showNotification(message, isError = false) {
+            const notif = document.getElementById('notification');
+            const msgEl = document.getElementById('notificationMessage');
+            if(isError) {
+                notif.classList.replace('border-blue-500', 'border-red-500');
+                notif.querySelector('i').className = 'fa-solid fa-circle-exclamation text-xl text-red-500 shrink-0';
+            } else {
+                notif.classList.replace('border-red-500', 'border-blue-500');
+                notif.querySelector('i').className = 'fa-solid fa-circle-check text-xl text-crystal shrink-0';
             }
+            notif.classList.remove('-translate-x-[150%]');
+            msgEl.innerText = message;
+            setTimeout(() => { notif.classList.add('-translate-x-[150%]'); }, 4000);
         }
 
-        function saveUser(e) {
-            e.preventDefault();
-            const id = document.getElementById('umId').value; const role = document.getElementById('umRole').value;
-            const data = { name: document.getElementById('umName').value, user: document.getElementById('umUser').value, pass: document.getElementById('umPass').value };
-            const coll = role==='manager' ? 'managers' : 'agents';
-            if(role==='agent') {
-                data.mgrId = document.getElementById('umManager').value; data.promo = document.getElementById('umPromo').value;
-                const paxVal = document.getElementById('umPax').value; data.overridePax = paxVal !== '' ? parseInt(paxVal) : null;
-                const salesVal = document.getElementById('umSales').value; data.sales = salesVal !== '' ? parseInt(salesVal) : null;
+        // Custom Confirm Logic (Replaces window.confirm)
+        let confirmCallback = null;
+        function customConfirm(title, text, callback) {
+            document.getElementById('confirmModalTitle').innerText = title;
+            document.getElementById('confirmModalText').innerText = text;
+            confirmCallback = callback;
+            const modal = document.getElementById('customConfirmModal');
+            modal.classList.remove('modal-hidden');
+            modal.classList.add('modal-visible');
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('customConfirmModal');
+            modal.classList.remove('modal-visible');
+            modal.classList.add('modal-hidden');
+            confirmCallback = null; // Clear callback on cancel
+        }
+
+        document.getElementById('confirmModalActionBtn').addEventListener('click', function() {
+            if(confirmCallback) {
+                const action = confirmCallback; // Store locally
+                closeConfirmModal(); // Close modal FIRST
+                action(); // Execute action SECOND
             }
-            if(id) db.collection(coll).doc(id).update(data).then(()=>{ showNotification('משתמש עודכן'); closeUserModal(); });
-            else db.collection(coll).add(data).then(()=>{ showNotification('משתמש נוצר'); closeUserModal(); });
-        }
+        });
 
-        function managerAddAgent(e) {
+        function handlePublicTourForm(e) {
             e.preventDefault();
-            const data = { name: document.getElementById('newAgtName').value, user: document.getElementById('newAgtUser').value, pass: document.getElementById('newAgtPass').value, mgrId: currentUser.id };
-            db.collection("agents").add(data).then(()=>{ showNotification('סוכן נוצר ומוכן לעבודה!'); e.target.reset(); });
-        }
-
-        function adminAddProperty(e) {
-            e.preventDefault();
-            const data = {
-                title: document.getElementById('propTitle').value, location: document.getElementById('propLoc').value,
-                price: document.getElementById('propPrice').value, category: document.getElementById('propCat').value,
-                tag: document.getElementById('propTag').value, yield: document.getElementById('propYield').value, desc: 'מידע מפורט ופרוספקטים ימסרו במהלך סיור משקיעים ה-VIP.'
-            };
-            const fileInput = document.getElementById('propImage');
-            if(fileInput.files && fileInput.files[0]) {
-                showNotification('מכווץ תמונה ומתחיל העלאה ל-Firestore... (אנא המתן)');
-                compressImage(fileInput.files[0], (base64Img) => {
-                    data.media = [{ type: 'image', url: base64Img }];
-                    db.collection("properties").add(data).then(()=>{ showNotification('הנכס באוויר!'); e.target.reset(); });
-                });
-            }
-        }
-
-        function saveCMS(e) {
-            e.preventDefault();
-            const fileInput = document.getElementById('cmsImageFile');
-            const update = { heroTitle: document.getElementById('cmsTitle').value, heroSub: document.getElementById('cmsSub').value };
-            if(fileInput.files && fileInput.files[0]) {
-                showNotification('מעדכן תמונת רקע בענן...');
-                compressImage(fileInput.files[0], (base64Img) => { update.heroImg = base64Img; db.collection("site_content").doc("main").set(update, {merge:true}).then(()=>showNotification('תוכן ותמונה עודכנו!')); });
-            } else { db.collection("site_content").doc("main").set(update, {merge:true}).then(()=>showNotification('תוכן מעודכן')); }
-        }
-        function saveConfig() { db.collection("site_content").doc("main").set({ wa: document.getElementById('cmsWa').value, tourPrice: document.getElementById('cmsTourPrice').value }, {merge:true}).then(()=>showNotification('הגדרות נשמרו')); }
-        function saveBroadcast() { db.collection("site_content").doc("main").set({ broadcast: document.getElementById('cmsBroadcastMsg').value }, {merge:true}).then(()=>showNotification('הודעה שודרה לסוכנים')); }
-        function clearBroadcast() { document.getElementById('cmsBroadcastMsg').value=''; saveBroadcast(); }
-
-        function updatePublicBrokers() {
-            const sel = document.getElementById('publicBrokerSelect');
-            sel.innerHTML = '<option value="">ללא סוכן (הגעה ישירה)</option>';
-            dbAgents.forEach(a => sel.innerHTML += `<option value="${a.id}">${a.name}</option>`);
+            const clientName = document.getElementById('clientNameInput').value;
+            const clientPhone = document.getElementById('clientPhoneInput').value;
+            const flightDate = document.getElementById('flightDateInput').value;
+            const pax = document.getElementById('paxCount').value;
+            const brokerId = document.getElementById('publicBrokerSelect').value;
+            const flightInfo = document.getElementById('flightSelect').value;
             
-            const ref = sessionStorage.getItem('ref_agent');
-            if(ref && dbAgents.find(a=>a.id===ref)) sel.value = ref;
+            if(!flightInfo) { showNotification('חובה לבחור טיסה מהרשימה', true); return; }
+
+            db.collection("bookings").add({
+                clientName: clientName,
+                clientPhone: clientPhone,
+                tourDate: flightDate,
+                flightInfo: flightInfo,
+                pax: parseInt(pax),
+                brokerId: brokerId,
+                timestamp: new Date().toISOString(),
+                status: 'בהמתנה לטיסה'
+            }).then(() => {
+                showNotification('בקשתך לסיור וטיסה נשלחה בהצלחה.');
+                e.target.reset();
+                document.getElementById('flightDateInput').value = '';
+                document.getElementById('returnDateDisplay').innerText = '--';
+                document.getElementById('flightSelect').innerHTML = '<option value="" disabled selected>יש לבחור תאריך תחילה</option>';
+                document.getElementById('flightSelect').disabled = true;
+                calculateLivePrice();
+            }).catch(error => {
+                showNotification('שגיאה בשליחת הבקשה', true);
+            });
         }
 
         function calculateLivePrice() {
-            const input = document.getElementById('paxCount'); let pax = parseInt(input.value) || 1;
-            if (pax > 8) { pax = 8; input.value = 8; } if (pax < 1) { pax = 1; input.value = 1; }
-            const bPrice = parseInt(dbCMS.tourPrice ? dbCMS.tourPrice.replace(/\D/g,'') : 870) || 870;
-            const dPrice = bPrice * 0.75; const pairs = Math.floor(pax / 2); const singles = pax % 2;
-            const tot = (pairs * (bPrice + dPrice)) + (singles * bPrice);
-            document.getElementById('livePriceDisplay').innerText = '$' + tot.toLocaleString('en-US');
+            const input = document.getElementById('paxCount');
+            if(!input) return;
+            let pax = parseInt(input.value) || 1;
+            if (pax > 8) { pax = 8; input.value = 8; }
+            if (pax < 1) { pax = 1; input.value = 1; }
+
+            const basePrice = globalSettings.tourPrice || 870;
+            const discountedPrice = basePrice * 0.75; 
+
+            const pairs = Math.floor(pax / 2);
+            const singles = pax % 2;
+            const totalPrice = (pairs * (basePrice + discountedPrice)) + (singles * basePrice);
+            
+            document.getElementById('livePriceDisplay').innerText = '$' + totalPrice.toLocaleString('en-US', {maximumFractionDigits: 0});
         }
 
-        function submitTourForm(e) {
-            e.preventDefault();
-            const data = {
-                name: document.getElementById('clientNameInput').value, phone: document.getElementById('clientPhoneInput').value,
-                pax: document.getElementById('paxCount').value, tourDate: document.getElementById('flightDateInput').value,
-                agentId: document.getElementById('publicBrokerSelect').value, status: 'בהמתנה לאישור', timestamp: new Date().toISOString()
+        // --- CALENDAR LOGIC (Mondays/Tuesdays to Wed/Thu) ---
+        let calMonth = new Date().getMonth();
+        let calYear = new Date().getFullYear();
+
+        function toggleCalendar() { document.getElementById('calendarDropdown').classList.toggle('hidden'); }
+
+        function initCalendar() {
+            renderCalendar(calMonth, calYear);
+            document.addEventListener('click', function(event) {
+                const cal = document.getElementById('calendarDropdown');
+                const input = document.getElementById('flightDateInput');
+                if (cal && !cal.contains(event.target) && event.target !== input) cal.classList.add('hidden');
+            });
+        }
+
+        function changeMonth(dir) {
+            calMonth += dir;
+            if (calMonth > 11) { calMonth = 0; calYear++; }
+            if (calMonth < 0) { calMonth = 11; calYear--; }
+            renderCalendar(calMonth, calYear);
+        }
+
+        function renderCalendar(month, year) {
+            const grid = document.getElementById('calGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calMonthYear').innerText = `${monthNames[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date(); today.setHours(0,0,0,0);
+            
+            for (let i = 0; i < firstDay; i++) { grid.innerHTML += `<div></div>`; }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const date = new Date(year, month, i);
+                const dayOfWeek = date.getDay();
+                // Allow ONLY Mondays (1) and Tuesdays (2)
+                const isAllowedDay = (dayOfWeek === 1 || dayOfWeek === 2);
+                const isValid = date >= today;
+
+                if (isAllowedDay && isValid) {
+                    grid.innerHTML += `<div class="calendar-day active-day" onclick="selectDate(${year}, ${month}, ${i})">${i}</div>`;
+                } else {
+                    grid.innerHTML += `<div class="calendar-day ${isAllowedDay ? 'line-through opacity-30' : ''}">${i}</div>`;
+                }
+            }
+        }
+
+        function selectDate(year, month, day) {
+            const selected = new Date(year, month, day);
+            const returnDate = new Date(selected);
+            returnDate.setDate(selected.getDate() + 2); // Return 48h later
+
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            document.getElementById('flightDateInput').value = selected.toLocaleDateString('en-US', options);
+            document.getElementById('returnDateDisplay').innerText = returnDate.toLocaleDateString('en-US', options);
+            
+            // Populate Flight Dropdown
+            const fSelect = document.getElementById('flightSelect');
+            fSelect.innerHTML = '<option value="" disabled selected>בחר טיסה מהרשימה...</option>';
+            flightOptionsTLV.forEach(f => {
+                fSelect.innerHTML += `<option value="${f.text}">${f.text}</option>`;
+            });
+            fSelect.disabled = false;
+            fSelect.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            toggleCalendar();
+        }
+
+        // --- IMAGE COMPRESSOR (HTML5 Canvas) ---
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Max width 800px to keep base64 string small for Firestore
+                    const maxWidth = 800;
+                    let scaleSize = 1;
+                    if(img.width > maxWidth) scaleSize = maxWidth / img.width;
+                    
+                    canvas.width = img.width * scaleSize;
+                    canvas.height = img.height * scaleSize;
+                    
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6); // 60% quality
+                    callback(compressedDataUrl);
+                }
             };
-            db.collection("bookings").add(data).then(()=>{ showNotification('הבקשה נשלחה לחמ"ל! ניצור קשר בהקדם.'); e.target.reset(); document.getElementById('flightDateInput').value=''; document.getElementById('returnDateDisplay').innerText='מחושב אוטומטית'; calculateLivePrice(); });
         }
 
-        function calculateROI() {
-            const val = parseInt(document.getElementById('roiInput').value);
-            document.getElementById('roiValueDisplay').innerText = '$' + val.toLocaleString();
-            document.getElementById('roiAnnual').innerText = '$' + (val*0.08).toLocaleString();
-            const cap = Math.floor(val * Math.pow(1.1, 5)) - val;
-            document.getElementById('roiCapital').innerText = '$' + cap.toLocaleString();
-            document.getElementById('roiTotal').innerText = '$' + (val + cap).toLocaleString();
+        function addNewProperty(e) {
+            e.preventDefault();
+            const title = document.getElementById('newPropTitle').value;
+            const location = document.getElementById('newPropLocation').value;
+            const price = document.getElementById('newPropPrice').value;
+            const category = document.getElementById('newPropCategory').value;
+            const fileInput = document.getElementById('newPropFile');
+            
+            if (fileInput.files && fileInput.files[0]) {
+                // Compress before upload
+                compressImage(fileInput.files[0], function(compressedData) {
+                    savePropertyToCloud(title, location, price, category, compressedData);
+                });
+            } else {
+                showNotification('יש לבחור קובץ תמונה.', true);
+            }
         }
 
-        function renderCollection(cat) {
-            const cont = document.getElementById('projectsContainer'); cont.innerHTML = '';
-            const f = cat === 'all' ? dbProps : dbProps.filter(p => p.category === cat);
-            f.forEach(p => {
-                cont.innerHTML += `
-                    <div class="glass-card rounded-2xl overflow-hidden group cursor-pointer relative flex flex-col h-full">
-                        <div class="absolute top-4 right-4 bg-black/90 text-white text-xs font-bold px-3 py-1.5 rounded z-10">${p.tag}</div>
-                        <div class="absolute top-4 left-4 bg-sapphire text-white text-sm font-black px-4 py-1.5 rounded z-10 ltr-dir">${p.price}</div>
-                        <div class="h-48 overflow-hidden relative shrink-0"><img src="${p.media[0].url}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700"></div>
-                        <div class="p-6 flex-1 flex flex-col">
-                            <h3 class="text-xl font-bold mb-2 text-white ltr-dir text-right w-full">${p.title}</h3>
-                            <p class="text-crystal text-sm mb-2"><i class="fa-solid fa-location-dot ml-2"></i> ${p.location}</p>
-                            <p class="text-[11px] text-gray-400 mb-4 bg-slate-900/50 p-2 rounded">${p.yield}</p>
-                            <button onclick="document.getElementById('tour').scrollIntoView({behavior:'smooth'})" class="w-full border border-slate-700 text-white text-sm py-2 rounded hover:bg-white hover:text-black transition mt-auto">לתיאום סיור בנכס</button>
+        function savePropertyToCloud(title, location, price, category, mediaUrl) {
+            const newProp = {
+                category: category, title: title, location: location, tag: 'נכס חדש', price: price, yield: 'פרטים במשרד',
+                desc: 'נכס פרימיום שהועלה כעת למערכת. פרטים מורחבים ופרוספקטים יימסרו במהלך סיור ה-VIP.',
+                media: [{ type: 'image', url: mediaUrl }]
+            };
+            db.collection("properties").add(newProp).then(() => {
+                showNotification('הנכס החדש נשמר בענן בהצלחה.');
+                document.getElementById('addPropertyForm').reset();
+            }).catch(e => showNotification('שגיאה בשמירת נכס.', true));
+        }
+
+        function renderCollection(category) {
+            const container = document.getElementById('projectsContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            const filtered = category === 'all' ? propertiesDB : propertiesDB.filter(p => p.category === category);
+
+            filtered.forEach(p => {
+                container.innerHTML += `
+                    <div class="glass-card rounded-2xl overflow-hidden group cursor-pointer relative flex flex-col" onclick="openPropertyModal('${p.firestoreId}')">
+                        <div class="absolute top-3 md:top-4 right-3 md:right-4 bg-[#020617]/90 backdrop-blur text-white text-[10px] md:text-xs font-bold px-2 md:px-3 py-1 md:py-1.5 rounded border border-slate-800 z-10">${p.tag}</div>
+                        <div class="absolute top-3 md:top-4 left-3 md:left-4 bg-sapphire text-white text-xs md:text-sm font-black px-3 md:px-4 py-1 md:py-1.5 rounded-md z-10 shadow-lg ltr-dir">מ- ${p.price}</div>
+                        <div class="h-48 md:h-64 overflow-hidden relative">
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition z-10"></div>
+                            <img src="${p.media[0].url}" alt="${p.title}" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-700">
+                        </div>
+                        <div class="p-5 md:p-8 flex-1 flex flex-col">
+                            <h3 class="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-white ltr-dir text-right w-full">${p.title}</h3>
+                            <p class="text-crystal text-xs md:text-sm mb-3 md:mb-4"><i class="fa-solid fa-location-dot ml-2"></i> ${p.location}</p>
+                            <p class="text-sm text-gray-400 mb-4 md:mb-6 line-clamp-2">${p.desc}</p>
                         </div>
                     </div>`;
             });
         }
-        function filterCollection(cat, btn) {
-            document.querySelectorAll('#categoryFilters button').forEach(b => { b.classList.remove('bg-sapphire','text-white'); b.classList.add('text-gray-400'); });
-            btn.classList.add('bg-sapphire','text-white'); btn.classList.remove('text-gray-400'); renderCollection(cat);
+
+        function filterCollection(category, btn) {
+            document.querySelectorAll('#categoryFilters button').forEach(b => {
+                b.classList.remove('bg-sapphire', 'text-white');
+                b.classList.add('text-gray-400', 'hover:text-white');
+            });
+            btn.classList.remove('text-gray-400', 'hover:text-white');
+            btn.classList.add('bg-sapphire', 'text-white');
+            renderCollection(category);
         }
 
-        // Calendar Logic (Tuesdays, 48 hours = Return Thursday)
-        let cMonth = new Date().getMonth(); let cYear = new Date().getFullYear();
-        function toggleCalendar() { document.getElementById('calendarDropdown').classList.toggle('hidden'); }
-        function initCalendar() { renderCal(cMonth, cYear); document.addEventListener('click', e => { const c = document.getElementById('calendarDropdown'); const i = document.getElementById('flightDateInput'); if(!c.contains(e.target) && e.target !== i) c.classList.add('hidden'); }); }
-        function changeMonth(d) { cMonth+=d; if(cMonth>11){cMonth=0;cYear++;} if(cMonth<0){cMonth=11;cYear--;} renderCal(cMonth,cYear); }
-        function renderCal(m, y) {
-            const g = document.getElementById('calGrid'); g.innerHTML = '';
-            document.getElementById('calMonthYear').innerText = `${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m]} ${y}`;
-            const fd = new Date(y, m, 1).getDay(); const dim = new Date(y, m+1, 0).getDate();
-            const td = new Date(); td.setHours(0,0,0,0); const md = new Date(); md.setFullYear(td.getFullYear()+1);
-            for(let i=0; i<fd; i++) g.innerHTML += `<div></div>`;
-            for(let i=1; i<=dim; i++) {
-                const d = new Date(y, m, i); const isT = d.getDay()===2; const isV = d>=td && d<=md;
-                if(isT && isV) g.innerHTML += `<div class="calendar-day tuesday" onclick="selectDate(${y},${m},${i})">${i}</div>`;
-                else g.innerHTML += `<div class="calendar-day ${isT?'line-through opacity-50':''}">${i}</div>`;
+        function renderAdminProperties() {
+            const tbody = document.getElementById('admin-prop-del-table');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            propertiesDB.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-2 font-bold">${p.title}</td>
+                        <td class="p-2 text-gray-400 ltr-dir">${p.price}</td>
+                        <td class="p-2 text-left">
+                            <button onclick="deleteEntity('properties', '${p.firestoreId}')" class="text-red-500 hover:text-red-400"><i class="fa-solid fa-trash"></i> מחיקה</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // --- AUTH & ROLES ---
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('loginUsername').value.trim();
+            const pass = document.getElementById('loginPassword').value.trim();
+
+            if (user === 'admin' && pass === 'admin') {
+                currentUser = { role: 'admin' };
+                loginSuccess('admin');
+                return;
+            }
+
+            // Check Managers
+            const manager = managersDB.find(m => m.username === user && m.password === pass);
+            if(manager) {
+                currentUser = { role: 'manager', data: manager };
+                loginSuccess('manager');
+                return;
+            }
+
+            // Check Brokers
+            const broker = brokerDatabase.find(b => b.licenseId === user && b.password === pass);
+            if(broker) {
+                currentUser = { role: 'broker', data: broker };
+                loginSuccess('broker');
+                return;
+            }
+
+            showNotification('פרטי התחברות שגויים.', true);
+        }
+
+        function loginSuccess(role) {
+            toggleLoginModal();
+            showNotification(`התחברת בהצלחה (${role})`);
+            document.getElementById('public-view').classList.add('hidden');
+            document.getElementById('navbar').classList.add('hidden');
+
+            if(role === 'admin') {
+                document.getElementById('adminModal').classList.remove('modal-hidden');
+                document.getElementById('adminModal').classList.add('modal-visible');
+                updateAdminStats();
+                renderAdminManagers();
+                renderAdminBrokers();
+                renderAdminBookings();
+            } else {
+                document.getElementById('userPortalModal').classList.remove('modal-hidden');
+                document.getElementById('userPortalModal').classList.add('modal-visible');
+                document.getElementById('portalUserName').innerText = currentUser.data.name;
+                document.getElementById('portalUserRole').innerText = role === 'manager' ? 'מנהל מכירות' : 'סוכן נדל"ן';
+                if(role === 'manager') renderManagerPortal();
+                if(role === 'broker') renderBrokerPortal();
             }
         }
-        function selectDate(y,m,d) {
-            const s = new Date(y,m,d); const r = new Date(s); r.setDate(s.getDate()+2); // +2 days = Thursday
-            document.getElementById('flightDateInput').value = s.toLocaleDateString('en-US', {weekday:'short',year:'numeric',month:'short',day:'numeric'});
-            document.getElementById('returnDateDisplay').innerText = r.toLocaleDateString('en-US', {weekday:'short',year:'numeric',month:'short',day:'numeric'});
-            toggleCalendar();
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            
+            document.getElementById('adminModal').classList.remove('modal-visible');
+            document.getElementById('adminModal').classList.add('modal-hidden');
+            
+            document.getElementById('userPortalModal').classList.remove('modal-visible');
+            document.getElementById('userPortalModal').classList.add('modal-hidden');
+            
+            showPublicView();
+            showNotification('התנתקת מהמערכת.');
+        }
+
+        // --- ADMIN OPERATIONS ---
+        function updateAdminStats() {
+            if(document.getElementById('admin-stat-brokers')) document.getElementById('admin-stat-brokers').innerText = brokerDatabase.length;
+            if(document.getElementById('admin-stat-bookings')) document.getElementById('admin-stat-bookings').innerText = bookingsDB.length;
+            if(document.getElementById('admin-stat-properties')) document.getElementById('admin-stat-properties').innerText = propertiesDB.length;
+        }
+
+        function deleteEntity(collection, id) {
+            customConfirm('מחיקת נתון', 'האם אתה בטוח שברצונך למחוק רשומה זו?', function() {
+                db.collection(collection).doc(id).delete().then(() => {
+                    showNotification('רשומה נמחקה בהצלחה.');
+                }).catch(e => showNotification('שגיאת מחיקה בענן', true));
+            });
+        }
+
+        function updateBookingStatus(id, newStatus) {
+            db.collection('bookings').doc(id).update({ status: newStatus }).then(() => {
+                showNotification('סטטוס עודכן. (הרווחים עודכנו בהתאם).');
+            });
+        }
+
+        function renderAdminManagers() {
+            const tbody = document.getElementById('admin-managers-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            managersDB.forEach(m => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-800 transition">
+                        <td class="p-3">${m.name}</td>
+                        <td class="p-3 ltr-dir">${m.username}</td>
+                        <td class="p-3 ltr-dir">${m.password}</td>
+                        <td class="p-3 text-left">
+                            <button onclick="openQuickEdit('managers', '${m.firestoreId}')" class="text-crystal hover:text-white ml-3"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteEntity('managers', '${m.firestoreId}')" class="text-red-500 hover:text-white"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdminBrokers() {
+            const tbody = document.getElementById('admin-brokers-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            brokerDatabase.forEach(b => {
+                const manager = managersDB.find(m => m.firestoreId === b.managerId);
+                const managerName = manager ? manager.name : 'ללא מנהל';
+                
+                // Calculate Stats automatically from bookings OR use manual overrides
+                const brokerBookings = bookingsDB.filter(bk => bk.brokerId === b.firestoreId);
+                const autoPax = brokerBookings.reduce((sum, bk) => sum + (bk.pax || 0), 0);
+                const autoSales = brokerBookings.filter(bk => bk.status === 'סגר עסקה!').length;
+                
+                const finalPax = b.manualPax !== undefined ? b.manualPax : autoPax;
+                const finalSales = b.manualSales !== undefined ? b.manualSales : autoSales;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-800 transition">
+                        <td class="p-3 font-bold">${b.name}</td>
+                        <td class="p-3 text-xs ltr-dir">${b.licenseId} / ${b.password}</td>
+                        <td class="p-3 text-gray-400 text-xs">${managerName}</td>
+                        <td class="p-3 text-center text-crystal">${finalPax}</td>
+                        <td class="p-3 text-center text-green-400">${finalSales}</td>
+                        <td class="p-3 text-left">
+                            <button onclick="openQuickEdit('brokers', '${b.firestoreId}')" class="text-crystal hover:text-white ml-3"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteEntity('brokers', '${b.firestoreId}')" class="text-red-500 hover:text-white"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderAdminBookings() {
+            const tbody = document.getElementById('admin-bookings-table-body');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            bookingsDB.forEach(b => {
+                const broker = brokerDatabase.find(br => br.firestoreId === b.brokerId);
+                const brokerName = broker ? broker.name : 'ישיר';
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-800 transition">
+                        <td class="p-3">${b.clientName}<br><span class="text-[10px] text-gray-500 ltr-dir">${b.clientPhone}</span></td>
+                        <td class="p-3 text-xs ltr-dir text-left">${b.flightInfo || '--'} <br> <span class="text-crystal">${b.tourDate}</span></td>
+                        <td class="p-3 text-center">${b.pax}</td>
+                        <td class="p-3 text-crystal text-xs">${brokerName}</td>
+                        <td class="p-3">
+                            <select onchange="updateBookingStatus('${b.firestoreId}', this.value)" class="bg-slate-900 border border-slate-700 rounded p-1 text-xs text-white">
+                                <option value="בהמתנה לטיסה" ${b.status==='בהמתנה לטיסה'?'selected':''}>בהמתנה לטיסה</option>
+                                <option value="טס בפועל" ${b.status==='טס בפועל'?'selected':''}>טס בפועל</option>
+                                <option value="סגר עסקה!" ${b.status==='סגר עסקה!'?'selected':''}>סגר עסקה!</option>
+                            </select>
+                        </td>
+                        <td class="p-3 text-left">
+                            <button onclick="deleteEntity('bookings', '${b.firestoreId}')" class="text-red-500 hover:text-white"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function addManager(e) {
+            e.preventDefault();
+            db.collection("managers").add({
+                name: document.getElementById('newManagerName').value,
+                username: document.getElementById('newManagerUsername').value,
+                password: document.getElementById('newManagerPass').value,
+                timestamp: new Date().toISOString()
+            }).then(() => {
+                showNotification('מנהל נוסף בהצלחה.');
+                e.target.reset();
+            });
+        }
+
+        function saveSystemSettings() {
+            const s = {
+                whatsapp: document.getElementById('adminWaInput').value,
+                tourPrice: document.getElementById('adminTourPrice').value,
+                broadcast: document.getElementById('adminBroadcastInput').value,
+                heroTitle: document.getElementById('adminHeroTitle').value,
+                heroText: document.getElementById('adminHeroText').value
+            };
+            db.collection("settings").doc("global").set(s, { merge: true }).then(() => {
+                showNotification('הגדרות נשמרו והוחלו באוויר.');
+            });
+        }
+
+        function openQuickEdit(collection, id) {
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editUserCollection').value = collection;
+            
+            let obj = null;
+            if(collection === 'managers') obj = managersDB.find(m => m.firestoreId === id);
+            if(collection === 'brokers') obj = brokerDatabase.find(b => b.firestoreId === id);
+            if(!obj) return;
+
+            document.getElementById('editName').value = obj.name || '';
+            document.getElementById('editUser').value = obj.username || obj.licenseId || '';
+            document.getElementById('editPass').value = obj.password || '';
+
+            if(collection === 'brokers') {
+                document.getElementById('editBrokerFields').classList.remove('hidden');
+                document.getElementById('editPax').value = obj.manualPax !== undefined ? obj.manualPax : '';
+                document.getElementById('editSales').value = obj.manualSales !== undefined ? obj.manualSales : '';
+                document.getElementById('editPromo').value = obj.customPromo || '';
+                
+                const sel = document.getElementById('editManagerId');
+                sel.innerHTML = '<option value="">ללא מנהל</option>';
+                managersDB.forEach(m => {
+                    sel.innerHTML += `<option value="${m.firestoreId}" ${obj.managerId === m.firestoreId ? 'selected':''}>${m.name}</option>`;
+                });
+            } else {
+                document.getElementById('editBrokerFields').classList.add('hidden');
+            }
+
+            document.getElementById('quickEditModal').classList.remove('modal-hidden');
+            document.getElementById('quickEditModal').classList.add('modal-visible');
+        }
+
+        function closeQuickEdit() {
+            document.getElementById('quickEditModal').classList.add('modal-hidden');
+            document.getElementById('quickEditModal').classList.remove('modal-visible');
+        }
+
+        function saveQuickEdit() {
+            const id = document.getElementById('editUserId').value;
+            const collection = document.getElementById('editUserCollection').value;
+            let data = {
+                name: document.getElementById('editName').value,
+                password: document.getElementById('editPass').value
+            };
+            if(collection === 'managers') data.username = document.getElementById('editUser').value;
+            if(collection === 'brokers') {
+                data.licenseId = document.getElementById('editUser').value;
+                data.managerId = document.getElementById('editManagerId').value;
+                
+                const pax = document.getElementById('editPax').value;
+                const sales = document.getElementById('editSales').value;
+                if(pax !== '') data.manualPax = parseInt(pax); else data.manualPax = firebase.firestore.FieldValue.delete();
+                if(sales !== '') data.manualSales = parseInt(sales); else data.manualSales = firebase.firestore.FieldValue.delete();
+                
+                data.customPromo = document.getElementById('editPromo').value;
+            }
+
+            db.collection(collection).doc(id).update(data).then(() => {
+                showNotification('שינויים נשמרו בהצלחה.');
+                closeQuickEdit();
+            });
+        }
+
+        function populateManagerDropdowns() {
+            // Setup dropdowns inside Manager portals or admin tools if needed
+        }
+
+        // --- BROKER PORTAL ---
+        function renderBrokerPortal() {
+            const b = currentUser.data;
+            const myBookings = bookingsDB.filter(bk => bk.brokerId === b.firestoreId);
+            
+            const autoPax = myBookings.reduce((sum, bk) => sum + (bk.pax || 0), 0);
+            const autoSales = myBookings.filter(bk => bk.status === 'סגר עסקה!').length;
+            
+            const pax = b.manualPax !== undefined ? b.manualPax : autoPax;
+            const sales = b.manualSales !== undefined ? b.manualSales : autoSales;
+
+            // Promo Engine Logic
+            let promoStatus = '';
+            let progressHtml = '';
+            let promoColor = 'text-gray-400';
+
+            if (b.customPromo && b.customPromo.trim() !== '') {
+                promoStatus = `<i class="fa-solid fa-star text-gold mr-2"></i> ${b.customPromo}`;
+                promoColor = 'text-gold';
+            } else if (sales >= 100 || pax >= 200) {
+                promoStatus = `<i class="fa-solid fa-key text-crystal mr-2"></i> זכית בדירה בשווי 70,000$ מתנה!`;
+                promoColor = 'text-crystal';
+                progressHtml = `<div class="w-full bg-slate-800 rounded-full h-2.5 mt-2"><div class="bg-crystal h-2.5 rounded-full" style="width: 100%"></div></div>`;
+            } else if (pax >= 100) {
+                promoStatus = `<i class="fa-solid fa-money-bill-wave text-green-400 mr-2"></i> בונוס מזומן הושג (10K$)! יעד הבא: דירה (עוד ${200-pax} נוסעים)`;
+                promoColor = 'text-green-400';
+                progressHtml = `<div class="w-full bg-slate-800 rounded-full h-2.5 mt-2"><div class="bg-green-400 h-2.5 rounded-full" style="width: ${(pax/200)*100}%"></div></div>`;
+            } else if (pax >= 50) {
+                promoStatus = `<i class="fa-solid fa-umbrella-beach text-orange-400 mr-2"></i> זכית בחופשה ב-Sea Breeze! יעד הבא: בונוס 10K$ (עוד ${100-pax} נוסעים)`;
+                promoColor = 'text-orange-400';
+                progressHtml = `<div class="w-full bg-slate-800 rounded-full h-2.5 mt-2"><div class="bg-orange-400 h-2.5 rounded-full" style="width: ${(pax/100)*100}%"></div></div>`;
+            } else if (pax >= 10) {
+                promoStatus = `<i class="fa-solid fa-plane text-blue-400 mr-2"></i> זכית בטיסה חינם! יעד הבא: חופשה (עוד ${50-pax} נוסעים)`;
+                promoColor = 'text-blue-400';
+                progressHtml = `<div class="w-full bg-slate-800 rounded-full h-2.5 mt-2"><div class="bg-blue-400 h-2.5 rounded-full" style="width: ${(pax/50)*100}%"></div></div>`;
+            } else {
+                promoStatus = `<i class="fa-solid fa-plane-up text-gray-400 mr-2"></i> עוד ${10-pax} נוסעים לטיסה חינם.`;
+                progressHtml = `<div class="w-full bg-slate-800 rounded-full h-2.5 mt-2"><div class="bg-gray-500 h-2.5 rounded-full" style="width: ${(pax/10)*100}%"></div></div>`;
+            }
+
+            const refLink = window.location.origin + window.location.pathname + '?broker_ref=' + b.firestoreId;
+
+            let html = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="glass-card p-6 rounded-xl border border-slate-800">
+                        <h3 class="text-sm text-gray-400 mb-1">מד נוסעים כולל</h3>
+                        <div class="text-4xl font-mono font-bold text-white mb-4">${pax}</div>
+                        <p class="text-sm font-bold ${promoColor}">${promoStatus}</p>
+                        ${progressHtml}
+                    </div>
+                    <div class="glass-card p-6 rounded-xl border border-slate-800">
+                        <h3 class="text-sm text-gray-400 mb-1">מד עסקאות (סגירות בפועל)</h3>
+                        <div class="text-4xl font-mono font-bold text-green-400">${sales}</div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 rounded-xl border border-slate-800 mb-8">
+                    <h3 class="text-sm font-bold text-crystal mb-2"><i class="fa-solid fa-link mr-2"></i> קישור שותף אישי שלך</h3>
+                    <p class="text-[10px] text-gray-400 mb-2">שלח קישור זה ללקוחות. הם ישויכו אליך אוטומטית בהרשמה.</p>
+                    <div class="flex">
+                        <input type="text" readonly value="${refLink}" class="flex-1 bg-slate-900 p-2 text-xs text-white outline-none rounded-r ltr-dir border border-slate-700">
+                        <button onclick="navigator.clipboard.writeText('${refLink}'); showNotification('הקישור הועתק')" class="bg-sapphire text-white px-4 py-2 rounded-l text-xs font-bold hover:bg-blue-700">העתק</button>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold mb-4">צינור מכירות - הלקוחות שלי</h3>
+                <div class="glass-card rounded-xl border border-slate-800 overflow-x-auto">
+                    <table class="w-full text-right text-sm whitespace-nowrap min-w-[600px]">
+                        <thead class="bg-slate-950 text-gray-400 border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">שם הלקוח</th>
+                                <th class="p-3">תאריך יציאה (טיסה)</th>
+                                <th class="p-3">נוסעים</th>
+                                <th class="p-3">סטטוס (נקבע ע"י המערכת)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-900 text-slate-300">
+            `;
+
+            if(myBookings.length === 0) {
+                html += `<tr><td colspan="4" class="p-6 text-center text-gray-500">עדיין אין לך לקוחות רשומים. שלח את קישור השותף שלך!</td></tr>`;
+            } else {
+                myBookings.forEach(bk => {
+                    let stColor = 'text-white';
+                    if(bk.status === 'סגר עסקה!') stColor = 'text-green-400 font-bold';
+                    if(bk.status === 'טס בפועל') stColor = 'text-crystal';
+                    html += `
+                        <tr class="hover:bg-slate-800">
+                            <td class="p-3">${bk.clientName}</td>
+                            <td class="p-3 ltr-dir text-left text-xs">${bk.tourDate} <br> <span class="text-gray-500">${bk.flightInfo||''}</span></td>
+                            <td class="p-3">${bk.pax}</td>
+                            <td class="p-3 ${stColor}">${bk.status}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            html += `</tbody></table></div>`;
+            document.getElementById('portalContent').innerHTML = html;
+        }
+
+        // --- MANAGER PORTAL ---
+        function renderManagerPortal() {
+            const m = currentUser.data;
+            const myBrokers = brokerDatabase.filter(b => b.managerId === m.firestoreId);
+            
+            let totalTeamPax = 0;
+            let totalTeamSales = 0;
+            const activeBrokersCount = myBrokers.length;
+
+            myBrokers.forEach(b => {
+                const bBk = bookingsDB.filter(bk => bk.brokerId === b.firestoreId);
+                const autoPax = bBk.reduce((sum, bk) => sum + (bk.pax || 0), 0);
+                const autoSales = bBk.filter(bk => bk.status === 'סגר עסקה!').length;
+                totalTeamPax += (b.manualPax !== undefined ? b.manualPax : autoPax);
+                totalTeamSales += (b.manualSales !== undefined ? b.manualSales : autoSales);
+            });
+
+            // Financial Algorithm
+            const earnings = (activeBrokersCount * 50) + (totalTeamPax * 100) + (totalTeamSales * 1000);
+
+            // Free Ticket Logic: Check if any single tour date has 12+ pax from this team
+            let tourDatesMap = {};
+            bookingsDB.forEach(bk => {
+                const isMyTeam = myBrokers.some(b => b.firestoreId === bk.brokerId);
+                if(isMyTeam) {
+                    if(!tourDatesMap[bk.tourDate]) tourDatesMap[bk.tourDate] = 0;
+                    tourDatesMap[bk.tourDate] += (bk.pax || 0);
+                }
+            });
+            let freeTicketsHtml = '';
+            for (const [date, count] of Object.entries(tourDatesMap)) {
+                if(count >= 12) {
+                    freeTicketsHtml += `<div class="bg-green-900/30 border border-green-500/50 p-2 rounded text-xs text-green-400 mb-2"><i class="fa-solid fa-ticket mr-1"></i> זכאות לכרטיס חינם לסיור בתאריך: ${date} (${count} נוסעים בצוות)</div>`;
+                }
+            }
+
+            let html = `
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="glass-card p-4 rounded-xl border border-slate-800 text-center">
+                        <span class="text-[10px] text-gray-400 block mb-1">סוכנים בצוות שלי</span>
+                        <span class="text-2xl font-bold font-mono text-white">${activeBrokersCount}</span>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border border-slate-800 text-center">
+                        <span class="text-[10px] text-gray-400 block mb-1">סך נוסעי הצוות</span>
+                        <span class="text-2xl font-bold font-mono text-white">${totalTeamPax}</span>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border border-slate-800 text-center">
+                        <span class="text-[10px] text-gray-400 block mb-1">סך עסקאות (Sales)</span>
+                        <span class="text-2xl font-bold font-mono text-green-400">${totalTeamSales}</span>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border border-crystal/40 text-center bg-blue-900/10 shadow-[0_0_20px_rgba(56,189,248,0.1)]">
+                        <span class="text-[10px] text-crystal block mb-1">ארנק עמלות צבורות ($)</span>
+                        <span class="text-2xl font-bold font-mono text-crystal ltr-dir">$${earnings.toLocaleString()}</span>
+                    </div>
+                </div>
+
+                ${freeTicketsHtml}
+
+                <div class="glass-card p-4 rounded-xl border border-slate-800 mb-8 bg-slate-900/50">
+                    <h3 class="text-sm font-bold text-white mb-4">יצירת חשבון לסוכן חדש בצוות</h3>
+                    <div class="flex flex-col md:flex-row gap-2">
+                        <input type="text" id="mgrNewBrokerName" placeholder="שם הסוכן" class="flex-1 bg-black border border-slate-700 rounded p-2 text-xs text-white">
+                        <input type="text" id="mgrNewBrokerUser" placeholder="מספר רישיון (יוזר)" class="flex-1 bg-black border border-slate-700 rounded p-2 text-xs text-white ltr-dir">
+                        <input type="text" id="mgrNewBrokerPass" placeholder="סיסמה" class="flex-1 bg-black border border-slate-700 rounded p-2 text-xs text-white ltr-dir">
+                        <button onclick="managerAddsBroker()" class="bg-sapphire text-white px-4 py-2 rounded text-xs font-bold">הקם סוכן ושייך אלי</button>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold mb-4">ניהול סוכני הצוות</h3>
+                <div class="glass-card rounded-xl border border-slate-800 overflow-x-auto">
+                    <table class="w-full text-right text-sm whitespace-nowrap min-w-[600px]">
+                        <thead class="bg-slate-950 text-gray-400 border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">שם הסוכן</th>
+                                <th class="p-3">התחברות (יוזר / סיסמה)</th>
+                                <th class="p-3 text-center">נוסעים</th>
+                                <th class="p-3 text-center">סגירות</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-900 text-slate-300">
+            `;
+
+            if(myBrokers.length === 0) {
+                html += `<tr><td colspan="4" class="p-6 text-center text-gray-500">אין סוכנים בצוות. התחל להחתים!</td></tr>`;
+            } else {
+                myBrokers.forEach(b => {
+                    const bBk = bookingsDB.filter(bk => bk.brokerId === b.firestoreId);
+                    const autoPax = bBk.reduce((sum, bk) => sum + (bk.pax || 0), 0);
+                    const autoSales = bBk.filter(bk => bk.status === 'סגר עסקה!').length;
+                    const finalPax = b.manualPax !== undefined ? b.manualPax : autoPax;
+                    const finalSales = b.manualSales !== undefined ? b.manualSales : autoSales;
+
+                    html += `
+                        <tr class="hover:bg-slate-800">
+                            <td class="p-3 font-bold">${b.name}</td>
+                            <td class="p-3 text-xs text-gray-400 ltr-dir text-right">${b.licenseId} / ${b.password}</td>
+                            <td class="p-3 text-center text-crystal">${finalPax}</td>
+                            <td class="p-3 text-center text-green-400">${finalSales}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            html += `</tbody></table></div>`;
+            document.getElementById('portalContent').innerHTML = html;
+        }
+
+        function managerAddsBroker() {
+            const name = document.getElementById('mgrNewBrokerName').value;
+            const user = document.getElementById('mgrNewBrokerUser').value;
+            const pass = document.getElementById('mgrNewBrokerPass').value;
+            
+            if(!name || !user || !pass) { showNotification('יש למלא את כל השדות', true); return; }
+
+            db.collection("brokers").add({
+                name: name,
+                licenseId: user,
+                password: pass,
+                managerId: currentUser.data.firestoreId,
+                timestamp: new Date().toISOString()
+            }).then(() => {
+                showNotification('חשבון הסוכן הוקם. אתה יכול לשלוח לו את הפרטים.');
+            }).catch(e => showNotification('שגיאה', true));
+        }
+
+        function openPropertyModal(firestoreId) {
+            const prop = propertiesDB.find(p => p.firestoreId === firestoreId);
+            if (!prop) return;
+            currentPropMedia = prop.media;
+            document.getElementById('modalPropertyTag').innerText = prop.tag;
+            document.getElementById('modalPropertyTitle').innerText = prop.title;
+            document.getElementById('modalPropertyPrice').innerText = prop.price;
+            document.getElementById('modalPropertyYield').innerText = prop.yield;
+            document.getElementById('modalPropertyDesc').innerText = prop.desc;
+            
+            document.getElementById('modalMainMediaContainer').innerHTML = `<img src="${currentPropMedia[0].url}" class="w-full h-full object-cover">`;
+            
+            const modal = document.getElementById('propertyModal');
+            modal.classList.remove('modal-hidden');
+            modal.classList.add('modal-visible');
+        }
+
+        function closePropertyModal() {
+            document.getElementById('propertyModal').classList.remove('modal-visible');
+            document.getElementById('propertyModal').classList.add('modal-hidden');
+        }
+
+        function toggleLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal.classList.contains('modal-hidden')) {
+                modal.classList.remove('modal-hidden');
+                modal.classList.add('modal-visible');
+            } else {
+                modal.classList.remove('modal-visible');
+                modal.classList.add('modal-hidden');
+            }
+        }
+
+        function showPublicView() {
+            document.getElementById('public-view').classList.remove('hidden');
+            document.getElementById('adminModal').classList.add('modal-hidden');
+            document.getElementById('adminModal').classList.remove('modal-visible');
+            document.getElementById('navbar').classList.remove('hidden');
+        }
+
+        function switchAdminTab(tab, btn) {
+            document.querySelectorAll('.admin-tab-btn').forEach(b => {
+                b.className = 'shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-2 md:py-3 rounded-lg text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-300';
+            });
+            btn.className = 'shrink-0 admin-tab-btn w-auto lg:w-full text-right px-4 py-2 md:py-3 rounded-lg text-sm font-semibold transition-all duration-300 bg-sapphire text-white';
+
+            const tabs = ['overview', 'managers', 'brokers', 'bookings', 'properties', 'settings'];
+            tabs.forEach(t => {
+                const el = document.getElementById('admin-' + t);
+                if (el) { el.classList.add('hidden'); el.classList.remove('block'); }
+            });
+            
+            const targetEl = document.getElementById('admin-' + tab);
+            if (targetEl) { targetEl.classList.remove('hidden'); targetEl.classList.add('block'); }
         }
     </script>
 </body>
