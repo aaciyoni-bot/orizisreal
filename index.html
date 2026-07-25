@@ -225,7 +225,7 @@
         <!-- Hero Section -->
         <section class="relative min-h-[90vh] md:min-h-screen flex items-center justify-start overflow-hidden pt-20">
             <div class="absolute inset-0 z-0">
-                <img id="publicHeroImg" src="https://images.unsplash.com/photo-1613490908236-4700f5317789?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80" alt="נכס יוקרה באזרבייג'ן" class="w-full h-full object-cover object-center scale-105 animate-[pulse_20s_ease-in-out_infinite]" />
+                <img id="publicHeroImg" src="images/hero-baku.jpg" fetchpriority="high" alt="קו הרקיע של באקו, בירת אזרבייג'ן, ומפרץ הים הכספי" class="w-full h-full object-cover object-center scale-105 animate-[pulse_20s_ease-in-out_infinite]" />
                 <div class="absolute inset-0 hero-gradient"></div>
                 <div class="absolute inset-0 hero-vignette"></div>
             </div>
@@ -310,7 +310,7 @@
                         </ul>
                     </div>
                     <div class="lg:w-1/2 h-64 lg:h-auto relative">
-                        <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Sea Breeze Luxury Resort" class="w-full h-full object-cover">
+                        <img src="images/sea-breeze.jpg" loading="lazy" alt="מתחם הנופש Sea Breeze על חוף הים הכספי בבאקו" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-r from-[#020617] via-transparent to-transparent"></div>
                     </div>
                 </div>
@@ -319,7 +319,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 reveal">
                     <div class="glass-card rounded-2xl p-8 relative overflow-hidden group">
                         <div class="absolute inset-0 z-0 opacity-40 group-hover:opacity-60 transition duration-500">
-                            <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="White City Architecture" class="w-full h-full object-cover">
+                            <img src="images/white-city.jpg" loading="lazy" alt="אדריכלות יוקרה בשדרות Baku White City" class="w-full h-full object-cover">
                         </div>
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/20 z-10"></div>
                         <div class="relative z-20 h-full flex flex-col justify-end">
@@ -332,7 +332,7 @@
                     </div>
                     <div class="glass-card rounded-2xl p-8 relative overflow-hidden group">
                         <div class="absolute inset-0 z-0 opacity-40 group-hover:opacity-60 transition duration-500">
-                            <img src="https://images.unsplash.com/photo-1542224566-6e85f2e6772f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Gabala Mountain Scenery" class="w-full h-full object-cover">
+                            <img src="images/gabala.jpg" loading="lazy" alt="נופי ההרים המושלגים של גבאלה, אזרבייג'ן" class="w-full h-full object-cover">
                         </div>
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/20 z-10"></div>
                         <div class="relative z-20 h-full flex flex-col justify-end">
@@ -1411,7 +1411,7 @@
             }
 
             filtered.forEach(p => {
-                const imgUrl = (p.media && p.media[0] && p.media[0].url) ? p.media[0].url : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=70';
+                const imgUrl = (p.media && p.media[0] && p.media[0].url) ? p.media[0].url : 'images/white-city.jpg';
                 container.innerHTML += `
                     <div class="glass-card rounded-2xl overflow-hidden group cursor-pointer relative flex flex-col" onclick="openPropertyModal('${p.firestoreId}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'){openPropertyModal('${p.firestoreId}')}">
                         <div class="absolute top-3 md:top-4 right-3 md:right-4 bg-[#020617]/90 backdrop-blur text-white text-[10px] md:text-xs font-bold px-2 md:px-3 py-1 md:py-1.5 rounded border border-slate-800 z-10">${p.tag || 'נכס'}</div>
@@ -1957,7 +1957,7 @@
             document.getElementById('modalPropertyYield').innerText = prop.yield || 'פרטים במשרד';
             document.getElementById('modalPropertyDesc').innerText = prop.desc || '';
 
-            const mainUrl = (currentPropMedia[0] && currentPropMedia[0].url) ? currentPropMedia[0].url : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=70';
+            const mainUrl = (currentPropMedia[0] && currentPropMedia[0].url) ? currentPropMedia[0].url : 'images/white-city.jpg';
             document.getElementById('modalMainMediaContainer').innerHTML = `<img src="${mainUrl}" alt="${prop.title || 'נכס'}" class="w-full h-full object-cover">`;
 
             const modal = document.getElementById('propertyModal');
